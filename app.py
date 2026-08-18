@@ -277,7 +277,6 @@ def home():
 
 @app.route('/css/<path:filename>')
 def serve_css(filename):
-    # On utilise la variable css_dir définie en haut pour être sûr à 100% du chemin
     return send_from_directory(css_dir, filename)
 
 # ==========================================
@@ -286,10 +285,12 @@ def serve_css(filename):
 @app.route('/<page_name>')
 def render_html_page(page_name):
     try:
-        # Cela va chercher automatiquement n'importe quel fichier .html dans ton dossier templates
+        # Si l'utilisateur ou un lien ajoute déjà ".html" à la fin, on l'enlève pour éviter de chercher "page.html.html"
+        if page_name.endswith('.html'):
+            page_name = page_name[:-5]
+            
         return render_template(f"{page_name}.html")
     except Exception:
-        # Si le fichier n'existe pas, on évite l'erreur 500 et on affiche un message propre
         return "Page introuvable (Erreur 404)", 404
 
 # Lancement local (ignoré par Vercel)
