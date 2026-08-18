@@ -262,5 +262,6 @@ def update_order_status(order_id):
     return jsonify({"message": "Statut manquant"}), 400
 
 
+# Lancement local (ignoré par Vercel)
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
