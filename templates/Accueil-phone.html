@@ -138,8 +138,9 @@
       window.location.href = 'Accueil-phone.html';
     }
 
-    // 2. Récupération dynamique depuis l'API Flask (port 5000) et affichage du classement trié
-    fetch('http://localhost:5000/api/products')
+    // 2. Récupération dynamique depuis l'API Flask et affichage du classement trié
+    // On utilise un chemin relatif '/api/products' au lieu de localhost
+    fetch('/api/products')
       .then(res => res.json())
       .then(data => {
         const tableBody = document.querySelector('#phones-table tbody');
@@ -169,7 +170,8 @@
         });
       })
       .catch(err => {
-        console.warn("Impossible de joindre le serveur Flask sur http://localhost:5000.", err);
+        // Message d'erreur mis à jour pour le mode en ligne
+        console.warn("Impossible de joindre le serveur Flask.", err);
       });
   </script>
 

@@ -69,22 +69,26 @@
 
   <!-- Script dynamique -->
   <script>
-  // Configuration de l'URL de ton backend
-  const API_URL = 'http://127.0.0.1:5000/api';
+  // Configuration de l'URL de ton backend pour Vercel (chemin relatif)
+  const API_URL = '/api';
 
   // Récupération Email
   document.getElementById('recoverEmailForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = e.target.querySelector('input').value;
 
-    const response = await fetch(`${API_URL}/recover-email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-    
-    const data = await response.json();
-    alert(data.message);
+    try {
+      const response = await fetch(`${API_URL}/recover-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await response.json();
+      alert(data.message);
+    } catch (err) {
+      console.warn("Erreur de connexion au serveur :", err);
+    }
   });
 
   // Récupération Téléphone
@@ -92,14 +96,18 @@
     e.preventDefault();
     const phone = e.target.querySelector('input').value;
 
-    const response = await fetch(`${API_URL}/recover-phone`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone })
-    });
-    
-    const data = await response.json();
-    alert(data.message);
+    try {
+      const response = await fetch(`${API_URL}/recover-phone`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+      
+      const data = await response.json();
+      alert(data.message);
+    } catch (err) {
+      console.warn("Erreur de connexion au serveur :", err);
+    }
   });
 </script>
 </body>

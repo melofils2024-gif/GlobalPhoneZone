@@ -153,18 +153,42 @@
   </footer>
 
   <script>
-    function addToFavorites(name, price, phone = "22900000000") {
-      let favorites = JSON.parse(localStorage.getItem('userFavorites')) || [];
-      const exists = favorites.some(item => item.name === name);
-      if (exists) {
-        alert(name + " est déjà dans vos favoris !");
+    // Fonction pour ajouter aux favoris via l'API Backend
+    async function addToFavorites(name, price, phone = "22900000000") {
+      const userId = localStorage.getItem('userId');
+      
+      if (!userId) {
+        alert("Veuillez vous connecter pour ajouter des favoris.");
+        window.location.href = 'login.html';
         return;
       }
-      favorites.push({ name, price, phone });
-      localStorage.setItem('userFavorites', JSON.stringify(favorites));
-      alert(name + " a été ajouté à vos favoris avec succès !");
+
+      try {
+        const response = await fetch('/api/favorites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            user_id: userId, 
+            name: name, 
+            price: price, 
+            phone: phone 
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(name + " a été ajouté à vos favoris avec succès !");
+        } else {
+          alert(data.message || "Erreur lors de l'ajout.");
+        }
+      } catch (error) {
+        console.error("Erreur:", error);
+        alert("Impossible de contacter le serveur.");
+      }
     }
 
+    // Mise à jour de la modale pour fonctionner avec l'API
     function openDetails(name, price, description, phone) {
       document.getElementById('modalTitle').textContent = name;
       document.getElementById('modalPrice').textContent = price;
@@ -173,6 +197,7 @@
       const whatsappMsg = encodeURIComponent(`Bonjour, je souhaite commander l'article : ${name} au prix de ${price}.`);
       document.getElementById('modalOrderBtn').href = `https://wa.me/${phone}?text=${whatsappMsg}`;
       
+      // On conserve l'appel à la fonction asynchrone ci-dessus
       document.getElementById('modalFavBtn').onclick = function() {
         addToFavorites(name, price, phone);
         closeDetails();
@@ -184,6 +209,6 @@
     function closeDetails() {
       document.getElementById('detailsModal').classList.add('hidden');
     }
-  </script>
+</script>
 </body>
 </html>

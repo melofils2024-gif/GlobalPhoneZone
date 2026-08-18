@@ -88,30 +88,101 @@
 </form>
 
 
-  <!-- Script -->
+  <!-- Script dynamique -->
   <script>
-    function showForm(type){
+    // 1. Basculement entre les formulaires
+    function showForm(type) {
       document.getElementById("loginForm").classList.add("hidden");
       document.getElementById("registerForm").classList.add("hidden");
       if(type === "login") document.getElementById("loginForm").classList.remove("hidden");
       if(type === "register") document.getElementById("registerForm").classList.remove("hidden");
     }
 
-    document.getElementById("loginForm").addEventListener("submit", function(e){
+    // 2. Gestion de la Connexion avec le serveur Flask
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
       e.preventDefault();
-      alert("Connexion réussie (simulation) !");
-      // Plus tard : redirection vers accueil client ou vendeur
+      
+      const identifier = document.getElementById("identifier").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        // Chemin relatif vers l'API sur Vercel
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identifier: identifier, password: password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Connexion réussie !");
+          
+          // Enregistrer le rôle dans le navigateur pour modifier l'affichage des autres pages
+          // (Comme on l'a vu dans ton script Accueil-phone.html)
+          if (data.role) {
+            localStorage.setItem('userRole', data.role);
+          }
+          
+          // Redirection vers l'accueil (qui est maintenant géré par la route '/')
+          window.location.href = "/";
+        } else {
+          alert("Erreur : " + (data.message || "Identifiants incorrects"));
+        }
+      } catch (error) {
+        console.warn("Erreur de connexion serveur :", error);
+        alert("Impossible de joindre le serveur. Vérifiez votre connexion.");
+      }
     });
 
-    document.getElementById("registerForm").addEventListener("submit", function(e){
+    // 3. Gestion de l'Inscription avec le serveur Flask
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
       e.preventDefault();
-      alert("Inscription réussie (simulation) !");
-      // Plus tard : enregistrement dans la base
+
+      // Récupération des valeurs du formulaire
+      const prenom = document.getElementById("firstname").value;
+      const nom = document.getElementById("lastname").value;
+      const identifier = document.getElementById("identifierReg").value;
+      const role = document.getElementById("role").value;
+      const password = document.getElementById("passwordReg").value;
+
+      try {
+        // Chemin relatif vers l'API sur Vercel
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            prenom: prenom, 
+            nom: nom, 
+            identifier: identifier, 
+            role: role, 
+            password: password 
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
+          // Basculer automatiquement sur le formulaire de connexion
+          showForm("login"); 
+        } else {
+          alert("Erreur : " + (data.message || "L'inscription a échoué"));
+        }
+      } catch (error) {
+        console.warn("Erreur d'inscription :", error);
+        alert("Impossible de joindre le serveur. Vérifiez votre connexion.");
+      }
     });
 
-    function recoverPassword(){
-      alert("Un email de récupération sera envoyé via Gmail (simulation).");
-      // Plus tard : intégration avec Gmail API
+    // 4. Options de récupération
+    function showRecover(method) {
+      if(method === 'email') {
+        // Redirection vers ta page de récupération qu'on a corrigée plus tôt
+        window.location.href = "recover.html"; // Ajuste le nom du fichier si c'est différent
+      } else {
+        window.location.href = "recover.html"; 
+      }
     }
   </script>
 </body>

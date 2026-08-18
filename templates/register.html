@@ -99,7 +99,9 @@
   </footer>
 
   <!-- Script JS Mis à jour -->
-  <script>
+ <script>
+    const API_URL = 'http://127.0.0.1:5000/api';
+
     // 1. Basculement visuel entre le formulaire Client et Vendeur
     function showForm(type) {
       const clientForm = document.getElementById('clientForm');
@@ -123,7 +125,7 @@
     // 2. Traitement d'inscription + Connexion instantanée & Redirection directe
     async function submitRegistration(payload) {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/register', {
+        const response = await fetch(`${API_URL}/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -136,7 +138,7 @@
           localStorage.setItem('userRole', payload.role);
           localStorage.setItem('userEmail', payload.email);
           localStorage.setItem('userName', `${payload.prenom} ${payload.nom}`.trim());
-          if (data.user_id) localStorage.setItem('userId', data.user_id);
+          if (data.user_id || data.id) localStorage.setItem('userId', data.user_id || data.id);
           if (data.token) localStorage.setItem('authToken', data.token);
 
           // Redirection directe vers la bonne page

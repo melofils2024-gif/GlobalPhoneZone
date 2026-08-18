@@ -207,16 +207,18 @@
 
   <!-- Script Dynamique -->
   <script>
+ // Script Dynamique 
   const RATES = { USD: 1, EUR: 0.92, XOF: 600 };
   const SYMBOLS = { USD: '$', EUR: '€', XOF: 'FCFA' };
   let currentCurrency = 'XOF';
   let selectedProductForInstallment = null;
   let products = []; // Devient dynamique
 
-  // 1. Chargement des données depuis l'API Flask
+  // 1. Chargement des données depuis l'API Flask (CORRIGÉ POUR VERCEL)
   async function loadProducts() {
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/products');
+      // Utilisation du chemin relatif au lieu de http://127.0.0.1:5000
+      const response = await fetch('/api/products');
       if (!response.ok) throw new Error('Erreur réseau');
       
       products = await response.json();
@@ -225,8 +227,8 @@
       console.error('Erreur API :', error);
       document.getElementById('productsGrid').innerHTML = `
         <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-red-300 p-6">
-          <p class="text-lg font-bold text-red-600">Impossible de contacter le serveur Flask.</p>
-          <p class="text-sm text-slate-400 mt-1">Assurez-vous que "python3 app.py" tourne sur le port 5000.</p>
+          <p class="text-lg font-bold text-red-600">Impossible de contacter le serveur.</p>
+          <p class="text-sm text-slate-400 mt-1">Vérifiez votre connexion internet ou le statut de l'API.</p>
         </div>`;
     }
   }

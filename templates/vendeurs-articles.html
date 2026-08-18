@@ -55,6 +55,8 @@
 
   <!-- Script Dynamique -->
   <script>
+    const API_URL = 'http://127.0.0.1:5000/api';
+    
     // Récupération du rôle depuis le localStorage
     const userRole = localStorage.getItem('userRole');
     const navFavorites = document.getElementById('navFavorites');
@@ -68,7 +70,8 @@
         navProf.textContent = "Espace Vendeur 📊";
         navProf.href = "page-vendeur.html";
       }
-      document.getElementById('subTitle').textContent = "Espace Analyse Tendance - Consultez la concurrence et les prix du marché.";
+      const subTitle = document.getElementById('subTitle');
+      if (subTitle) subTitle.textContent = "Espace Analyse Tendance - Consultez la concurrence et les prix du marché.";
     } else if (userRole === 'client') {
       if (navFavorites) navFavorites.style.display = 'inline-block';
       if (navProf) {
@@ -85,16 +88,17 @@
     // Fonction pour charger les articles depuis l'API Flask
     async function chargerArticles() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/products');
+        const response = await fetch(`${API_URL}/products`);
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des produits");
         }
         const articles = await response.json();
         
         const container = document.getElementById('articles-container');
+        if (!container) return;
 
         if (articles.length === 0) {
-          container.innerHTML = `<p class="col-span-3 text-center text-gray-500">Aucun article disponible pour le moment.</p>`;
+          container.innerHTML = `<p class="col-span-3 text-center text-gray-500 py-8">Aucun article disponible pour le moment.</p>`;
           return;
         }
 
@@ -158,9 +162,12 @@
 
       } catch (error) {
         console.error("Erreur :", error);
-        document.getElementById('articles-container').innerHTML = `
-          <p class="col-span-3 text-center text-red-500">Impossible de charger les articles depuis le serveur. Vérifiez que Flask est bien lancé.</p>
-        `;
+        const container = document.getElementById('articles-container');
+        if (container) {
+          container.innerHTML = `
+            <p class="col-span-3 text-center text-red-500 py-8">Impossible de charger les articles depuis le serveur. Vérifiez que Flask est bien lancé.</p>
+          `;
+        }
       }
     }
 
@@ -177,41 +184,46 @@
       const marque = item.brand || item.marque || "Non spécifiée";
       const specs = item.specs || item.description || "Aucune description";
 
-      title.innerText = nom;
-      price.innerText = prix;
+      if (title) title.innerText = nom;
+      if (price) price.innerText = prix;
       
-      content.innerHTML = `
-        <p class="text-xs text-gray-500"><strong>Marque :</strong> ${marque}</p>
-        <p class="text-xs text-gray-500"><strong>Spécifications :</strong> ${specs}</p>
-        <hr class="my-2">
-        <p class="text-sm text-gray-700"><strong>Description :</strong> ${specs}</p>
-      `;
+      if (content) {
+        content.innerHTML = `
+          <p class="text-xs text-gray-500"><strong>Marque :</strong> ${marque}</p>
+          <p class="text-xs text-gray-500"><strong>Spécifications :</strong> ${specs}</p>
+          <hr class="my-2">
+          <p class="text-sm text-gray-700"><strong>Description :</strong> ${specs}</p>
+        `;
+      }
 
       const message = encodeURIComponent(`Bonjour, je souhaite commander : ${nom} à ${prix}.`);
       const whatsapp = item.whatsapp || "2290100000000";
       
-      if (userRole === 'vendeur') {
-        modalActions.innerHTML = `
-          <button onclick="fermerModal()" class="w-full bg-slate-800 text-white py-2.5 rounded-lg font-bold hover:bg-slate-700 transition text-sm">
-            Fermer
-          </button>
-        `;
-      } else {
-        modalActions.innerHTML = `
-          <a href="https://wa.me/${whatsapp}?text=${message}" target="_blank" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-center text-sm">
-            💬 Commander (WhatsApp)
-          </a>
-          <button onclick="addToFavorites('${nom}', '${prix}', '${whatsapp}', '${specs.replace(/'/g, "\\'")}'); fermerModal();" class="flex-1 bg-sky-600 text-white py-2.5 rounded-lg font-bold hover:bg-sky-500 transition shadow text-sm">
-            ❤️ Ajouter aux favoris
-          </button>
-        `;
+      if (modalActions) {
+        if (userRole === 'vendeur') {
+          modalActions.innerHTML = `
+            <button onclick="fermerModal()" class="w-full bg-slate-800 text-white py-2.5 rounded-lg font-bold hover:bg-slate-700 transition text-sm">
+              Fermer
+            </button>
+          `;
+        } else {
+          modalActions.innerHTML = `
+            <a href="https://wa.me/${whatsapp}?text=${message}" target="_blank" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-center text-sm">
+              💬 Commander (WhatsApp)
+            </a>
+            <button onclick="addToFavorites('${nom}', '${prix}', '${whatsapp}', '${specs.replace(/'/g, "\\'")}'); fermerModal();" class="flex-1 bg-sky-600 text-white py-2.5 rounded-lg font-bold hover:bg-sky-500 transition shadow text-sm">
+              ❤️ Ajouter aux favoris
+            </button>
+          `;
+        }
       }
 
-      modal.classList.remove('hidden');
+      if (modal) modal.classList.remove('hidden');
     }
 
     function fermerModal() {
-      document.getElementById('modalDetails').classList.add('hidden');
+      const modal = document.getElementById('modalDetails');
+      if (modal) modal.classList.add('hidden');
     }
 
     function addToFavorites(name, price, phone, desc) {

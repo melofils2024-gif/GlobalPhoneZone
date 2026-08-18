@@ -78,92 +78,89 @@
   <script>
     const DEFAULT_SELLER_PHONE = "22900000000";
 
-    function loadFavorites() {
+   // Charger les favoris depuis l'API Flask connectée à la base de données
+    async function loadFavorites() {
       const listContainer = document.getElementById('favoritesList');
       const clearContainer = document.getElementById('clearContainer');
-      let favorites = JSON.parse(localStorage.getItem('userFavorites')) || [];
-
-      listContainer.innerHTML = '';
-
-      if (favorites.length === 0) {
-        listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
-        clearContainer.classList.add('hidden');
+      
+      // Récupérer l'ID de l'utilisateur connecté (stocké lors de la connexion)
+      const userId = localStorage.getItem('userId');
+      
+      if (!userId) {
+        listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Veuillez vous connecter pour voir vos favoris.</p>';
         return;
       }
 
-      clearContainer.classList.remove('hidden');
-
-      favorites.forEach((item, index) => {
-        const sellerPhone = item.phone || DEFAULT_SELLER_PHONE;
-        const description = item.desc || "Ecran haute résolution, processeur puissant, appareil photo net, autonomie longue durée et garantie constructeur.";
-        const message = encodeURIComponent(`Bonjour, je souhaite passer la commande pour cet article enregistré dans mes favoris : ${item.name} (${item.price}). Est-il toujours disponible ?`);
-        const whatsappUrl = `https://wa.me/${sellerPhone}?text=${message}`;
-
-        const card = document.createElement('div');
-        card.className = "border rounded-xl p-5 shadow-sm bg-gray-50 flex flex-col justify-between hover:shadow-md transition";
+      try {
+        const response = await fetch(`/api/favorites/${userId}`);
+        if (!response.ok) throw new Error("Erreur réseau");
         
-        card.innerHTML = `
-          <div>
-            <div class="w-full h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400 font-bold">
-              📱 Photo ${item.name}
-            </div>
-            <h4 class="text-lg font-bold text-slate-800">${item.name}</h4>
-            <p class="text-sm text-violet-600 font-bold mt-1">${item.price}</p>
-          </div>
+        const favorites = await response.json();
+        
+        listContainer.innerHTML = '';
 
-          <div class="mt-5 space-y-2">
-            <button onclick="openDetails('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${description.replace(/'/g, "\\'")}', '${sellerPhone}', ${index})" 
-                    class="w-full bg-slate-100 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 transition text-sm">
-              🔍 Fiche technique & Détails
-            </button>
-            
-            <div class="flex gap-2">
-              <a href="${whatsappUrl}" 
-                 target="_blank" 
-                 class="w-1/2 bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-xs text-center flex items-center justify-center gap-1">
-                💬 Commander
-              </a>
-              <button onclick="removeFavorite(${index})" class="w-1/2 bg-rose-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-rose-500 transition shadow text-xs">
-                Supprimer ❌
+        if (favorites.length === 0) {
+          listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
+          clearContainer.classList.add('hidden');
+          return;
+        }
+
+        clearContainer.classList.remove('hidden');
+
+        favorites.forEach((item, index) => {
+          const sellerPhone = item.phone || "22900000000";
+          const description = item.desc || "Description non disponible.";
+          const message = encodeURIComponent(`Bonjour, je souhaite passer la commande pour cet article : ${item.name} (${item.price}).`);
+          const whatsappUrl = `https://wa.me/${sellerPhone}?text=${message}`;
+
+          const card = document.createElement('div');
+          card.className = "border rounded-xl p-5 shadow-sm bg-gray-50 flex flex-col justify-between hover:shadow-md transition";
+          
+          card.innerHTML = `
+            <div>
+              <div class="w-full h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400 font-bold">
+                📱 ${item.name}
+              </div>
+              <h4 class="text-lg font-bold text-slate-800">${item.name}</h4>
+              <p class="text-sm text-violet-600 font-bold mt-1">${item.price}</p>
+            </div>
+
+            <div class="mt-5 space-y-2">
+              <button onclick="openDetails('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${description.replace(/'/g, "\\'")}', '${sellerPhone}', ${item.id})" 
+                      class="w-full bg-slate-100 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 transition text-sm">
+                🔍 Fiche technique & Détails
               </button>
+              
+              <div class="flex gap-2">
+                <a href="${whatsappUrl}" target="_blank" class="w-1/2 bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-xs text-center flex items-center justify-center gap-1">
+                  💬 Commander
+                </a>
+                <button onclick="removeFavorite(${item.id})" class="w-1/2 bg-rose-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-rose-500 transition shadow text-xs">
+                  Supprimer ❌
+                </button>
+              </div>
             </div>
-          </div>
-        `;
-        listContainer.appendChild(card);
-      });
+          `;
+          listContainer.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error("Erreur lors du chargement des favoris :", error);
+        listContainer.innerHTML = '<p class="col-span-full text-red-500 text-center py-8">Impossible de charger les favoris depuis la base de données.</p>';
+      }
     }
 
-    function openDetails(name, price, description, phone, index) {
-      document.getElementById('modalTitle').textContent = name;
-      document.getElementById('modalPrice').textContent = price;
-      document.getElementById('modalDesc').textContent = description;
-      
-      const whatsappMsg = encodeURIComponent(`Bonjour, je souhaite commander l'article : ${name} au prix de ${price}.`);
-      document.getElementById('modalOrderBtn').href = `https://wa.me/${phone}?text=${whatsappMsg}`;
-      
-      document.getElementById('modalDeleteBtn').onclick = function() {
-        removeFavorite(index);
-        closeDetails();
-      };
-
-      document.getElementById('detailsModal').classList.remove('hidden');
-    }
-
-    function closeDetails() {
-      document.getElementById('detailsModal').classList.add('hidden');
-    }
-
-    function removeFavorite(index) {
-      let favorites = JSON.parse(localStorage.getItem('userFavorites')) || [];
-      favorites.splice(index, 1);
-      localStorage.setItem('userFavorites', JSON.stringify(favorites));
-      loadFavorites();
-    }
-
-    function clearAllFavorites() {
-      if (confirm("Voulez-vous vraiment supprimer tous vos favoris ?")) {
-        localStorage.removeItem('userFavorites');
-        loadFavorites();
+    async function removeFavorite(favoriteId) {
+      const userId = localStorage.getItem('userId');
+      try {
+        const response = await fetch(`/api/favorites/${userId}/${favoriteId}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          loadFavorites(); // Recharger la liste
+        }
+      } catch (error) {
+        console.error("Erreur lors de la suppression :", error);
       }
     }
 

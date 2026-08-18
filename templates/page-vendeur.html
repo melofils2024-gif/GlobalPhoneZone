@@ -122,181 +122,162 @@
   <!-- Script -->
   <script>
     const API_URL = 'http://127.0.0.1:5000/api';
-    const productList = document.getElementById('productList');
+    const listContainer = document.getElementById('favoritesList');
+    const clearContainer = document.getElementById('clearContainer');
 
-    // 1. Vérification de la session au chargement de la page
+    // 1. Vérification de la session et chargement des favoris au démarrage
     document.addEventListener('DOMContentLoaded', () => {
-      const userRole = localStorage.getItem('userRole');
       const userId = localStorage.getItem('userId');
-      const userName = localStorage.getItem('userName');
 
-      if (!userRole || userRole !== 'vendeur' || !userId) {
-        alert("Accès refusé. Veuillez vous connecter en tant que Vendeur.");
-        window.location.href = 'login.html';
+      if (!userId) {
+        listContainer.innerHTML = '<p class="col-span-full text-center text-red-500 py-8 font-semibold">Veuillez vous connecter en tant que client pour voir vos favoris.</p>';
+        if (clearContainer) clearContainer.classList.add('hidden');
         return;
       }
 
-      if (userName) {
-        document.getElementById('welcomeMessage').textContent = `Bienvenue ${userName} ! Gérez votre inventaire et vos commandes en un clin d'œil.`;
-      }
-
-      // Charger les produits du vendeur connecté
-      loadVendorProducts(userId);
+      loadUserFavorites(userId);
     });
 
-    // 2. Bouton de déconnexion
-    document.getElementById('logoutBtn')?.addEventListener('click', () => {
-      localStorage.clear();
-      window.location.href = 'login.html';
-    });
-
-    // 3. Charger les produits depuis le serveur Flask
-    async function loadVendorProducts(vendeurId) {
+    // 2. Charger les favoris depuis l'API Flask
+    async function loadUserFavorites(userId) {
       try {
-        const response = await fetch(`${API_URL}/vendeur/products?vendeur_id=${vendeurId}`);
-        if (!response.ok) return;
-
-        const products = await response.json();
-        productList.innerHTML = ''; // Réinitialiser le tableau
-
-        products.forEach(product => {
-          renderProductRow(product);
-        });
-      } catch (error) {
-        console.error('Erreur lors du chargement des produits :', error);
-      }
-    }
-
-    // 4. Ajouter un nouveau produit
-    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const vendeurId = localStorage.getItem('userId');
-      const payload = {
-        vendeur_id: vendeurId,
-        nom: document.getElementById('prodName').value.trim(),
-        marque: document.getElementById('prodBrand').value.trim(),
-        prix: parseFloat(document.getElementById('prodPrice').value),
-        devise: document.getElementById('currency').value,
-        description: document.getElementById('prodDesc').value.trim(),
-        statut: "Actif"
-      };
-
-      try {
-        const response = await fetch(`${API_URL}/vendeur/products`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          renderProductRow(data.product || { ...payload, id: data.id });
-          alert("Produit ajouté avec succès à votre inventaire !");
-          e.target.reset();
-        } else {
-          alert(data.message || "Erreur lors de l'ajout du produit.");
+        const response = await fetch(`${API_URL}/favorites/${userId}`);
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des favoris.");
         }
+
+        const favorites = await response.json();
+        listContainer.innerHTML = ''; // Réinitialiser le conteneur
+
+        if (!favorites || favorites.length === 0) {
+          listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
+          if (clearContainer) clearContainer.classList.add('hidden');
+          return;
+        }
+
+        if (clearContainer) clearContainer.classList.remove('hidden');
+
+        favorites.forEach((item, index) => {
+          renderFavoriteCard(item);
+        });
       } catch (error) {
         console.error('Erreur :', error);
-        alert("Impossible de communiquer avec le serveur Flask.");
-      }
-    });
-
-    // 5. Afficher une ligne de produit dans le tableau HTML
-    function renderProductRow(product) {
-      const isActif = product.statut === "Actif";
-      const statusClass = isActif ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-700";
-
-      const row = document.createElement('tr');
-      row.className = "hover:bg-gray-50 transition";
-      row.setAttribute('data-id', product.id);
-      row.innerHTML = `
-        <td class="border p-2.5 font-medium prod-name">${product.nom || product.name}</td>
-        <td class="border p-2.5 prod-brand">${product.marque || product.brand}</td>
-        <td class="border p-2.5 text-violet-600 font-semibold prod-price">${product.prix || product.price} ${product.devise || product.currency || 'F CFA'}</td>
-        <td class="border p-2.5 text-center">
-          <span class="px-2 py-1 rounded-full text-xs font-bold ${statusClass}">${product.statut || 'Actif'}</span>
-        </td>
-        <td class="border p-2.5 text-center space-x-1">
-          <button class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-amber-400 transition" onclick="toggleStatus(this)">Statut</button>
-          <button class="bg-sky-600 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-sky-500 transition" onclick="editProduct(this)">Modifier</button>
-          <button class="bg-rose-600 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-rose-500 transition" onclick="deleteProduct(this)">Supprimer</button>
-        </td>
-      `;
-      productList.appendChild(row);
-    }
-
-    // 6. Basculer le statut Actif / Inactif
-    async function toggleStatus(btn) {
-      const row = btn.closest('tr');
-      const productId = row.getAttribute('data-id');
-      const statusBadge = row.children[3].querySelector('span');
-      const newStatus = statusBadge.textContent === "Actif" ? "Inactif" : "Actif";
-
-      try {
-        const response = await fetch(`${API_URL}/vendeur/products/${productId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ statut: newStatus })
-        });
-
-        if (response.ok) {
-          statusBadge.textContent = newStatus;
-          statusBadge.className = newStatus === "Actif" 
-            ? "px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700"
-            : "px-2 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700";
-        }
-      } catch (error) {
-        console.error('Erreur lors du changement de statut :', error);
+        listContainer.innerHTML = '<p class="col-span-full text-red-500 text-center py-8">Impossible de contacter le serveur Flask.</p>';
       }
     }
 
-    // 7. Modifier le nom d'un produit
-    async function editProduct(btn) {
-      const row = btn.closest('tr');
-      const productId = row.getAttribute('data-id');
-      const currentName = row.querySelector('.prod-name').textContent;
+    // 3. Afficher une carte de favori dans le DOM
+    function renderFavoriteCard(item) {
+      const sellerPhone = item.phone || "22900000000";
+      const description = item.desc || item.description || "Écran haute résolution, processeur puissant et autonomie longue durée.";
+      const message = encodeURIComponent(`Bonjour, je souhaite passer la commande pour cet article enregistré dans mes favoris : ${item.name} (${item.price}). Est-il toujours disponible ?`);
+      const whatsappUrl = `https://wa.me/${sellerPhone}?text=${message}`;
+
+      const card = document.createElement('div');
+      card.className = "border rounded-xl p-5 shadow-sm bg-gray-50 flex flex-col justify-between hover:shadow-md transition";
+      card.setAttribute('data-id', item.id);
       
-      const newName = prompt("Modifier le nom du produit :", currentName);
-      if (!newName || newName.trim() === currentName) return;
+      card.innerHTML = `
+        <div>
+          <div class="w-full h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400 font-bold">
+            📱 ${item.name}
+          </div>
+          <h4 class="text-lg font-bold text-slate-800">${item.name}</h4>
+          <p class="text-sm text-violet-600 font-bold mt-1">${item.price}</p>
+        </div>
 
-      try {
-        const response = await fetch(`${API_URL}/vendeur/products/${productId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nom: newName.trim() })
-        });
-
-        if (response.ok) {
-          row.querySelector('.prod-name').textContent = newName.trim();
-        }
-      } catch (error) {
-        console.error('Erreur lors de la modification :', error);
-      }
+        <div class="mt-5 space-y-2">
+          <button onclick="openDetails('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${description.replace(/'/g, "\\'")}', '${sellerPhone}', ${item.id})" 
+                  class="w-full bg-slate-100 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 transition text-sm">
+            🔍 Fiche technique & Détails
+          </button>
+          
+          <div class="flex gap-2">
+            <a href="${whatsappUrl}" 
+               target="_blank" 
+               class="w-1/2 bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-xs text-center flex items-center justify-center gap-1">
+              💬 Commander
+            </a>
+            <button onclick="removeFavorite(${item.id})" class="w-1/2 bg-rose-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-rose-500 transition shadow text-xs">
+              Supprimer ❌
+            </button>
+          </div>
+        </div>
+      `;
+      listContainer.appendChild(card);
     }
 
-    // 8. Supprimer un produit
-    async function deleteProduct(btn) {
-      if (!confirm("Voulez-vous vraiment supprimer cette annonce ?")) return;
-
-      const row = btn.closest('tr');
-      const productId = row.getAttribute('data-id');
-
+    // 4. Supprimer un favori spécifique via l'API
+    async function removeFavorite(favoriteId) {
+      const userId = localStorage.getItem('userId');
       try {
-        const response = await fetch(`${API_URL}/vendeur/products/${productId}`, {
+        const response = await fetch(`${API_URL}/favorites/${userId}/${favoriteId}`, {
           method: 'DELETE'
         });
 
         if (response.ok) {
-          row.remove();
+          // Recharger dynamiquement ou supprimer l'élément du DOM
+          const card = document.querySelector(`[data-id="${favoriteId}"]`);
+          if (card) card.remove();
+
+          // Vérifier s'il reste des éléments pour masquer le bouton "Tout vider" si vide
+          if (listContainer.children.length === 0) {
+            listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
+            if (clearContainer) clearContainer.classList.add('hidden');
+          }
         } else {
-          alert("Erreur lors de la suppression.");
+          alert("Erreur lors de la suppression du favori.");
         }
       } catch (error) {
-        console.error('Erreur lors de la suppression :', error);
+        console.error('Erreur :', error);
+        alert("Impossible de communiquer avec le serveur.");
       }
+    }
+
+    // 5. Vider toute la liste des favoris via l'API
+    async function clearAllFavorites() {
+      if (!confirm("Voulez-vous vraiment supprimer tous vos favoris ?")) return;
+
+      const userId = localStorage.getItem('userId');
+      try {
+        const response = await fetch(`${API_URL}/favorites/${userId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
+          if (clearContainer) clearContainer.classList.add('hidden');
+        } else {
+          alert("Erreur lors du nettoyage des favoris.");
+        }
+      } catch (error) {
+        console.error('Erreur :', error);
+        alert("Impossible de communiquer avec le serveur.");
+      }
+    }
+
+    // 6. Gestion de la modale de détails
+    function openDetails(name, price, description, phone, favoriteId) {
+      document.getElementById('modalTitle').textContent = name;
+      document.getElementById('modalPrice').textContent = price;
+      document.getElementById('modalDesc').textContent = description;
+      
+      const whatsappMsg = encodeURIComponent(`Bonjour, je souhaite commander l'article : ${name} au prix de ${price}.`);
+      document.getElementById('modalOrderBtn').href = `https://wa.me/${phone}?text=${whatsappMsg}`;
+      
+      const deleteBtn = document.getElementById('modalDeleteBtn');
+      if (deleteBtn) {
+        deleteBtn.onclick = function() {
+          removeFavorite(favoriteId);
+          closeDetails();
+        };
+      }
+
+      document.getElementById('detailsModal').classList.remove('hidden');
+    }
+
+    function closeDetails() {
+      document.getElementById('detailsModal').classList.add('hidden');
     }
   </script>
 </body>
