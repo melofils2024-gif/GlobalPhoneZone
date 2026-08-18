@@ -2,22 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "Accueil-phone.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "CSS/**",
-      "use": "@vercel/static"
+      "src": "wsgi.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "^/$",
-      "dest": "/Accueil-phone.html"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "wsgi.py"
     }
   ]
 }
