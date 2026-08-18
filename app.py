@@ -262,17 +262,13 @@ def update_order_status(order_id):
     return jsonify({"message": "Statut manquant"}), 400
 
 @app.route('/')
-def index():
-    return jsonify({
-        "status": "online",
-        "message": "Bienvenue sur l'API de GlobalPhoneZone",
-        "endpoints": {
-            "products": "/api/products",
-            "login": "/api/login",
-            "register": "/api/register"
-        }
-    }), 200
+def home():
+    return send_from_directory('templates', 'Accueil-phone.html')
 
+# Pour que tes fichiers CSS dans le dossier 'css' fonctionnent aussi :
+@app.route('/css/<path:filename>')
+def serve_css(filename):
+    return send_from_directory('css', filename)
 
 # Lancement local (ignoré par Vercel)
 if __name__ == '__main__':
