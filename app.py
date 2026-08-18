@@ -1,9 +1,15 @@
-from flask import Flask, jsonify, request
+import os
+from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, Product, Order, OrderItem
 
-app = Flask(__name__)
+# 1. Définir les chemins absolus pour Vercel
+template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
+css_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'css'))
+
+# 2. Initialiser Flask en lui indiquant le dossier des templates
+app = Flask(__name__, template_folder=template_dir)
 CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -261,14 +267,18 @@ def update_order_status(order_id):
         return jsonify({"message": "Statut de la commande mis à jour", "order": order.to_dict()}), 200
     return jsonify({"message": "Statut manquant"}), 400
 
+# ==========================================
+# ROUTES FRONT-END (HTML / CSS)
+# ==========================================
+
 @app.route('/')
 def home():
     return render_template('Accueil-phone.html')
 
-# Pour que tes fichiers CSS dans le dossier 'css' fonctionnent aussi :
 @app.route('/css/<path:filename>')
 def serve_css(filename):
-    return send_from_directory('css', filename)
+    # On utilise la variable css_dir définie en haut pour être sûr à 100% du chemin
+    return send_from_directory(css_dir, filename)
 
 # Lancement local (ignoré par Vercel)
 if __name__ == '__main__':
