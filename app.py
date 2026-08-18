@@ -261,6 +261,18 @@ def update_order_status(order_id):
         return jsonify({"message": "Statut de la commande mis à jour", "order": order.to_dict()}), 200
     return jsonify({"message": "Statut manquant"}), 400
 
+@app.route('/')
+def index():
+    return jsonify({
+        "status": "online",
+        "message": "Bienvenue sur l'API de GlobalPhoneZone",
+        "endpoints": {
+            "products": "/api/products",
+            "login": "/api/login",
+            "register": "/api/register"
+        }
+    }), 200
+
 
 # Lancement local (ignoré par Vercel)
 if __name__ == '__main__':
