@@ -263,7 +263,7 @@ def update_order_status(order_id):
 
 @app.route('/')
 def home():
-    return send_from_directory('templates', 'Accueil-phone.html')
+    return render_template('Accueil-phone.html')
 
 # Pour que tes fichiers CSS dans le dossier 'css' fonctionnent aussi :
 @app.route('/css/<path:filename>')
