@@ -52,11 +52,10 @@ def login():
     user = User.query.filter_by(email=data.get('email')).first()
 
     if user and check_password_hash(user.password_hash, data.get('password')):
-        # Tu peux optionnellement vérifier le rôle ici si tu veux bloquer un client qui tente de se connecter en tant que vendeur
         return jsonify({
             "message": "Connexion réussie", 
             "user": user.to_dict(),
-            "role": user.role,  # Très important pour que ton JS récupère data.role
+            "role": user.role,  
             "user_id": user.id
         }), 200
 
@@ -100,7 +99,6 @@ def recover_email():
     user = User.query.filter_by(email=email).first()
     
     if user:
-        # Ici, tu ajouterais normalement l'envoi d'un vrai mail
         return jsonify({"message": "Si cet email existe, un lien a été envoyé."}), 200
     return jsonify({"message": "Email non trouvé."}), 404
 
@@ -108,7 +106,6 @@ def recover_email():
 def recover_phone():
     data = request.get_json()
     phone = data.get('phone')
-    # Logique pour vérifier si le numéro existe dans ta base
     return jsonify({"message": f"Code OTP envoyé au {phone}"}), 200
 
 
@@ -122,7 +119,7 @@ def get_products():
     return jsonify([{
         "id": p.id,
         "name": p.name,
-        "marque_modele": p.name, # Utilisé par l'accueil pour afficher le nom complet
+        "marque_modele": p.name, 
         "brand": p.brand,
         "ecran": getattr(p, 'ecran', '6.7" AMOLED'),
         "camera": getattr(p, 'camera', '50 MP'),
@@ -130,9 +127,8 @@ def get_products():
         "stockage": p.specs,
         "ram": getattr(p, 'ram', '8Go'),
         "prix_approx": p.price_usd,
-        "tendance": getattr(p, 'tendance', 85), # Score par défaut pour le tri du classement
+        "tendance": getattr(p, 'tendance', 85), 
         "photo_url": getattr(p, 'image_url', ''),
-        # Champs conservés pour tes autres pages / formulaires
         "nom": p.name,
         "marque": p.brand,
         "prix": f"{p.price_usd} $",
