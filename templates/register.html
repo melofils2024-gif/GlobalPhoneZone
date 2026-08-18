@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription - Téléphones du Monde</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-full">
+
+  <!-- Header Épuré (Non connecté) -->
+  <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+    <h1 class="text-2xl font-bold text-sky-700">Téléphones du Monde 🌍</h1>
+    <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
+      <a href="Accueil-phone.html" class="hover:text-sky-800 transition">Accueil</a>
+      <a href="catalogue.html" class="hover:text-sky-800 transition">Catalogue</a>
+      <a href="auth.html" class="hover:text-sky-800 transition">Récupération</a>
+      <a href="login.html" class="hover:text-sky-800 transition font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg">
+        Connexion
+      </a>
+    </nav>
+  </header>
+
+  <!-- Section Inscription -->
+  <section class="flex justify-center items-center py-12 bg-gradient-to-r from-blue-900 to-violet-700 flex-grow px-4">
+    <div class="bg-white shadow-xl rounded-xl p-8 w-full max-w-md animate-fadeIn">
+      <h2 class="text-2xl font-bold text-center text-sky-700 mb-2">Créer un compte ✨</h2>
+      <p class="text-center text-sm text-gray-500 mb-6">Choisissez votre profil utilisateur :</p>
+      
+      <!-- Sélecteur de Type de Compte -->
+      <div class="flex justify-center gap-4 mb-6">
+        <button onclick="showForm('client')" id="btnClient" type="button"
+                class="bg-sky-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-sky-500 transition shadow">
+          Client 👤
+        </button>
+        <button onclick="showForm('vendeur')" id="btnVendeur" type="button"
+                class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-300 transition">
+          Vendeur 🛒
+        </button>
+      </div>
+
+      <!-- Formulaire Client (affiché par défaut) -->
+      <form id="clientForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Nom</label>
+          <input type="text" id="clientNom" placeholder="Votre nom" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Prénom</label>
+          <input type="text" id="clientPrenom" placeholder="Votre prénom" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+          <input type="email" id="clientEmail" placeholder="exemple@email.com" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Mot de passe</label>
+          <input type="password" id="clientPassword" placeholder="••••••••" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+        <button type="submit" class="w-full bg-sky-600 text-white py-2.5 rounded-lg font-bold hover:bg-sky-500 transition shadow-md">
+          Créer mon compte Client
+        </button>
+      </form>
+
+      <!-- Formulaire Vendeur (caché par défaut) -->
+      <form id="vendeurForm" class="space-y-4 hidden">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Entreprise / Nom commercial</label>
+          <input type="text" id="vendeurNom" placeholder="Nom de votre boutique" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Prénom du responsable</label>
+          <input type="text" id="vendeurPrenom" placeholder="Votre prénom" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Email professionnel</label>
+          <input type="email" id="vendeurEmail" placeholder="contact@boutique.com" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Mot de passe</label>
+          <input type="password" id="vendeurPassword" placeholder="••••••••" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+        </div>
+        <button type="submit" class="w-full bg-violet-600 text-white py-2.5 rounded-lg font-bold hover:bg-violet-500 transition shadow-md">
+          Créer mon compte Vendeur
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-gray-600 mt-6">
+        Vous avez déjà un compte ? <a href="login.html" class="text-sky-600 font-semibold hover:text-violet-600 transition">Connectez-vous</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gradient-to-r from-blue-900 to-violet-700 text-white text-center p-6">
+    <p>© 2026 Téléphones du Monde</p>
+    <p class="text-sm mt-2">Votre partenaire de confiance pour l’achat de téléphones</p>
+  </footer>
+
+  <!-- Script JS Mis à jour -->
+  <script>
+    // 1. Basculement visuel entre le formulaire Client et Vendeur
+    function showForm(type) {
+      const clientForm = document.getElementById('clientForm');
+      const vendeurForm = document.getElementById('vendeurForm');
+      const btnClient = document.getElementById('btnClient');
+      const btnVendeur = document.getElementById('btnVendeur');
+
+      if (type === 'client') {
+        clientForm.classList.remove('hidden');
+        vendeurForm.classList.add('hidden');
+        btnClient.className = "bg-sky-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-sky-500 transition shadow";
+        btnVendeur.className = "bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-300 transition";
+      } else {
+        vendeurForm.classList.remove('hidden');
+        clientForm.classList.add('hidden');
+        btnVendeur.className = "bg-violet-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-violet-500 transition shadow";
+        btnClient.className = "bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-300 transition";
+      }
+    }
+
+    // 2. Traitement d'inscription + Connexion instantanée & Redirection directe
+    async function submitRegistration(payload) {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Sauvegarde de la session dans le navigateur
+          localStorage.setItem('userRole', payload.role);
+          localStorage.setItem('userEmail', payload.email);
+          localStorage.setItem('userName', `${payload.prenom} ${payload.nom}`.trim());
+          if (data.user_id) localStorage.setItem('userId', data.user_id);
+          if (data.token) localStorage.setItem('authToken', data.token);
+
+          // Redirection directe vers la bonne page
+          if (payload.role === 'vendeur') {
+            window.location.href = 'page-vendeur.html';
+          } else {
+            window.location.href = 'catalogue.html';
+          }
+        } else {
+          alert(data.message || "Erreur lors de l'inscription.");
+        }
+      } catch (error) {
+        console.error('Erreur :', error);
+        alert('Impossible de contacter le serveur Flask. Vérifiez qu\'il tourne sur le port 5000.');
+      }
+    }
+
+    // 3. Écouteur pour le formulaire CLIENT
+    document.getElementById('clientForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const payload = {
+        nom: document.getElementById('clientNom').value.trim(),
+        prenom: document.getElementById('clientPrenom').value.trim(),
+        email: document.getElementById('clientEmail').value.trim(),
+        password: document.getElementById('clientPassword').value,
+        role: 'client'
+      };
+      submitRegistration(payload);
+    });
+
+    // 4. Écouteur pour le formulaire VENDEUR
+    document.getElementById('vendeurForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const payload = {
+        nom: document.getElementById('vendeurNom').value.trim(),
+        prenom: document.getElementById('vendeurPrenom').value.trim(),
+        email: document.getElementById('vendeurEmail').value.trim(),
+        password: document.getElementById('vendeurPassword').value,
+        role: 'vendeur'
+      };
+      submitRegistration(payload);
+    });
+  </script>
+</body>
+</html>

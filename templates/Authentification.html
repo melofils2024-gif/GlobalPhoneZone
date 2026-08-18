@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Authentification - Téléphones du Monde</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-900 to-white flex items-center justify-center min-h-screen">
+
+  <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-sky-700 mb-6">Authentification</h2>
+
+    <!-- Onglets -->
+    <div class="flex justify-around mb-6">
+      <button onclick="showForm('login')" class="px-4 py-2 bg-sky-600 text-white rounded">Connexion</button>
+      <button onclick="showForm('register')" class="px-4 py-2 bg-gray-200 text-sky-700 rounded">Inscription</button>
+    </div>
+
+  <!-- Formulaire Connexion -->
+<form id="loginForm" class="space-y-4">
+  <div>
+    <label for="identifier" class="block text-sm font-medium text-gray-700">Email ou numéro</label>
+    <input type="text" id="identifier" name="identifier" required
+      class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400">
+  </div>
+  <div>
+    <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+    <input type="password" id="password" name="password" required
+      class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400">
+  </div>
+  <button type="submit" class="w-full bg-sky-600 text-white py-2 rounded-lg font-bold hover:bg-sky-500 transition">
+    Se connecter
+  </button>
+
+  <!-- Options récupération -->
+  <p class="text-sm text-center text-gray-600 mt-4">
+    Mot de passe oublié ?  
+    <a href="#" onclick="showRecover('email')" class="text-sky-600 hover:underline">Par Gmail</a> |  
+    <a href="#" onclick="showRecover('phone')" class="text-sky-600 hover:underline">Par numéro</a>
+  </p>
+</form>
+
+
+    <!-- Formulaire Inscription -->
+<form id="registerForm" class="space-y-4 hidden">
+  <!-- Prénom -->
+  <div>
+    <label for="firstname" class="block text-sm font-medium text-gray-700">Prénom</label>
+    <input type="text" id="firstname" name="firstname" required
+      class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400">
+  </div>
+
+  <!-- Nom -->
+  <div>
+    <label for="lastname" class="block text-sm font-medium text-gray-700">Nom</label>
+    <input type="text" id="lastname" name="lastname" required
+      class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400">
+  </div>
+
+  <!-- Email ou numéro -->
+  <div>
+    <label for="identifierReg" class="block text-sm font-medium text-gray-700">Email ou numéro</label>
+    <input type="text" id="identifierReg" name="identifierReg" required
+      class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400">
+  </div>
+
+  <!-- Rôle -->
+  <div>
+    <label for="role" class="block text-sm font-medium text-gray-700">Rôle</label>
+    <select id="role" name="role" required
+      class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400">
+      <option value="client">Client</option>
+      <option value="vendeur">Vendeur</option>
+    </select>
+  </div>
+
+  <!-- Mot de passe -->
+  <div>
+    <label for="passwordReg" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+    <input type="password" id="passwordReg" name="passwordReg" required
+      class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400">
+  </div>
+
+  <!-- Bouton -->
+  <button type="submit" class="w-full bg-sky-600 text-white py-2 rounded-lg font-bold hover:bg-sky-500 transition">
+    S'inscrire
+  </button>
+</form>
+
+
+  <!-- Script -->
+  <script>
+    function showForm(type){
+      document.getElementById("loginForm").classList.add("hidden");
+      document.getElementById("registerForm").classList.add("hidden");
+      if(type === "login") document.getElementById("loginForm").classList.remove("hidden");
+      if(type === "register") document.getElementById("registerForm").classList.remove("hidden");
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      alert("Connexion réussie (simulation) !");
+      // Plus tard : redirection vers accueil client ou vendeur
+    });
+
+    document.getElementById("registerForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      alert("Inscription réussie (simulation) !");
+      // Plus tard : enregistrement dans la base
+    });
+
+    function recoverPassword(){
+      alert("Un email de récupération sera envoyé via Gmail (simulation).");
+      // Plus tard : intégration avec Gmail API
+    }
+  </script>
+</body>
+</html>

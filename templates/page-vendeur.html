@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Vendeur - Téléphones du Monde</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-full justify-between">
+
+  <!-- Header Vendeur Connecté -->
+  <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
+    <h1 class="text-2xl font-bold text-violet-700">Téléphones du Monde 🌍</h1>
+    <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
+      <a href="Accueil-phone.html" class="hover:text-sky-800 transition">Accueil</a>
+      <a href="catalogue.html" class="hover:text-sky-800 transition">Catalogue</a>
+      <a href="vendeurs-articles.html" class="hover:text-sky-800 transition">Articles des Vendeurs</a>
+      <button id="logoutBtn" type="button" class="text-rose-600 hover:text-rose-800 transition font-bold border border-rose-200 px-3 py-1 rounded-lg hover:bg-rose-50">
+        Déconnexion 🚪
+      </button>
+    </nav>
+  </header>
+
+  <!-- Tableau de bord vendeur -->
+  <section class="p-4 sm:p-8 bg-gradient-to-r from-blue-900 to-violet-700 flex-grow">
+    <div class="max-w-5xl mx-auto space-y-8">
+      
+      <!-- En-tête du dashboard -->
+      <div class="bg-white shadow-lg rounded-xl p-6 sm:p-8">
+        <h2 class="text-2xl font-bold text-center text-violet-700 mb-2">Espace Vendeur 🛒</h2>
+        <p id="welcomeMessage" class="text-center text-gray-600 mb-6">Gérez votre inventaire, vos devises et vos commandes clients en un clin d'œil.</p>
+
+        <!-- Formulaire ajout produit -->
+        <form id="addProductForm" class="space-y-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <h3 class="text-lg font-semibold text-sky-700 mb-2">Publier un nouveau téléphone</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="text" id="prodName" placeholder="Nom du produit (ex: iPhone 13)" required 
+                   class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+            <input type="text" id="prodBrand" placeholder="Marque (ex: Apple)" required 
+                   class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input type="number" id="prodPrice" step="0.01" placeholder="Prix" required 
+                   class="md:col-span-2 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+            <select id="currency" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none bg-white">
+              <option value="F CFA">F CFA (XOF)</option>
+              <option value="EUR">Euros (€)</option>
+              <option value="USD">Dollars ($)</option>
+            </select>
+          </div>
+          <textarea id="prodDesc" placeholder="Description du téléphone (état, stockage...)" required rows="3"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none"></textarea>
+          <button type="submit" class="w-full bg-violet-600 text-white py-2.5 rounded-lg font-bold hover:bg-violet-500 transition shadow-md">
+            Ajouter à l'inventaire 🚀
+          </button>
+        </form>
+      </div>
+
+      <!-- Inventaire / Mes publications -->
+      <div class="bg-white shadow-lg rounded-xl p-6 sm:p-8">
+        <h3 class="text-xl font-semibold text-sky-700 mb-4">Inventaire de mes publications 📦</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse border border-gray-300 text-sm">
+            <thead>
+              <tr class="bg-gray-100 text-gray-700">
+                <th class="border p-2.5 text-left">Nom</th>
+                <th class="border p-2.5 text-left">Marque</th>
+                <th class="border p-2.5 text-left">Prix</th>
+                <th class="border p-2.5 text-center">Statut</th>
+                <th class="border p-2.5 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productList">
+              <!-- Rempli dynamiquement -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Commandes lancées par les clients -->
+      <div class="bg-white shadow-lg rounded-xl p-6 sm:p-8">
+        <h3 class="text-xl font-semibold text-sky-700 mb-4">Commandes & Demandes Clients 💬</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse border border-gray-300 text-sm">
+            <thead>
+              <tr class="bg-gray-100 text-gray-700">
+                <th class="border p-2.5 text-left">Client</th>
+                <th class="border p-2.5 text-left">Téléphone demandé</th>
+                <th class="border p-2.5 text-center">Statut Commande</th>
+                <th class="border p-2.5 text-center">Répondre sur WhatsApp</th>
+              </tr>
+            </thead>
+            <tbody id="ordersList">
+              <tr class="hover:bg-gray-50 transition">
+                <td class="border p-2.5 font-medium">Kévin Dossou</td>
+                <td class="border p-2.5">Samsung Galaxy S15</td>
+                <td class="border p-2.5 text-center">
+                  <span class="px-2 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">En attente</span>
+                </td>
+                <td class="border p-2.5 text-center">
+                  <a href="https://wa.me/22900000000?text=Bonjour%20K%C3%A9vin,%20je%20vous%20contacte%20concernant%20votre%20commande%20pour%20le%20Samsung%20Galaxy%20S15." 
+                     target="_blank" 
+                     class="inline-flex items-center gap-1 bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-500 transition shadow">
+                    💬 Discuter sur WhatsApp
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gradient-to-r from-blue-900 to-violet-700 text-white text-center p-6">
+    <p>© 2026 Téléphones du Monde</p>
+    <p class="text-sm mt-2">Interface vendeur – gérez vos annonces et clients facilement</p>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    const API_URL = 'http://127.0.0.1:5000/api';
+    const productList = document.getElementById('productList');
+
+    // 1. Vérification de la session au chargement de la page
+    document.addEventListener('DOMContentLoaded', () => {
+      const userRole = localStorage.getItem('userRole');
+      const userId = localStorage.getItem('userId');
+      const userName = localStorage.getItem('userName');
+
+      if (!userRole || userRole !== 'vendeur' || !userId) {
+        alert("Accès refusé. Veuillez vous connecter en tant que Vendeur.");
+        window.location.href = 'login.html';
+        return;
+      }
+
+      if (userName) {
+        document.getElementById('welcomeMessage').textContent = `Bienvenue ${userName} ! Gérez votre inventaire et vos commandes en un clin d'œil.`;
+      }
+
+      // Charger les produits du vendeur connecté
+      loadVendorProducts(userId);
+    });
+
+    // 2. Bouton de déconnexion
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    });
+
+    // 3. Charger les produits depuis le serveur Flask
+    async function loadVendorProducts(vendeurId) {
+      try {
+        const response = await fetch(`${API_URL}/vendeur/products?vendeur_id=${vendeurId}`);
+        if (!response.ok) return;
+
+        const products = await response.json();
+        productList.innerHTML = ''; // Réinitialiser le tableau
+
+        products.forEach(product => {
+          renderProductRow(product);
+        });
+      } catch (error) {
+        console.error('Erreur lors du chargement des produits :', error);
+      }
+    }
+
+    // 4. Ajouter un nouveau produit
+    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const vendeurId = localStorage.getItem('userId');
+      const payload = {
+        vendeur_id: vendeurId,
+        nom: document.getElementById('prodName').value.trim(),
+        marque: document.getElementById('prodBrand').value.trim(),
+        prix: parseFloat(document.getElementById('prodPrice').value),
+        devise: document.getElementById('currency').value,
+        description: document.getElementById('prodDesc').value.trim(),
+        statut: "Actif"
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/vendeur/products`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          renderProductRow(data.product || { ...payload, id: data.id });
+          alert("Produit ajouté avec succès à votre inventaire !");
+          e.target.reset();
+        } else {
+          alert(data.message || "Erreur lors de l'ajout du produit.");
+        }
+      } catch (error) {
+        console.error('Erreur :', error);
+        alert("Impossible de communiquer avec le serveur Flask.");
+      }
+    });
+
+    // 5. Afficher une ligne de produit dans le tableau HTML
+    function renderProductRow(product) {
+      const isActif = product.statut === "Actif";
+      const statusClass = isActif ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-700";
+
+      const row = document.createElement('tr');
+      row.className = "hover:bg-gray-50 transition";
+      row.setAttribute('data-id', product.id);
+      row.innerHTML = `
+        <td class="border p-2.5 font-medium prod-name">${product.nom || product.name}</td>
+        <td class="border p-2.5 prod-brand">${product.marque || product.brand}</td>
+        <td class="border p-2.5 text-violet-600 font-semibold prod-price">${product.prix || product.price} ${product.devise || product.currency || 'F CFA'}</td>
+        <td class="border p-2.5 text-center">
+          <span class="px-2 py-1 rounded-full text-xs font-bold ${statusClass}">${product.statut || 'Actif'}</span>
+        </td>
+        <td class="border p-2.5 text-center space-x-1">
+          <button class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-amber-400 transition" onclick="toggleStatus(this)">Statut</button>
+          <button class="bg-sky-600 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-sky-500 transition" onclick="editProduct(this)">Modifier</button>
+          <button class="bg-rose-600 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-rose-500 transition" onclick="deleteProduct(this)">Supprimer</button>
+        </td>
+      `;
+      productList.appendChild(row);
+    }
+
+    // 6. Basculer le statut Actif / Inactif
+    async function toggleStatus(btn) {
+      const row = btn.closest('tr');
+      const productId = row.getAttribute('data-id');
+      const statusBadge = row.children[3].querySelector('span');
+      const newStatus = statusBadge.textContent === "Actif" ? "Inactif" : "Actif";
+
+      try {
+        const response = await fetch(`${API_URL}/vendeur/products/${productId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ statut: newStatus })
+        });
+
+        if (response.ok) {
+          statusBadge.textContent = newStatus;
+          statusBadge.className = newStatus === "Actif" 
+            ? "px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700"
+            : "px-2 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700";
+        }
+      } catch (error) {
+        console.error('Erreur lors du changement de statut :', error);
+      }
+    }
+
+    // 7. Modifier le nom d'un produit
+    async function editProduct(btn) {
+      const row = btn.closest('tr');
+      const productId = row.getAttribute('data-id');
+      const currentName = row.querySelector('.prod-name').textContent;
+      
+      const newName = prompt("Modifier le nom du produit :", currentName);
+      if (!newName || newName.trim() === currentName) return;
+
+      try {
+        const response = await fetch(`${API_URL}/vendeur/products/${productId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom: newName.trim() })
+        });
+
+        if (response.ok) {
+          row.querySelector('.prod-name').textContent = newName.trim();
+        }
+      } catch (error) {
+        console.error('Erreur lors de la modification :', error);
+      }
+    }
+
+    // 8. Supprimer un produit
+    async function deleteProduct(btn) {
+      if (!confirm("Voulez-vous vraiment supprimer cette annonce ?")) return;
+
+      const row = btn.closest('tr');
+      const productId = row.getAttribute('data-id');
+
+      try {
+        const response = await fetch(`${API_URL}/vendeur/products/${productId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          row.remove();
+        } else {
+          alert("Erreur lors de la suppression.");
+        }
+      } catch (error) {
+        console.error('Erreur lors de la suppression :', error);
+      }
+    }
+  </script>
+</body>
+</html>

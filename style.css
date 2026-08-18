@@ -1,0 +1,96 @@
+/* =========================
+   Animations Hero
+   ========================= */
+@keyframes zoomBackground {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+.animate-zoomSlow {
+  animation: zoomBackground 20s infinite alternate;
+}
+
+@keyframes zoomTranslateBackground {
+  0%   { transform: scale(1) translateX(0); }
+  50%  { transform: scale(1.1) translateX(20px); }
+  100% { transform: scale(1) translateX(-20px); }
+}
+.animate-zoomTranslate {
+  animation: zoomTranslateBackground 30s infinite alternate ease-in-out;
+}
+
+/* =========================
+   Styles globaux
+   ========================= */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: #f9fafb; /* gris clair */
+  color: #1e293b; /* gris foncé */
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+header {
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+header h1 {
+  color: #0369a1; /* bleu */
+}
+header nav a {
+  text-decoration: none;
+  font-weight: 500;
+}
+header nav a:hover {
+  color: #0ea5e9; /* bleu clair */
+}
+
+/* Hero */
+section.relative {
+  position: relative;
+  overflow: hidden;
+}
+section.relative h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2563eb; /* bleu vif */
+}
+section.relative p {
+  font-size: 1.1rem;
+  color: #374151; /* gris */
+}
+
+/* Boutons */
+a, button {
+  transition: all 0.3s ease;
+}
+a:hover, button:hover {
+  transform: scale(1.05);
+}
+
+/* Tableau */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+thead {
+  background-color: #f0f9ff;
+}
+th, td {
+  padding: 12px;
+  text-align: left;
+}
+tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Footer */
+footer {
+  background-color: #1e3a8a; /* bleu foncé */
+  color: #ffffff;
+  text-align: center;
+  padding: 20px;
+}
+footer p {
+  margin: 5px 0;
+}

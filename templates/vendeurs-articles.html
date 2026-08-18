@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Articles des Vendeurs - Téléphones du Monde</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-full justify-between">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
+    <h1 class="text-2xl font-bold text-sky-700">Téléphones du Monde 🌍</h1>
+    <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
+      <a href="Accueil-phone.html" class="hover:text-sky-800 transition">Accueil</a>
+      <a href="catalogue.html" class="hover:text-sky-800 transition">Catalogue</a>
+      
+      <!-- Favoris masqué par défaut -->
+      <a href="favoris.html" id="navFavorites" class="hover:text-sky-800 transition" style="display: none;">Favoris ❤️</a>
+      
+      <a href="vendeurs-articles.html" class="font-bold underline text-sky-900">Articles Vendeurs</a>
+      
+      <!-- Espace Client/Vendeur masqué par défaut -->
+      <a href="page-client.html" id="navProfile" class="hover:text-sky-800 transition" style="display: none;">Mon Espace Client</a>
+    </nav>
+  </header>
+
+  <!-- Contenu Principal -->
+  <main class="max-w-6xl mx-auto px-4 py-8 sm:py-12 flex-grow w-full">
+    <h2 class="text-3xl font-bold text-sky-700 mb-2 text-center">Les Téléphones des Vendeurs 📱</h2>
+    <p id="subTitle" class="text-center text-gray-500 mb-8">
+      Parcourez les offres du marché, consultez les spécifications et contactez directement les vendeurs.
+    </p>
+
+    <!-- Conteneur des articles -->
+    <div id="articles-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Généré dynamiquement par JavaScript -->
+    </div>
+  </main>
+
+  <!-- Fenêtre Modale pour voir les détails -->
+  <div id="modalDetails" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">
+      <button onclick="fermerModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 font-bold text-xl">✕</button>
+      <h3 id="modalTitle" class="text-2xl font-bold text-sky-700 mb-2"></h3>
+      <p id="modalPrice" class="text-lg font-bold text-violet-600 mb-4"></p>
+      
+      <div id="modalContent" class="text-slate-600 space-y-2 mb-6 bg-gray-50 p-4 rounded-xl border"></div>
+      
+      <div id="modalActions" class="flex gap-3">
+        <!-- Actions injectées dynamiquement selon le rôle -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Dynamique -->
+  <script>
+    // Récupération du rôle depuis le localStorage
+    const userRole = localStorage.getItem('userRole');
+    const navFavorites = document.getElementById('navFavorites');
+    const navProf = document.getElementById('navProfile');
+
+    // Gestion dynamique de l'affichage de la navigation
+    if (userRole === 'vendeur') {
+      if (navFavorites) navFavorites.style.display = 'none';
+      if (navProf) {
+        navProf.style.display = 'inline-block';
+        navProf.textContent = "Espace Vendeur 📊";
+        navProf.href = "page-vendeur.html";
+      }
+      document.getElementById('subTitle').textContent = "Espace Analyse Tendance - Consultez la concurrence et les prix du marché.";
+    } else if (userRole === 'client') {
+      if (navFavorites) navFavorites.style.display = 'inline-block';
+      if (navProf) {
+        navProf.style.display = 'inline-block';
+        navProf.textContent = "Mon Espace Client";
+        navProf.href = "page-client.html";
+      }
+    } else {
+      // Visiteur non connecté
+      if (navFavorites) navFavorites.style.display = 'none';
+      if (navProf) navProf.style.display = 'none';
+    }
+
+    // Fonction pour charger les articles depuis l'API Flask
+    async function chargerArticles() {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/api/products');
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des produits");
+        }
+        const articles = await response.json();
+        
+        const container = document.getElementById('articles-container');
+
+        if (articles.length === 0) {
+          container.innerHTML = `<p class="col-span-3 text-center text-gray-500">Aucun article disponible pour le moment.</p>`;
+          return;
+        }
+
+        container.innerHTML = articles.map(item => {
+          const nom = item.name || item.nom;
+          const prix = item.price_usd ? `${item.price_usd} $` : (item.prix || "Prix non spécifié");
+          const etat = item.statut || item.etat || "Actif";
+          const vendeur = item.vendeur_id ? `Vendeur #${item.vendeur_id}` : (item.vendeur || "Boutique");
+          const whatsapp = item.whatsapp || "2290100000000";
+          const description = item.specs || item.description || "";
+
+          const message = encodeURIComponent(`Bonjour, je suis intéressé par votre ${nom} à ${prix}. Est-il toujours disponible ?`);
+          const whatsappUrl = `https://wa.me/${whatsapp}?text=${message}`;
+
+          let actionButtons = ``;
+
+          if (userRole === 'vendeur') {
+            actionButtons = `
+              <button onclick='voirDetails(${JSON.stringify(item)})' class="w-full bg-slate-100 text-slate-700 border border-slate-300 py-2 rounded-lg font-bold hover:bg-slate-200 transition text-sm">
+                🔍 Fiche technique & Détails
+              </button>
+              <div class="bg-amber-50 text-amber-800 text-xs font-semibold p-2.5 rounded-lg text-center border border-amber-200">
+                📊 Article proposé par le système
+              </div>
+            `;
+          } else {
+            actionButtons = `
+              <button onclick='voirDetails(${JSON.stringify(item)})' class="w-full bg-slate-100 text-slate-700 border border-slate-300 py-2 rounded-lg font-bold hover:bg-slate-200 transition text-sm">
+                🔍 Fiche technique & Détails
+              </button>
+              
+              <div class="flex gap-2">
+                <a href="${whatsappUrl}" target="_blank" class="w-1/2 bg-emerald-600 text-white py-2 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-xs flex items-center justify-center gap-1">
+                  💬 Commander
+                </a>
+                <button onclick="addToFavorites('${nom}', '${prix}', '${whatsapp}', '${description.replace(/'/g, "\\'")}')" class="w-1/2 bg-sky-600 text-white py-2 rounded-lg font-bold hover:bg-sky-500 transition shadow text-xs">
+                  ❤️ Favoris
+                </button>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+              <div>
+                <div class="w-full h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400 font-bold">
+                  📱 Photo ${nom}
+                </div>
+                <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded">${etat}</span>
+                <h3 class="text-lg font-bold mt-2 text-slate-800">${nom}</h3>
+                <p class="text-xs text-gray-500 mb-1">Vendeur : ${vendeur}</p>
+                <p class="text-xl font-bold text-violet-600 mb-4">${prix}</p>
+              </div>
+              
+              <div class="space-y-2 mt-2">
+                ${actionButtons}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Erreur :", error);
+        document.getElementById('articles-container').innerHTML = `
+          <p class="col-span-3 text-center text-red-500">Impossible de charger les articles depuis le serveur. Vérifiez que Flask est bien lancé.</p>
+        `;
+      }
+    }
+
+    // Afficher les détails dans la modale
+    function voirDetails(item) {
+      const modal = document.getElementById('modalDetails');
+      const title = document.getElementById('modalTitle');
+      const price = document.getElementById('modalPrice');
+      const content = document.getElementById('modalContent');
+      const modalActions = document.getElementById('modalActions');
+
+      const nom = item.name || item.nom;
+      const prix = item.price_usd ? `${item.price_usd} $` : (item.prix || "");
+      const marque = item.brand || item.marque || "Non spécifiée";
+      const specs = item.specs || item.description || "Aucune description";
+
+      title.innerText = nom;
+      price.innerText = prix;
+      
+      content.innerHTML = `
+        <p class="text-xs text-gray-500"><strong>Marque :</strong> ${marque}</p>
+        <p class="text-xs text-gray-500"><strong>Spécifications :</strong> ${specs}</p>
+        <hr class="my-2">
+        <p class="text-sm text-gray-700"><strong>Description :</strong> ${specs}</p>
+      `;
+
+      const message = encodeURIComponent(`Bonjour, je souhaite commander : ${nom} à ${prix}.`);
+      const whatsapp = item.whatsapp || "2290100000000";
+      
+      if (userRole === 'vendeur') {
+        modalActions.innerHTML = `
+          <button onclick="fermerModal()" class="w-full bg-slate-800 text-white py-2.5 rounded-lg font-bold hover:bg-slate-700 transition text-sm">
+            Fermer
+          </button>
+        `;
+      } else {
+        modalActions.innerHTML = `
+          <a href="https://wa.me/${whatsapp}?text=${message}" target="_blank" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-center text-sm">
+            💬 Commander (WhatsApp)
+          </a>
+          <button onclick="addToFavorites('${nom}', '${prix}', '${whatsapp}', '${specs.replace(/'/g, "\\'")}'); fermerModal();" class="flex-1 bg-sky-600 text-white py-2.5 rounded-lg font-bold hover:bg-sky-500 transition shadow text-sm">
+            ❤️ Ajouter aux favoris
+          </button>
+        `;
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function fermerModal() {
+      document.getElementById('modalDetails').classList.add('hidden');
+    }
+
+    function addToFavorites(name, price, phone, desc) {
+      let favorites = JSON.parse(localStorage.getItem('userFavorites')) || [];
+      const exists = favorites.some(item => item.name === name);
+      
+      if (exists) {
+        alert(name + " est déjà dans vos favoris !");
+        return;
+      }
+
+      favorites.push({ name, price, phone, desc });
+      localStorage.setItem('userFavorites', JSON.stringify(favorites));
+      alert(name + " a été ajouté à vos favoris avec succès !");
+    }
+
+    // Charger les articles au chargement de la page
+    chargerArticles();
+  </script>
+
+  <!-- Footer -->
+  <footer class="bg-gradient-to-r from-blue-900 to-violet-700 text-white text-center p-6 mt-12">
+    <p>© 2026 Téléphones du Monde</p>
+    <p class="text-sm mt-2">Votre partenaire de confiance pour l’achat de téléphones</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,195 @@
+/* =========================
+   Importation & Typography
+   ========================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+body {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background-color: #f9fafb;
+  color: #1e293b;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================
+   Animations Hero
+   ========================= */
+@keyframes zoomBackground {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+.animate-zoomSlow {
+  animation: zoomBackground 20s infinite alternate;
+}
+
+@keyframes zoomTranslateBackground {
+  0%   { transform: scale(1) translateX(0); }
+  50%  { transform: scale(1.1) translateX(20px); }
+  100% { transform: scale(1) translateX(-20px); }
+}
+.animate-zoomTranslate {
+  animation: zoomTranslateBackground 30s infinite alternate ease-in-out;
+}
+
+/* Animation Modals (Assistant & Tranches) */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+#assistantModal > div,
+#installmentModal > div {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* =========================
+   Header & Structure
+   ========================= */
+header {
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+header h1 {
+  color: #0369a1;
+}
+header nav a {
+  text-decoration: none;
+  font-weight: 500;
+}
+header nav a:hover {
+  color: #0ea5e9;
+}
+
+/* Hero Section */
+section.relative {
+  position: relative;
+  overflow: hidden;
+}
+section.relative h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2563eb;
+}
+section.relative p {
+  font-size: 1.1rem;
+  color: #374151;
+}
+
+/* Boutons & Liens */
+a, button {
+  transition: all 0.3s ease;
+}
+
+/* =========================
+   Inputs & Formulaires
+   ========================= */
+/* Masquage des flèches d'incrémentation dans le filtre Prix Max */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* =========================
+   Tableau & Classement
+   ========================= */
+table, .ranking-table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+thead {
+  background-color: #f0f9ff;
+}
+
+th, td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  color: #0369a1;
+  font-weight: 700;
+}
+
+tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Images dans le tableau */
+.ranking-table img, td img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 0.375rem;
+  border: 1px solid #cbd5e1;
+}
+
+/* Barre de tendance dynamique */
+.trend-bar {
+  position: relative;
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  height: 22px;
+  width: 100%;
+  min-width: 60px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #1e293b;
+  z-index: 2;
+}
+
+.trend-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--value, 50%);
+  background: linear-gradient(90deg, #38bdf8, #8b5cf6);
+  z-index: 1;
+  border-radius: 9999px;
+  opacity: 0.3;
+}
+
+/* =========================
+   Scrollbar Personnalisée
+   ========================= */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* =========================
+   Footer
+   ========================= */
+footer {
+  background-color: #1e3a8a;
+  color: #ffffff;
+  text-align: center;
+  padding: 20px;
+}
+footer p {
+  margin: 5px 0;
+}
