@@ -101,7 +101,6 @@
     const navSpace = document.getElementById('navSpace');
     const authButtons = document.getElementById('authButtons');
 
-    // ... (Ton code existant pour le menu reste parfait) ...
     if (userRole === 'vendeur') {
       if (navFavorites) navFavorites.style.display = 'none';
       if (navSpace) {
@@ -116,9 +115,26 @@
         navSpace.textContent = 'Mon Espace Client';
         navSpace.href = '/page-client';
       }
+    } else {
+      if (navFavorites) navFavorites.style.display = 'none';
+      if (navSpace) navSpace.style.display = 'none';
     }
 
-    // 2. Récupération unique et propre des données
+    if (userRole && authButtons) {
+      authButtons.innerHTML = `
+        <button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-xs sm:text-sm">
+          Déconnexion
+        </button>
+      `;
+    }
+
+    function logout() {
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userId');
+      window.location.href = '/';
+    }
+
+    // 2. Récupération et affichage automatique du classement mondial
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
