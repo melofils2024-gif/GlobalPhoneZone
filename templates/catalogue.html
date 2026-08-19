@@ -227,7 +227,7 @@
     }
 
     function formatPrice(priceUSD) {
-      const converted = Math.round((priceUSD || 0) * RATES[currentCurrency]);
+      const converted = Math.round((Number(priceUSD) || 0) * RATES[currentCurrency]);
       return `${converted.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
     }
 
@@ -236,33 +236,37 @@
       if (!grid) return;
       grid.innerHTML = '';
 
-      if (items.length === 0) {
+      if (!items || items.length === 0) {
         grid.innerHTML = `
           <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 p-6">
-            <p class="text-lg font-bold text-slate-700">Aucun modèle ne correspond à vos critères.</p>
-            <p class="text-sm text-slate-400 mt-1">Essayez d'ajuster vos filtres de recherche.</p>
+            <p class="text-lg font-bold text-slate-700">Aucun téléphone disponible pour le moment.</p>
+            <p class="text-sm text-slate-400 mt-1">Les articles postés par les vendeurs apparaîtront ici automatiquement.</p>
           </div>`;
         return;
       }
 
       items.forEach(p => {
-        const price = p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0;
+        const price = Number(p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0);
         const img = p.image || p.image_url || p.photo_url || '';
         const name = p.name || p.nom || 'Téléphone';
         const brand = p.brand || p.marque || '';
+        const specs = p.specs || p.description || `${p.stockage || ''} • ${p.ram || ''}`.trim() || 'Caractéristiques non spécifiées';
+
+        // Validation stricte : vérifie si c'est une vraie URL et non du texte descriptif
+        const isValidImg = img && typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) && !img.toLowerCase().includes('photo ');
 
         const card = `
           <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col justify-between group">
             <div>
-              <div class="overflow-hidden h-48 bg-slate-100 relative">
-                ${img ? `<img src="${img.startsWith('http') ? img : '/' + img}" alt="${name}" onerror="this.src='https://via.placeholder.com/200'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">` : `<div class="w-full h-full flex items-center justify-center bg-sky-50 text-sky-600 font-bold text-2xl">📱</div>`}
+              <div class="overflow-hidden h-48 bg-slate-100 relative flex items-center justify-center">
+                ${isValidImg ? `<img src="${img}" alt="${name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">` : `<div class="text-4xl">📱</div>`}
                 <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-700 px-2.5 py-1 rounded-full shadow-sm">
                   ${brand}
                 </span>
               </div>
               <div class="p-4">
-                <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition">${name}</h3>
-                <p class="text-xs text-slate-400 mt-1 font-medium">${p.specs || p.description || ''}</p>
+                <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition">${brand} ${name}</h3>
+                <p class="text-xs text-slate-400 mt-1 font-medium">${specs}</p>
               </div>
             </div>
             <div class="p-4 pt-0">
@@ -273,7 +277,7 @@
               </button>
 
               <div class="flex gap-2">
-                <button class="flex-grow bg-sky-600 text-white font-bold py-2.5 rounded-xl hover:bg-sky-700 active:scale-95 transition text-sm">
+                <button onclick="window.location.href='/details?id=${p.id}'" class="flex-grow bg-sky-600 text-white font-bold py-2.5 rounded-xl hover:bg-sky-700 active:scale-95 transition text-sm">
                   Détails
                 </button>
                 <button class="px-3 border border-slate-200 rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 active:scale-95 transition">
@@ -313,7 +317,7 @@
 
         let matchesPrice = true;
         if (!isNaN(maxPriceUser) && maxPriceUser > 0) {
-          const price = p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0;
+          const price = Number(p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0);
           const convertedPrice = Math.round(price * RATES[currentCurrency]);
           matchesPrice = convertedPrice <= maxPriceUser;
         }
@@ -359,7 +363,7 @@
       }
 
       const filtered = products.filter(p => {
-        const price = p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0;
+        const price = Number(p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0);
         let okPrice = true;
         if (!isNaN(budget) && budget > 0) {
           okPrice = Math.round(price * RATES[currentCurrency]) <= budget;
@@ -390,7 +394,7 @@
       selectedProductForInstallment = products.find(p => p.id === productId);
       if (!selectedProductForInstallment) return;
 
-      const price = selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix || selectedProductForInstallment.prix_approx || 0;
+      const price = Number(selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix || selectedProductForInstallment.prix_approx || 0);
       const name = selectedProductForInstallment.name || selectedProductForInstallment.nom || 'Téléphone';
 
       const instTitle = document.getElementById('instTitle');
@@ -418,7 +422,7 @@
       const type = typeInput ? typeInput.value : 'MONTHLY';
       const duration = durationInput ? parseInt(durationInput.value) : 1;
       
-      const price = selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix || selectedProductForInstallment.prix_approx || 0;
+      const price = Number(selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix || selectedProductForInstallment.prix_approx || 0);
       const totalPrice = Math.round(price * RATES[currentCurrency]);
 
       let totalDivisions = duration;

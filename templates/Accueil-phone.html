@@ -131,6 +131,8 @@
     function logout() {
       localStorage.removeItem('userRole');
       localStorage.removeItem('userId');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userName');
       window.location.href = '/';
     }
 
@@ -143,17 +145,35 @@
         
         tableBody.innerHTML = ''; // Nettoyer avant remplissage
 
+        if (!data || data.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="9" class="text-center py-8 text-slate-400 font-medium">
+                Aucun téléphone enregistré pour le moment.
+              </td>
+            </tr>`;
+          return;
+        }
+
         // Tri et limitation aux 12 meilleurs
         const top12 = data.sort((a, b) => (b.tendance || 0) - (a.tendance || 0)).slice(0, 12);
 
         top12.forEach(phone => {
-          const nomComplet = `${phone.marque || ''} ${phone.nom || ''}`.trim();
-          const imageSrc = phone.image_url || '';
+          const marque = phone.marque || phone.brand || '';
+          const nom = phone.nom || phone.name || 'Téléphone';
+          const nomComplet = `${marque} ${nom}`.trim();
+          
+          // Vérification stricte pour s'assurer que c'est une vraie URL d'image et non du texte brut
+          const imageSrc = phone.image_url || phone.image || '';
+          const isValidImg = imageSrc && (imageSrc.startsWith('http') || imageSrc.startsWith('/'));
+
+          const prix = phone.prix || phone.price || 0;
+          const tendance = phone.tendance || 85;
 
           const row = `
             <tr class="hover:bg-gray-50 transition" data-id="${phone.id}">
               <td class="p-3">
-                ${imageSrc ? `<img src="${imageSrc}" alt="${nomComplet}" class="w-12 h-12 rounded-lg object-cover shadow-sm">` : `<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center font-bold text-xs">📱</div>`}
+                ${isValidImg ? `<img src="${imageSrc}" alt="${nomComplet}" class="w-12 h-12 rounded-lg object-cover shadow-sm">` : `<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center font-bold text-xs">📱</div>`}
               </td>
               <td class="p-3 font-semibold text-slate-800">${nomComplet}</td>
               <td class="p-3 text-gray-600">${phone.ecran || '-'}</td>
@@ -161,9 +181,9 @@
               <td class="p-3 text-gray-600">${phone.batterie || '-'}</td>
               <td class="p-3 text-gray-600">${phone.stockage || '-'}</td>
               <td class="p-3 text-gray-600">${phone.ram || '-'}</td>
-              <td class="p-3 font-bold text-violet-600">$${phone.prix || 0}</td>
+              <td class="p-3 font-bold text-violet-600">$${prix}</td>
               <td class="p-3">
-                <span class="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-1 rounded-full">${phone.tendance || 85}%</span>
+                <span class="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-1 rounded-full">${tendance}%</span>
               </td>
             </tr>`;
           tableBody.insertAdjacentHTML('beforeend', row);
