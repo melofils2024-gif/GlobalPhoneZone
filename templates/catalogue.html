@@ -205,19 +205,24 @@
     let selectedProductForInstallment = null;
     let products = [];
 
+    // 1. Chargement propre des produits depuis l'API Flask
     async function loadProducts() {
       try {
         const response = await fetch('/api/products');
-        if (!response.ok) throw new Error('Erreur serveur');
+        if (!response.ok) throw new Error("Erreur lors de la récupération des produits");
+        
         products = await response.json();
-        renderProducts(products);
+        renderProducts(products); // On alimente la grille avec tous les produits
       } catch (error) {
-        console.error('Erreur API :', error);
-        document.getElementById('productsGrid').innerHTML = `
-          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-red-300 p-6">
-            <p class="text-lg font-bold text-red-600">Impossible de charger le catalogue.</p>
-            <p class="text-sm text-slate-400 mt-1">Vérifiez la connexion avec votre serveur Flask.</p>
-          </div>`;
+        console.error("Erreur loadProducts:", error);
+        const grid = document.getElementById('productsGrid');
+        if (grid) {
+          grid.innerHTML = `
+            <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-red-300 p-6">
+              <p class="text-lg font-bold text-red-500">Impossible de charger le catalogue.</p>
+              <p class="text-sm text-slate-400 mt-1">Vérifiez que le serveur Flask est bien lancé.</p>
+            </div>`;
+        }
       }
     }
 
@@ -228,6 +233,7 @@
 
     function renderProducts(items) {
       const grid = document.getElementById('productsGrid');
+      if (!grid) return;
       grid.innerHTML = '';
 
       if (items.length === 0) {
@@ -240,21 +246,23 @@
       }
 
       items.forEach(p => {
-        const price = p.priceUSD || p.price_usd || p.prix_approx || 0;
+        const price = p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0;
         const img = p.image || p.image_url || p.photo_url || '';
+        const name = p.name || p.nom || 'Téléphone';
+        const brand = p.brand || p.marque || '';
 
         const card = `
           <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col justify-between group">
             <div>
               <div class="overflow-hidden h-48 bg-slate-100 relative">
-                <img src="${img.startsWith('http') ? img : '/' + img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                ${img ? `<img src="${img.startsWith('http') ? img : '/' + img}" alt="${name}" onerror="this.src='https://via.placeholder.com/200'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">` : `<div class="w-full h-full flex items-center justify-center bg-sky-50 text-sky-600 font-bold text-2xl">📱</div>`}
                 <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-700 px-2.5 py-1 rounded-full shadow-sm">
-                  ${p.brand}
+                  ${brand}
                 </span>
               </div>
               <div class="p-4">
-                <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition">${p.name}</h3>
-                <p class="text-xs text-slate-400 mt-1 font-medium">${p.specs || ''}</p>
+                <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition">${name}</h3>
+                <p class="text-xs text-slate-400 mt-1 font-medium">${p.specs || p.description || ''}</p>
               </div>
             </div>
             <div class="p-4 pt-0">
@@ -280,25 +288,32 @@
     }
 
     function filterProducts() {
-      const search = document.getElementById('searchInput').value.toLowerCase().trim();
-      const brandSelected = document.getElementById('brandFilter').value;
-      const maxPriceUser = parseFloat(document.getElementById('maxPriceInput').value);
+      const searchInput = document.getElementById('searchInput');
+      const brandFilter = document.getElementById('brandFilter');
+      const maxPriceInput = document.getElementById('maxPriceInput');
+
+      const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const brandSelected = brandFilter ? brandFilter.value : 'ALL';
+      const maxPriceUser = maxPriceInput ? parseFloat(maxPriceInput.value) : NaN;
 
       const filtered = products.filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(search) || p.brand.toLowerCase().includes(search);
+        const name = (p.name || p.nom || '').toLowerCase();
+        const brand = (p.brand || p.marque || '').toLowerCase();
+        const matchesSearch = name.includes(search) || brand.includes(search);
         
         let matchesBrand = true;
         if (brandSelected !== 'ALL') {
+          const pBrand = p.brand || p.marque || '';
           if (brandSelected === 'Samsung-S' || brandSelected === 'Samsung-A') {
             matchesBrand = p.series === brandSelected;
           } else {
-            matchesBrand = p.brand === brandSelected;
+            matchesBrand = pBrand === brandSelected;
           }
         }
 
         let matchesPrice = true;
         if (!isNaN(maxPriceUser) && maxPriceUser > 0) {
-          const price = p.priceUSD || p.price_usd || p.prix_approx || 0;
+          const price = p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0;
           const convertedPrice = Math.round(price * RATES[currentCurrency]);
           matchesPrice = convertedPrice <= maxPriceUser;
         }
@@ -310,30 +325,41 @@
     }
 
     function changeCurrency() {
-      currentCurrency = document.getElementById('currencySelect').value;
+      const currencySelect = document.getElementById('currencySelect');
+      if (currencySelect) {
+        currentCurrency = currencySelect.value;
+      }
       filterProducts();
     }
 
     function openAssistantModal() {
-      document.getElementById('assistantModal').classList.remove('hidden');
+      const modal = document.getElementById('assistantModal');
+      if (modal) modal.classList.remove('hidden');
     }
+    
     function closeAssistantModal() {
-      document.getElementById('assistantModal').classList.add('hidden');
+      const modal = document.getElementById('assistantModal');
+      if (modal) modal.classList.add('hidden');
     }
 
     function applyQuizResult() {
-      const budget = parseFloat(document.getElementById('quizBudget').value);
-      const priority = document.getElementById('quizPriority').value;
-      const brand = document.getElementById('quizBrand').value;
+      const budgetInput = document.getElementById('quizBudget');
+      const priorityInput = document.getElementById('quizPriority');
+      const brandInput = document.getElementById('quizBrand');
+
+      const budget = budgetInput ? parseFloat(budgetInput.value) : NaN;
+      const priority = priorityInput ? priorityInput.value : 'ALL';
+      const brand = brandInput ? brandInput.value : 'ALL';
 
       closeAssistantModal();
 
       if (!isNaN(budget) && budget > 0) {
-        document.getElementById('maxPriceInput').value = budget;
+        const maxPriceInput = document.getElementById('maxPriceInput');
+        if (maxPriceInput) maxPriceInput.value = budget;
       }
 
       const filtered = products.filter(p => {
-        const price = p.priceUSD || p.price_usd || p.prix_approx || 0;
+        const price = p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0;
         let okPrice = true;
         if (!isNaN(budget) && budget > 0) {
           okPrice = Math.round(price * RATES[currentCurrency]) <= budget;
@@ -341,10 +367,11 @@
 
         let okBrand = true;
         if (brand !== 'ALL') {
+          const pBrand = p.brand || p.marque || '';
           if (brand === 'Infinix') {
-            okBrand = ['Infinix', 'Tecno', 'Itel'].includes(p.brand);
+            okBrand = ['Infinix', 'Tecno', 'Itel'].includes(pBrand);
           } else {
-            okBrand = p.brand === brand;
+            okBrand = pBrand === brand;
           }
         }
 
@@ -363,25 +390,35 @@
       selectedProductForInstallment = products.find(p => p.id === productId);
       if (!selectedProductForInstallment) return;
 
-      const price = selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix_approx || 0;
+      const price = selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix || selectedProductForInstallment.prix_approx || 0;
+      const name = selectedProductForInstallment.name || selectedProductForInstallment.nom || 'Téléphone';
 
-      document.getElementById('instTitle').textContent = selectedProductForInstallment.name;
-      document.getElementById('instTotalPrice').textContent = `Prix Total : ${formatPrice(price)}`;
+      const instTitle = document.getElementById('instTitle');
+      const instTotalPrice = document.getElementById('instTotalPrice');
+      const installmentModal = document.getElementById('installmentModal');
+
+      if (instTitle) instTitle.textContent = name;
+      if (instTotalPrice) instTotalPrice.textContent = `Prix Total : ${formatPrice(price)}`;
       
       updateInstallmentCalc();
-      document.getElementById('installmentModal').classList.remove('hidden');
+      if (installmentModal) installmentModal.classList.remove('hidden');
     }
 
     function closeInstallmentModal() {
-      document.getElementById('installmentModal').classList.add('hidden');
+      const modal = document.getElementById('installmentModal');
+      if (modal) modal.classList.add('hidden');
     }
 
     function updateInstallmentCalc() {
       if (!selectedProductForInstallment) return;
 
-      const type = document.getElementById('instType').value;
-      const duration = parseInt(document.getElementById('instDuration').value);
-      const price = selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix_approx || 0;
+      const typeInput = document.getElementById('instType');
+      const durationInput = document.getElementById('instDuration');
+
+      const type = typeInput ? typeInput.value : 'MONTHLY';
+      const duration = durationInput ? parseInt(durationInput.value) : 1;
+      
+      const price = selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix || selectedProductForInstallment.prix_approx || 0;
       const totalPrice = Math.round(price * RATES[currentCurrency]);
 
       let totalDivisions = duration;
@@ -389,17 +426,20 @@
         totalDivisions = duration * 4;
       }
 
-      const perInstallment = Math.round(totalPrice / totalDivisions);
+      const perInstallment = Math.round(totalPrice / (totalDivisions || 1));
       const unitLabel = type === 'WEEKLY' ? 'par semaine' : 'par mois';
 
-      document.getElementById('instResult').textContent = `${perInstallment.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
-      document.getElementById('instSubText').textContent = `${unitLabel} (sur ${duration} mois)`;
+      const instResult = document.getElementById('instResult');
+      const instSubText = document.getElementById('instSubText');
+
+      if (instResult) instResult.textContent = `${perInstallment.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
+      if (instSubText) instSubText.textContent = `${unitLabel} (sur ${duration} mois)`;
     }
 
-    // Chargement initial via l'API Flask
+    // 2. Lancement initial au chargement de la page
     loadProducts();
 
-    // Adaptation Espace Client / Vendeur
+    // 3. Adaptation dynamique Espace Client / Vendeur / Visiteur
     const userRole = localStorage.getItem('userRole');
     const navFavorites = document.getElementById('navFavorites');
     const navSpace = document.getElementById('navSpace');
@@ -424,7 +464,7 @@
       if (navSpace) navSpace.style.display = 'none';
     }
 
-    if (userRole) {
+    if (userRole && authButtons) {
       authButtons.innerHTML = `
         <button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-xs sm:text-sm">
           Déconnexion

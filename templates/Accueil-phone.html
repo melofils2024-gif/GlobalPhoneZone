@@ -59,24 +59,24 @@
   <section id="classement" class="max-w-6xl w-full mx-auto px-4 my-8 sm:my-12 flex-grow">
     <h2 class="text-2xl sm:text-3xl font-bold text-center text-sky-700 mb-6">Classement des meilleurs téléphones</h2>
     <div class="overflow-x-auto shadow-md rounded-lg border border-gray-100 bg-white">
-      <table id="phones-table" class="ranking-table w-full border-collapse text-left text-sm sm:text-base">
-        <thead>
-          <tr class="bg-sky-100 text-sky-900">
-            <th class="p-3">Photo</th>
-            <th class="p-3">Marque & Modèle</th>
-            <th class="p-3">Écran</th>
-            <th class="p-3">Caméra</th>
-            <th class="p-3">Batterie</th>
-            <th class="p-3">Stockage</th>
-            <th class="p-3">RAM</th>
-            <th class="p-3">Prix Approx.</th>
-            <th class="p-3">Tendance</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          <!-- Chargé dynamiquement via l'API Flask -->
-        </tbody>
-      </table>
+     <table class="w-full text-left border-collapse">
+  <thead>
+    <tr class="border-b bg-gray-50 text-xs text-gray-500 uppercase">
+      <th class="p-3">Photo</th>
+      <th class="p-3">Marque & Modèle</th>
+      <th class="p-3">Écran</th>
+      <th class="p-3">Caméra</th>
+      <th class="p-3">Batterie</th>
+      <th class="p-3">Stockage</th>
+      <th class="p-3">RAM</th>
+      <th class="p-3">Prix Approx.</th>
+      <th class="p-3">Tendance</th>
+    </tr>
+  </thead>
+  <tbody id="classement-container">
+    <!-- Rempli dynamiquement par JavaScript -->
+  </tbody>
+</table>
     </div>
 
     <!-- BOUTON : Lien vers les articles des vendeurs -->
@@ -94,13 +94,14 @@
   </footer>
 
   <!-- Scripts -->
-  <script>
-    // 1. Adaptation dynamique de l'interface selon le rôle utilisateur
+ <script>
+    // 1. Adaptation dynamique de l'interface (Rôles)
     const userRole = localStorage.getItem('userRole');
     const navFavorites = document.getElementById('navFavorites');
     const navSpace = document.getElementById('navSpace');
     const authButtons = document.getElementById('authButtons');
 
+    // ... (Ton code existant pour le menu reste parfait) ...
     if (userRole === 'vendeur') {
       if (navFavorites) navFavorites.style.display = 'none';
       if (navSpace) {
@@ -115,59 +116,45 @@
         navSpace.textContent = 'Mon Espace Client';
         navSpace.href = '/page-client';
       }
-    } else {
-      if (navFavorites) navFavorites.style.display = 'none';
-      if (navSpace) navSpace.style.display = 'none';
     }
 
-    if (userRole) {
-      authButtons.innerHTML = `
-        <button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-xs sm:text-sm">
-          Déconnexion
-        </button>
-      `;
-    }
-
-    function logout() {
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('userId');
-      window.location.href = '/';
-    }
-
-    // 2. Récupération dynamique depuis l'API Flask
+    // 2. Récupération unique et propre des données
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
         const tableBody = document.querySelector('#phones-table tbody');
-        tableBody.innerHTML = '';
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = ''; // Nettoyer avant remplissage
 
-        // Tri décroissant selon le score de tendance
-        data.sort((a, b) => b.tendance - a.tendance);
+        // Tri et limitation aux 12 meilleurs
+        const top12 = data.sort((a, b) => (b.tendance || 0) - (a.tendance || 0)).slice(0, 12);
 
-        data.forEach(phone => {
+        top12.forEach(phone => {
+          const nomComplet = `${phone.marque || ''} ${phone.nom || ''}`.trim();
+          const imageSrc = phone.image_url || '';
+
           const row = `
             <tr class="hover:bg-gray-50 transition" data-id="${phone.id}">
               <td class="p-3">
-                <img src="${phone.photo_url || ''}" alt="${phone.marque_modele || ''}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover">
+                ${imageSrc ? `<img src="${imageSrc}" alt="${nomComplet}" class="w-12 h-12 rounded-lg object-cover shadow-sm">` : `<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center font-bold text-xs">📱</div>`}
               </td>
-              <td class="p-3 font-semibold">${phone.marque_modele || ''}</td>
-              <td class="p-3">${phone.ecran || '-'}</td>
-              <td class="p-3">${phone.camera || '-'}</td>
-              <td class="p-3">${phone.batterie || '-'}</td>
-              <td class="p-3">${phone.stockage || '-'}</td>
-              <td class="p-3">${phone.ram || '-'}</td>
-              <td class="p-3">$${phone.prix_approx || 0}</td>
+              <td class="p-3 font-semibold text-slate-800">${nomComplet}</td>
+              <td class="p-3 text-gray-600">${phone.ecran || '-'}</td>
+              <td class="p-3 text-gray-600">${phone.camera || '-'}</td>
+              <td class="p-3 text-gray-600">${phone.batterie || '-'}</td>
+              <td class="p-3 text-gray-600">${phone.stockage || '-'}</td>
+              <td class="p-3 text-gray-600">${phone.ram || '-'}</td>
+              <td class="p-3 font-bold text-violet-600">$${phone.prix || 0}</td>
               <td class="p-3">
-                <div class="trend-bar" style="--value:${phone.tendance || 50}%;">${phone.tendance || 50}</div>
+                <span class="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-1 rounded-full">${phone.tendance || 85}%</span>
               </td>
             </tr>`;
           tableBody.insertAdjacentHTML('beforeend', row);
         });
       })
-      .catch(err => {
-        console.warn("Impossible de joindre le serveur Flask.", err);
-      });
-  </script>
+      .catch(err => console.error("Erreur chargement :", err));
+</script>
 
 </body>
 </html>
