@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails du Téléphone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 p-6">
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-6" id="productDetails">
+        <p class="text-center text-slate-500">Chargement des détails...</p>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        async function loadDetails() {
+            const res = await fetch('/api/products');
+            const products = await res.json();
+            const product = products.find(p => p.id == productId);
+
+            const container = document.getElementById('productDetails');
+            if (!product) {
+                container.innerHTML = `<p class="text-red-500 font-bold">Téléphone introuvable.</p>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <img src="${product.image_url}" class="w-full h-64 object-cover rounded-xl mb-4">
+                <h1 class="text-2xl font-black text-slate-800">${product.brand} ${product.name}</h1>
+                <p class="text-lg font-bold text-sky-600 mt-2">${product.price_usd} $</p>
+                <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-slate-600">
+                    <div>📱 Écran : ${product.ecran}</div>
+                    <div>📸 Caméra : ${product.camera}</div>
+                    <div>🔋 Batterie : ${product.batterie}</div>
+                    <div>💾 Stockage : ${product.stockage}</div>
+                </div>
+                <a href="/" class="mt-6 inline-block bg-slate-800 text-white px-4 py-2 rounded-xl">Retour au catalogue</a>
+            `;
+        }
+        loadDetails();
+    </script>
+</body>
+</html>

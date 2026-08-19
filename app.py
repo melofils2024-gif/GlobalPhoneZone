@@ -126,23 +126,16 @@ def get_products():
     return jsonify([{
         "id": p.id,
         "name": p.name,
-        "marque_modele": p.name, 
         "brand": p.brand,
+        "price_usd": p.price_usd, # Prix brut en nombre pour éviter les erreurs NaN
         "ecran": getattr(p, 'ecran', '6.7" AMOLED'),
         "camera": getattr(p, 'camera', '50 MP'),
         "batterie": getattr(p, 'batterie', '5000 mAh'),
         "stockage": p.specs,
         "ram": getattr(p, 'ram', '8Go'),
-        "prix_approx": p.price_usd,
-        "tendance": getattr(p, 'tendance', 85), 
-        "photo_url": getattr(p, 'image_url', ''),
-        "nom": p.name,
-        "marque": p.brand,
-        "prix": f"{p.price_usd} $",
-        "etat": getattr(p, 'statut', 'Actif'),
-        "vendeur": p.vendeur_id if p.vendeur_id else "Boutique",
-        "whatsapp": "2290100000000",
-        "description": p.specs
+        "image_url": p.image_url or '',
+        "specs": p.specs,
+        "vendeur": p.vendeur_id if p.vendeur_id else "Boutique"
     } for p in products]), 200
 
 @app.route('/api/vendeur/products', methods=['GET'])

@@ -198,31 +198,21 @@
   </footer>
 
   <!-- Script Dynamique -->
-  <script>
+  <<script>
     const RATES = { USD: 1, EUR: 0.92, XOF: 600 };
     const SYMBOLS = { USD: '$', EUR: '€', XOF: 'FCFA' };
     let currentCurrency = 'XOF';
-    let selectedProductForInstallment = null;
     let products = [];
 
-    // 1. Chargement propre des produits depuis l'API Flask
     async function loadProducts() {
       try {
         const response = await fetch('/api/products');
-        if (!response.ok) throw new Error("Erreur lors de la récupération des produits");
-        
+        if (!response.ok) throw new Error("Erreur de chargement");
         products = await response.json();
-        renderProducts(products); // On alimente la grille avec tous les produits
+        renderProducts(products);
+        renderRanking(products);
       } catch (error) {
-        console.error("Erreur loadProducts:", error);
-        const grid = document.getElementById('productsGrid');
-        if (grid) {
-          grid.innerHTML = `
-            <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-red-300 p-6">
-              <p class="text-lg font-bold text-red-500">Impossible de charger le catalogue.</p>
-              <p class="text-sm text-slate-400 mt-1">Vérifiez que le serveur Flask est bien lancé.</p>
-            </div>`;
-        }
+        console.error("Erreur:", error);
       }
     }
 
@@ -231,259 +221,63 @@
       return `${converted.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
     }
 
+    function getCleanName(brand, name) {
+      if (!name) return 'Téléphone';
+      if (!brand) return name;
+      if (name.toLowerCase().startsWith(brand.toLowerCase())) return name;
+      return `${brand} ${name}`;
+    }
+
     function renderProducts(items) {
       const grid = document.getElementById('productsGrid');
       if (!grid) return;
       grid.innerHTML = '';
-
-      if (!items || items.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 p-6">
-            <p class="text-lg font-bold text-slate-700">Aucun téléphone disponible pour le moment.</p>
-            <p class="text-sm text-slate-400 mt-1">Les articles postés par les vendeurs apparaîtront ici automatiquement.</p>
-          </div>`;
-        return;
-      }
-
+      
       items.forEach(p => {
-        const price = Number(p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0);
-        const img = p.image || p.image_url || p.photo_url || '';
-        const name = p.name || p.nom || 'Téléphone';
-        const brand = p.brand || p.marque || '';
-        const specs = p.specs || p.description || `${p.stockage || ''} • ${p.ram || ''}`.trim() || 'Caractéristiques non spécifiées';
-
-        // Validation stricte : vérifie si c'est une vraie URL et non du texte descriptif
-        const isValidImg = img && typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) && !img.toLowerCase().includes('photo ');
-
-        const card = `
-          <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col justify-between group">
+        const displayName = getCleanName(p.brand, p.name);
+        grid.innerHTML += `
+          <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-100 flex flex-col justify-between">
             <div>
-              <div class="overflow-hidden h-48 bg-slate-100 relative flex items-center justify-center">
-                ${isValidImg ? `<img src="${img}" alt="${name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">` : `<div class="text-4xl">📱</div>`}
-                <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-700 px-2.5 py-1 rounded-full shadow-sm">
-                  ${brand}
-                </span>
-              </div>
-              <div class="p-4">
-                <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition">${brand} ${name}</h3>
-                <p class="text-xs text-slate-400 mt-1 font-medium">${specs}</p>
-              </div>
+              <img src="${p.image_url}" alt="${displayName}" class="w-full h-48 object-cover rounded-xl mb-3" onerror="this.src=''">
+              <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-1 rounded-full">${p.brand}</span>
+              <h3 class="font-bold text-slate-800 text-base mt-2">${displayName}</h3>
+              <p class="text-xs text-slate-400 mt-1">${p.specs}</p>
             </div>
-            <div class="p-4 pt-0">
-              <div class="text-lg font-black text-slate-900 mb-2">${formatPrice(price)}</div>
-              
-              <button onclick="openInstallmentModal(${p.id})" class="w-full mb-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold py-1.5 rounded-lg text-xs transition border border-emerald-100 flex items-center justify-center gap-1">
-                💳 Payer par tranche
-              </button>
-
-              <div class="flex gap-2">
-                <button onclick="window.location.href='/details?id=${p.id}'" class="flex-grow bg-sky-600 text-white font-bold py-2.5 rounded-xl hover:bg-sky-700 active:scale-95 transition text-sm">
-                  Détails
-                </button>
-                <button class="px-3 border border-slate-200 rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 active:scale-95 transition">
-                  ❤️
-                </button>
-              </div>
+            <div class="mt-4">
+              <div class="text-lg font-black text-slate-900 mb-2">${formatPrice(p.price_usd)}</div>
+              <a href="/details?id=${p.id}" class="block text-center bg-sky-600 text-white font-bold py-2 rounded-xl hover:bg-sky-700 text-sm">Détails</a>
             </div>
-          </div>
-        `;
-        grid.innerHTML += card;
+          </div>`;
       });
     }
 
-    function filterProducts() {
-      const searchInput = document.getElementById('searchInput');
-      const brandFilter = document.getElementById('brandFilter');
-      const maxPriceInput = document.getElementById('maxPriceInput');
-
-      const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
-      const brandSelected = brandFilter ? brandFilter.value : 'ALL';
-      const maxPriceUser = maxPriceInput ? parseFloat(maxPriceInput.value) : NaN;
-
-      const filtered = products.filter(p => {
-        const name = (p.name || p.nom || '').toLowerCase();
-        const brand = (p.brand || p.marque || '').toLowerCase();
-        const matchesSearch = name.includes(search) || brand.includes(search);
-        
-        let matchesBrand = true;
-        if (brandSelected !== 'ALL') {
-          const pBrand = p.brand || p.marque || '';
-          if (brandSelected === 'Samsung-S' || brandSelected === 'Samsung-A') {
-            matchesBrand = p.series === brandSelected;
-          } else {
-            matchesBrand = pBrand === brandSelected;
-          }
-        }
-
-        let matchesPrice = true;
-        if (!isNaN(maxPriceUser) && maxPriceUser > 0) {
-          const price = Number(p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0);
-          const convertedPrice = Math.round(price * RATES[currentCurrency]);
-          matchesPrice = convertedPrice <= maxPriceUser;
-        }
-
-        return matchesSearch && matchesBrand && matchesPrice;
+    function renderRanking(items) {
+      const tbody = document.getElementById('rankingBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      
+      items.forEach(p => {
+        const displayName = getCleanName(p.brand, p.name);
+        tbody.innerHTML += `
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-3"><img src="${p.image_url}" class="w-10 h-10 object-cover rounded-lg"></td>
+            <td class="p-3 font-bold text-slate-800">${displayName}</td>
+            <td class="p-3 text-sm text-slate-600">${p.ecran}</td>
+            <td class="p-3 text-sm text-slate-600">${p.camera}</td>
+            <td class="p-3 text-sm text-slate-600">${p.batterie}</td>
+            <td class="p-3 text-sm text-slate-600">${p.stockage}</td>
+          </tr>`;
       });
-
-      renderProducts(filtered);
     }
 
     function changeCurrency() {
-      const currencySelect = document.getElementById('currencySelect');
-      if (currencySelect) {
-        currentCurrency = currencySelect.value;
-      }
-      filterProducts();
+      const select = document.getElementById('currencySelect');
+      if (select) currentCurrency = select.value;
+      renderProducts(products);
     }
 
-    function openAssistantModal() {
-      const modal = document.getElementById('assistantModal');
-      if (modal) modal.classList.remove('hidden');
-    }
-    
-    function closeAssistantModal() {
-      const modal = document.getElementById('assistantModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function applyQuizResult() {
-      const budgetInput = document.getElementById('quizBudget');
-      const priorityInput = document.getElementById('quizPriority');
-      const brandInput = document.getElementById('quizBrand');
-
-      const budget = budgetInput ? parseFloat(budgetInput.value) : NaN;
-      const priority = priorityInput ? priorityInput.value : 'ALL';
-      const brand = brandInput ? brandInput.value : 'ALL';
-
-      closeAssistantModal();
-
-      if (!isNaN(budget) && budget > 0) {
-        const maxPriceInput = document.getElementById('maxPriceInput');
-        if (maxPriceInput) maxPriceInput.value = budget;
-      }
-
-      const filtered = products.filter(p => {
-        const price = Number(p.priceUSD || p.price_usd || p.prix || p.prix_approx || 0);
-        let okPrice = true;
-        if (!isNaN(budget) && budget > 0) {
-          okPrice = Math.round(price * RATES[currentCurrency]) <= budget;
-        }
-
-        let okBrand = true;
-        if (brand !== 'ALL') {
-          const pBrand = p.brand || p.marque || '';
-          if (brand === 'Infinix') {
-            okBrand = ['Infinix', 'Tecno', 'Itel'].includes(pBrand);
-          } else {
-            okBrand = pBrand === brand;
-          }
-        }
-
-        let okTag = true;
-        if (priority !== 'ALL') {
-          okTag = p.tag === priority;
-        }
-
-        return okPrice && okBrand && okTag;
-      });
-
-      renderProducts(filtered);
-    }
-
-    function openInstallmentModal(productId) {
-      selectedProductForInstallment = products.find(p => p.id === productId);
-      if (!selectedProductForInstallment) return;
-
-      const price = Number(selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix || selectedProductForInstallment.prix_approx || 0);
-      const name = selectedProductForInstallment.name || selectedProductForInstallment.nom || 'Téléphone';
-
-      const instTitle = document.getElementById('instTitle');
-      const instTotalPrice = document.getElementById('instTotalPrice');
-      const installmentModal = document.getElementById('installmentModal');
-
-      if (instTitle) instTitle.textContent = name;
-      if (instTotalPrice) instTotalPrice.textContent = `Prix Total : ${formatPrice(price)}`;
-      
-      updateInstallmentCalc();
-      if (installmentModal) installmentModal.classList.remove('hidden');
-    }
-
-    function closeInstallmentModal() {
-      const modal = document.getElementById('installmentModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function updateInstallmentCalc() {
-      if (!selectedProductForInstallment) return;
-
-      const typeInput = document.getElementById('instType');
-      const durationInput = document.getElementById('instDuration');
-
-      const type = typeInput ? typeInput.value : 'MONTHLY';
-      const duration = durationInput ? parseInt(durationInput.value) : 1;
-      
-      const price = Number(selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix || selectedProductForInstallment.prix_approx || 0);
-      const totalPrice = Math.round(price * RATES[currentCurrency]);
-
-      let totalDivisions = duration;
-      if (type === 'WEEKLY') {
-        totalDivisions = duration * 4;
-      }
-
-      const perInstallment = Math.round(totalPrice / (totalDivisions || 1));
-      const unitLabel = type === 'WEEKLY' ? 'par semaine' : 'par mois';
-
-      const instResult = document.getElementById('instResult');
-      const instSubText = document.getElementById('instSubText');
-
-      if (instResult) instResult.textContent = `${perInstallment.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
-      if (instSubText) instSubText.textContent = `${unitLabel} (sur ${duration} mois)`;
-    }
-
-    // 2. Lancement initial au chargement de la page
     loadProducts();
-
-    // 3. Adaptation dynamique Espace Client / Vendeur / Visiteur
-    const userRole = localStorage.getItem('userRole');
-    const navFavorites = document.getElementById('navFavorites');
-    const navSpace = document.getElementById('navSpace');
-    const authButtons = document.getElementById('authButtons');
-
-    if (userRole === 'vendeur') {
-      if (navFavorites) navFavorites.style.display = 'none';
-      if (navSpace) {
-        navSpace.style.display = 'inline-block';
-        navSpace.textContent = 'Espace Vendeur 📊';
-        navSpace.href = '/page-vendeur';
-      }
-    } else if (userRole === 'client') {
-      if (navFavorites) navFavorites.style.display = 'inline-block';
-      if (navSpace) {
-        navSpace.style.display = 'inline-block';
-        navSpace.textContent = 'Mon Espace Client';
-        navSpace.href = '/page-client';
-      }
-    } else {
-      if (navFavorites) navFavorites.style.display = 'none';
-      if (navSpace) navSpace.style.display = 'none';
-    }
-
-    if (userRole && authButtons) {
-      authButtons.innerHTML = `
-        <button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-xs sm:text-sm">
-          Déconnexion
-        </button>
-      `;
-    }
-
-    function logout() {
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userName');
-      window.location.reload();
-    }
-  </script>
+</script>
 
 </body>
 </html>
