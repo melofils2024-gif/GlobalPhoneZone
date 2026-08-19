@@ -12,9 +12,10 @@
   <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
     <h1 class="text-2xl font-bold text-violet-700">Téléphones du Monde 🌍</h1>
     <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
-      <a href="Accueil-phone.html" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="catalogue.html" class="hover:text-sky-800 transition">Catalogue</a>
-      <a href="vendeurs-articles.html" class="hover:text-sky-800 transition">Articles des Vendeurs</a>
+      <!-- LIENS CORRIGÉS ICI (sans le .html) -->
+      <a href="/Accueil-phone" class="hover:text-sky-800 transition">Accueil</a>
+      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
+      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles des Vendeurs</a>
       <button id="logoutBtn" type="button" class="text-rose-600 hover:text-rose-800 transition font-bold border border-rose-200 px-3 py-1 rounded-lg hover:bg-rose-50">
         Déconnexion 🚪
       </button>
@@ -121,7 +122,9 @@
 
   <!-- Script -->
   <script>
-    const API_URL = 'http://127.0.0.1:5000/api';
+    // URL DE L'API CORRIGÉE ICI : plus de localhost ou 127.0.0.1
+    const API_URL = '/api';
+    
     const listContainer = document.getElementById('favoritesList');
     const clearContainer = document.getElementById('clearContainer');
 
@@ -130,12 +133,17 @@
       const userId = localStorage.getItem('userId');
 
       if (!userId) {
-        listContainer.innerHTML = '<p class="col-span-full text-center text-red-500 py-8 font-semibold">Veuillez vous connecter en tant que client pour voir vos favoris.</p>';
+        if(listContainer) {
+            listContainer.innerHTML = '<p class="col-span-full text-center text-red-500 py-8 font-semibold">Veuillez vous connecter en tant que client pour voir vos favoris.</p>';
+        }
         if (clearContainer) clearContainer.classList.add('hidden');
         return;
       }
 
-      loadUserFavorites(userId);
+      // Si le conteneur existe, on charge les favoris
+      if(listContainer) {
+          loadUserFavorites(userId);
+      }
     });
 
     // 2. Charger les favoris depuis l'API Flask
@@ -150,7 +158,9 @@
         listContainer.innerHTML = ''; // Réinitialiser le conteneur
 
         if (!favorites || favorites.length === 0) {
-          listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
+            if(listContainer) {
+                listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
+            }
           if (clearContainer) clearContainer.classList.add('hidden');
           return;
         }
@@ -162,7 +172,9 @@
         });
       } catch (error) {
         console.error('Erreur :', error);
-        listContainer.innerHTML = '<p class="col-span-full text-red-500 text-center py-8">Impossible de contacter le serveur Flask.</p>';
+        if(listContainer) {
+            listContainer.innerHTML = '<p class="col-span-full text-red-500 text-center py-8">Impossible de contacter le serveur Flask.</p>';
+        }
       }
     }
 
@@ -204,7 +216,9 @@
           </div>
         </div>
       `;
-      listContainer.appendChild(card);
+      if(listContainer) {
+          listContainer.appendChild(card);
+      }
     }
 
     // 4. Supprimer un favori spécifique via l'API
@@ -221,7 +235,7 @@
           if (card) card.remove();
 
           // Vérifier s'il reste des éléments pour masquer le bouton "Tout vider" si vide
-          if (listContainer.children.length === 0) {
+          if (listContainer && listContainer.children.length === 0) {
             listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
             if (clearContainer) clearContainer.classList.add('hidden');
           }
@@ -245,7 +259,9 @@
         });
 
         if (response.ok) {
-          listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
+            if(listContainer){
+                listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
+            }
           if (clearContainer) clearContainer.classList.add('hidden');
         } else {
           alert("Erreur lors du nettoyage des favoris.");

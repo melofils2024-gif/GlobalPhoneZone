@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Connexion - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Chemin CSS corrigé -->
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="bg-gray-50 text-slate-800 flex flex-col min-h-full">
 
@@ -13,10 +14,11 @@
   <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
     <h1 class="text-2xl font-bold text-sky-700">Téléphones du Monde 🌍</h1>
     <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
-      <a href="Accueil-phone.html" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="catalogue.html" class="hover:text-sky-800 transition">Catalogue</a>
-      <a href="auth.html" class="hover:text-sky-800 transition">Récupération</a>
-      <a href="register.html" class="bg-sky-600 text-white px-3 py-1.5 rounded-lg hover:bg-sky-500 transition font-bold">
+      <!-- Liens nettoyés (sans .html) -->
+      <a href="/" class="hover:text-sky-800 transition">Accueil</a>
+      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
+      <a href="/auth" class="hover:text-sky-800 transition">Récupération</a>
+      <a href="/register" class="bg-sky-600 text-white px-3 py-1.5 rounded-lg hover:bg-sky-500 transition font-bold">
         Inscription
       </a>
     </nav>
@@ -49,7 +51,8 @@
         </div>
 
         <div class="text-right">
-          <a href="auth.html" class="text-xs text-sky-600 hover:underline font-medium">Mot de passe oublié ?</a>
+          <!-- Lien corrigé -->
+          <a href="/auth" class="text-xs text-sky-600 hover:underline font-medium">Mot de passe oublié ?</a>
         </div>
 
         <button type="submit"
@@ -59,7 +62,7 @@
       </form>
 
       <p class="text-center text-sm text-gray-600 mt-6">
-        Pas encore de compte ? <a href="register.html" class="text-sky-600 font-semibold hover:text-violet-600 transition">Inscrivez‑vous</a>
+        Pas encore de compte ? <a href="/register" class="text-sky-600 font-semibold hover:text-violet-600 transition">Inscrivez‑vous</a>
       </p>
     </div>
   </section>
@@ -78,13 +81,17 @@
       const role = document.getElementById('userRoleSelect').value;
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Connexion en cours...';
 
       try {
         const response = await fetch('/api/login', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email, password, role })
-});
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, role })
+        });
 
         const data = await response.json();
 
@@ -96,18 +103,22 @@
           if (data.token) localStorage.setItem('authToken', data.token);
           if (data.nom || data.prenom) localStorage.setItem('userName', `${data.prenom || ''} ${data.nom || ''}`.trim());
 
-          // Redirection directe sans alerte bloquante
+          // Redirection corrigée vers les routes Flask sans .html
           if (userRole === 'vendeur') {
-            window.location.href = 'page-vendeur.html';
+            window.location.href = '/page-vendeur';
           } else {
-            window.location.href = 'catalogue.html';
+            window.location.href = '/catalogue';
           }
         } else {
           alert(data.message || 'Identifiants ou rôle incorrects.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Se connecter';
         }
       } catch (error) {
         console.error('Erreur :', error);
-        alert('Impossible de contacter le serveur Flask. Vérifiez qu\'il tourne sur le port 5000.');
+        alert('Impossible de contacter le serveur Flask. Vérifiez qu\'il est bien lancé.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Se connecter';
       }
     });
   </script>

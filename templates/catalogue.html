@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catalogue - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-full font-sans">
 
@@ -15,20 +15,16 @@
       Téléphones du Monde <span class="text-base">🌍</span>
     </h1>
     <nav id="mainNav" class="flex flex-wrap justify-center gap-3 sm:space-x-4 text-sm sm:text-base text-sky-600 font-medium items-center">
-      <a href="Accueil-phone.html" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="catalogue.html" class="font-bold underline text-sky-800 transition">Catalogue</a>
+      <a href="/" class="hover:text-sky-800 transition">Accueil</a>
+      <a href="/catalogue" class="font-bold underline text-sky-800 transition">Catalogue</a>
       
-      <!-- Favoris masqué par défaut (affiché si client connecté) -->
-      <a href="favoris.html" id="navFavorites" class="hover:text-sky-800 transition" style="display: none;">Favoris ❤️</a>
-      
-      <a href="vendeurs-articles.html" class="hover:text-sky-800 transition">Articles Vendeurs</a>
-      
-      <!-- Espace Client/Vendeur masqué par défaut (affiché si connecté) -->
-      <a href="page-client.html" id="navSpace" class="hover:text-sky-800 transition" style="display: none;">Espace Client</a>
+      <a href="/favoris" id="navFavorites" class="hover:text-sky-800 transition" style="display: none;">Favoris ❤️</a>
+      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles Vendeurs</a>
+      <a href="/page-client" id="navSpace" class="hover:text-sky-800 transition" style="display: none;">Espace Client</a>
       
       <div id="authButtons" class="flex gap-2 items-center">
-        <a href="login.html" class="font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg transition text-sm">Connexion</a>
-        <a href="register.html" class="font-bold bg-sky-600 text-white hover:bg-sky-500 py-1 px-3 rounded-lg transition text-sm">Inscription</a>
+        <a href="/login" class="font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg transition text-sm">Connexion</a>
+        <a href="/register" class="font-bold bg-sky-600 text-white hover:bg-sky-500 py-1 px-3 rounded-lg transition text-sm">Inscription</a>
       </div>
     </nav>
   </header>
@@ -41,7 +37,6 @@
         Trouvez instantanément le téléphone correspondant à vos critères et à votre budget exact.
       </p>
       
-      <!-- BOUTON D'ASSISTANT INTERACTIF (Option 2) -->
       <button onclick="openAssistantModal()" class="mt-4 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold py-2.5 px-5 rounded-full shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition text-sm flex items-center gap-2 mx-auto">
         ✨ Hésitant ? Laisser l'assistant vous guider !
       </button>
@@ -58,7 +53,7 @@
         <span class="absolute left-3.5 top-3.5 text-slate-400">🔍</span>
       </div>
 
-      <!-- Conteneur des Boutons d'action Stylisés -->
+      <!-- Conteneur des Filtres -->
       <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full md:w-auto">
         
         <!-- 2. Filtre Marque & Gamme -->
@@ -109,7 +104,7 @@
     </div>
   </main>
 
-  <!-- MODAL ASSISTANT VIRTUEL (Option 2) -->
+  <!-- MODAL ASSISTANT VIRTUEL -->
   <div id="assistantModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border border-slate-100">
       <button onclick="closeAssistantModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
@@ -117,17 +112,15 @@
       <div class="text-center mb-6">
         <span class="text-4xl">🤖</span>
         <h3 class="text-xl font-bold text-slate-900 mt-2">Assistant de Choix</h3>
-        <p class="text-xs text-slate-500">Répondez à ces 3 questions pour trouver votre téléphone ideal.</p>
+        <p class="text-xs text-slate-500">Répondez à ces 3 questions pour trouver votre téléphone idéal.</p>
       </div>
 
       <div class="space-y-4 text-sm">
-        <!-- Question 1 -->
         <div>
           <label class="font-bold text-slate-700 block mb-1">1. Votre Budget Maximal :</label>
           <input type="number" id="quizBudget" placeholder="Ex: 150000" class="w-full p-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
         </div>
 
-        <!-- Question 2 -->
         <div>
           <label class="font-bold text-slate-700 block mb-1">2. Votre Priorité Principale :</label>
           <select id="quizPriority" class="w-full p-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-medium">
@@ -138,7 +131,6 @@
           </select>
         </div>
 
-        <!-- Question 3 -->
         <div>
           <label class="font-bold text-slate-700 block mb-1">3. Préférence de Marque :</label>
           <select id="quizBrand" class="w-full p-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-medium">
@@ -157,7 +149,7 @@
     </div>
   </div>
 
-  <!-- MODAL CALCULATEUR PAIEMENT PAR TRANCHE (Option 4) -->
+  <!-- MODAL CALCULATEUR PAIEMENT PAR TRANCHE -->
   <div id="installmentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border border-slate-100">
       <button onclick="closeInstallmentModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
@@ -207,246 +199,247 @@
 
   <!-- Script Dynamique -->
   <script>
- // Script Dynamique 
-  const RATES = { USD: 1, EUR: 0.92, XOF: 600 };
-  const SYMBOLS = { USD: '$', EUR: '€', XOF: 'FCFA' };
-  let currentCurrency = 'XOF';
-  let selectedProductForInstallment = null;
-  let products = []; // Devient dynamique
+    const RATES = { USD: 1, EUR: 0.92, XOF: 600 };
+    const SYMBOLS = { USD: '$', EUR: '€', XOF: 'FCFA' };
+    let currentCurrency = 'XOF';
+    let selectedProductForInstallment = null;
+    let products = [];
 
-  // 1. Chargement des données depuis l'API Flask (CORRIGÉ POUR VERCEL)
-  async function loadProducts() {
-    try {
-      // Utilisation du chemin relatif au lieu de http://127.0.0.1:5000
-      const response = await fetch('/api/products');
-      if (!response.ok) throw new Error('Erreur réseau');
-      
-      products = await response.json();
-      renderProducts(products);
-    } catch (error) {
-      console.error('Erreur API :', error);
-      document.getElementById('productsGrid').innerHTML = `
-        <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-red-300 p-6">
-          <p class="text-lg font-bold text-red-600">Impossible de contacter le serveur.</p>
-          <p class="text-sm text-slate-400 mt-1">Vérifiez votre connexion internet ou le statut de l'API.</p>
-        </div>`;
-    }
-  }
-
-  function formatPrice(priceUSD) {
-    const converted = Math.round(priceUSD * RATES[currentCurrency]);
-    return `${converted.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
-  }
-
-  function renderProducts(items) {
-    const grid = document.getElementById('productsGrid');
-    grid.innerHTML = '';
-
-    if (items.length === 0) {
-      grid.innerHTML = `
-        <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 p-6">
-          <p class="text-lg font-bold text-slate-700">Aucun modèle ne correspond à vos critères.</p>
-          <p class="text-sm text-slate-400 mt-1">Essayez de réinitialiser la recherche ou d'ajuster le budget.</p>
-        </div>`;
-      return;
+    async function loadProducts() {
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) throw new Error('Erreur serveur');
+        products = await response.json();
+        renderProducts(products);
+      } catch (error) {
+        console.error('Erreur API :', error);
+        document.getElementById('productsGrid').innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-red-300 p-6">
+            <p class="text-lg font-bold text-red-600">Impossible de charger le catalogue.</p>
+            <p class="text-sm text-slate-400 mt-1">Vérifiez la connexion avec votre serveur Flask.</p>
+          </div>`;
+      }
     }
 
-    items.forEach(p => {
-      const card = `
-        <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col justify-between group">
-          <div>
-            <div class="overflow-hidden h-48 bg-slate-100 relative">
-              <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-              <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-700 px-2.5 py-1 rounded-full shadow-sm">
-                ${p.brand}
-              </span>
+    function formatPrice(priceUSD) {
+      const converted = Math.round((priceUSD || 0) * RATES[currentCurrency]);
+      return `${converted.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
+    }
+
+    function renderProducts(items) {
+      const grid = document.getElementById('productsGrid');
+      grid.innerHTML = '';
+
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 p-6">
+            <p class="text-lg font-bold text-slate-700">Aucun modèle ne correspond à vos critères.</p>
+            <p class="text-sm text-slate-400 mt-1">Essayez d'ajuster vos filtres de recherche.</p>
+          </div>`;
+        return;
+      }
+
+      items.forEach(p => {
+        const price = p.priceUSD || p.price_usd || p.prix_approx || 0;
+        const img = p.image || p.image_url || p.photo_url || '';
+
+        const card = `
+          <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col justify-between group">
+            <div>
+              <div class="overflow-hidden h-48 bg-slate-100 relative">
+                <img src="${img.startsWith('http') ? img : '/' + img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-700 px-2.5 py-1 rounded-full shadow-sm">
+                  ${p.brand}
+                </span>
+              </div>
+              <div class="p-4">
+                <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition">${p.name}</h3>
+                <p class="text-xs text-slate-400 mt-1 font-medium">${p.specs || ''}</p>
+              </div>
             </div>
-            <div class="p-4">
-              <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition">${p.name}</h3>
-              <p class="text-xs text-slate-400 mt-1 font-medium">${p.specs}</p>
+            <div class="p-4 pt-0">
+              <div class="text-lg font-black text-slate-900 mb-2">${formatPrice(price)}</div>
+              
+              <button onclick="openInstallmentModal(${p.id})" class="w-full mb-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold py-1.5 rounded-lg text-xs transition border border-emerald-100 flex items-center justify-center gap-1">
+                💳 Payer par tranche
+              </button>
+
+              <div class="flex gap-2">
+                <button class="flex-grow bg-sky-600 text-white font-bold py-2.5 rounded-xl hover:bg-sky-700 active:scale-95 transition text-sm">
+                  Détails
+                </button>
+                <button class="px-3 border border-slate-200 rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 active:scale-95 transition">
+                  ❤️
+                </button>
+              </div>
             </div>
           </div>
-          <div class="p-4 pt-0">
-            <div class="text-lg font-black text-slate-900 mb-2">${formatPrice(p.priceUSD)}</div>
-            
-            <button onclick="openInstallmentModal(${p.id})" class="w-full mb-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold py-1.5 rounded-lg text-xs transition border border-emerald-100 flex items-center justify-center gap-1">
-              💳 Payer par tranche
-            </button>
+        `;
+        grid.innerHTML += card;
+      });
+    }
 
-            <div class="flex gap-2">
-              <button class="flex-grow bg-sky-600 text-white font-bold py-2.5 rounded-xl hover:bg-sky-700 active:scale-95 transition text-sm">
-                Détails
-              </button>
-              <button class="px-3 border border-slate-200 rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 active:scale-95 transition">
-                ❤️
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-      grid.innerHTML += card;
-    });
-  }
+    function filterProducts() {
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const brandSelected = document.getElementById('brandFilter').value;
+      const maxPriceUser = parseFloat(document.getElementById('maxPriceInput').value);
 
-  function filterProducts() {
-    const search = document.getElementById('searchInput').value.toLowerCase().trim();
-    const brandSelected = document.getElementById('brandFilter').value;
-    const maxPriceUser = parseFloat(document.getElementById('maxPriceInput').value);
-
-    const filtered = products.filter(p => {
-      const matchesSearch = p.name.toLowerCase().includes(search) || p.brand.toLowerCase().includes(search);
-      
-      let matchesBrand = true;
-      if (brandSelected !== 'ALL') {
-        if (brandSelected === 'Samsung-S' || brandSelected === 'Samsung-A') {
-          matchesBrand = p.series === brandSelected;
-        } else {
-          matchesBrand = p.brand === brandSelected;
+      const filtered = products.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(search) || p.brand.toLowerCase().includes(search);
+        
+        let matchesBrand = true;
+        if (brandSelected !== 'ALL') {
+          if (brandSelected === 'Samsung-S' || brandSelected === 'Samsung-A') {
+            matchesBrand = p.series === brandSelected;
+          } else {
+            matchesBrand = p.brand === brandSelected;
+          }
         }
-      }
 
-      let matchesPrice = true;
-      if (!isNaN(maxPriceUser) && maxPriceUser > 0) {
-        const convertedPrice = Math.round(p.priceUSD * RATES[currentCurrency]);
-        matchesPrice = convertedPrice <= maxPriceUser;
-      }
+        let matchesPrice = true;
+        if (!isNaN(maxPriceUser) && maxPriceUser > 0) {
+          const price = p.priceUSD || p.price_usd || p.prix_approx || 0;
+          const convertedPrice = Math.round(price * RATES[currentCurrency]);
+          matchesPrice = convertedPrice <= maxPriceUser;
+        }
 
-      return matchesSearch && matchesBrand && matchesPrice;
-    });
+        return matchesSearch && matchesBrand && matchesPrice;
+      });
 
-    renderProducts(filtered);
-  }
-
-  function changeCurrency() {
-    currentCurrency = document.getElementById('currencySelect').value;
-    filterProducts();
-  }
-
-  function openAssistantModal() {
-    document.getElementById('assistantModal').classList.remove('hidden');
-  }
-  function closeAssistantModal() {
-    document.getElementById('assistantModal').classList.add('hidden');
-  }
-
-  function applyQuizResult() {
-    const budget = parseFloat(document.getElementById('quizBudget').value);
-    const priority = document.getElementById('quizPriority').value;
-    const brand = document.getElementById('quizBrand').value;
-
-    closeAssistantModal();
-
-    if (!isNaN(budget) && budget > 0) {
-      document.getElementById('maxPriceInput').value = budget;
+      renderProducts(filtered);
     }
 
-    const filtered = products.filter(p => {
-      let okPrice = true;
+    function changeCurrency() {
+      currentCurrency = document.getElementById('currencySelect').value;
+      filterProducts();
+    }
+
+    function openAssistantModal() {
+      document.getElementById('assistantModal').classList.remove('hidden');
+    }
+    function closeAssistantModal() {
+      document.getElementById('assistantModal').classList.add('hidden');
+    }
+
+    function applyQuizResult() {
+      const budget = parseFloat(document.getElementById('quizBudget').value);
+      const priority = document.getElementById('quizPriority').value;
+      const brand = document.getElementById('quizBrand').value;
+
+      closeAssistantModal();
+
       if (!isNaN(budget) && budget > 0) {
-        okPrice = Math.round(p.priceUSD * RATES[currentCurrency]) <= budget;
+        document.getElementById('maxPriceInput').value = budget;
       }
 
-      let okBrand = true;
-      if (brand !== 'ALL') {
-        if (brand === 'Infinix') {
-          okBrand = ['Infinix', 'Tecno', 'Itel'].includes(p.brand);
-        } else {
-          okBrand = p.brand === brand;
+      const filtered = products.filter(p => {
+        const price = p.priceUSD || p.price_usd || p.prix_approx || 0;
+        let okPrice = true;
+        if (!isNaN(budget) && budget > 0) {
+          okPrice = Math.round(price * RATES[currentCurrency]) <= budget;
         }
+
+        let okBrand = true;
+        if (brand !== 'ALL') {
+          if (brand === 'Infinix') {
+            okBrand = ['Infinix', 'Tecno', 'Itel'].includes(p.brand);
+          } else {
+            okBrand = p.brand === brand;
+          }
+        }
+
+        let okTag = true;
+        if (priority !== 'ALL') {
+          okTag = p.tag === priority;
+        }
+
+        return okPrice && okBrand && okTag;
+      });
+
+      renderProducts(filtered);
+    }
+
+    function openInstallmentModal(productId) {
+      selectedProductForInstallment = products.find(p => p.id === productId);
+      if (!selectedProductForInstallment) return;
+
+      const price = selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix_approx || 0;
+
+      document.getElementById('instTitle').textContent = selectedProductForInstallment.name;
+      document.getElementById('instTotalPrice').textContent = `Prix Total : ${formatPrice(price)}`;
+      
+      updateInstallmentCalc();
+      document.getElementById('installmentModal').classList.remove('hidden');
+    }
+
+    function closeInstallmentModal() {
+      document.getElementById('installmentModal').classList.add('hidden');
+    }
+
+    function updateInstallmentCalc() {
+      if (!selectedProductForInstallment) return;
+
+      const type = document.getElementById('instType').value;
+      const duration = parseInt(document.getElementById('instDuration').value);
+      const price = selectedProductForInstallment.priceUSD || selectedProductForInstallment.price_usd || selectedProductForInstallment.prix_approx || 0;
+      const totalPrice = Math.round(price * RATES[currentCurrency]);
+
+      let totalDivisions = duration;
+      if (type === 'WEEKLY') {
+        totalDivisions = duration * 4;
       }
 
-      let okTag = true;
-      if (priority !== 'ALL') {
-        okTag = p.tag === priority;
+      const perInstallment = Math.round(totalPrice / totalDivisions);
+      const unitLabel = type === 'WEEKLY' ? 'par semaine' : 'par mois';
+
+      document.getElementById('instResult').textContent = `${perInstallment.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
+      document.getElementById('instSubText').textContent = `${unitLabel} (sur ${duration} mois)`;
+    }
+
+    // Chargement initial via l'API Flask
+    loadProducts();
+
+    // Adaptation Espace Client / Vendeur
+    const userRole = localStorage.getItem('userRole');
+    const navFavorites = document.getElementById('navFavorites');
+    const navSpace = document.getElementById('navSpace');
+    const authButtons = document.getElementById('authButtons');
+
+    if (userRole === 'vendeur') {
+      if (navFavorites) navFavorites.style.display = 'none';
+      if (navSpace) {
+        navSpace.style.display = 'inline-block';
+        navSpace.textContent = 'Espace Vendeur 📊';
+        navSpace.href = '/page-vendeur';
       }
-
-      return okPrice && okBrand && okTag;
-    });
-
-    renderProducts(filtered);
-  }
-
-  function openInstallmentModal(productId) {
-    selectedProductForInstallment = products.find(p => p.id === productId);
-    if (!selectedProductForInstallment) return;
-
-    document.getElementById('instTitle').textContent = selectedProductForInstallment.name;
-    document.getElementById('instTotalPrice').textContent = `Prix Total : ${formatPrice(selectedProductForInstallment.priceUSD)}`;
-    
-    updateInstallmentCalc();
-    document.getElementById('installmentModal').classList.remove('hidden');
-  }
-
-  function closeInstallmentModal() {
-    document.getElementById('installmentModal').classList.add('hidden');
-  }
-
-  function updateInstallmentCalc() {
-    if (!selectedProductForInstallment) return;
-
-    const type = document.getElementById('instType').value;
-    const duration = parseInt(document.getElementById('instDuration').value);
-    const totalPrice = Math.round(selectedProductForInstallment.priceUSD * RATES[currentCurrency]);
-
-    let totalDivisions = duration;
-    if (type === 'WEEKLY') {
-      totalDivisions = duration * 4;
+    } else if (userRole === 'client') {
+      if (navFavorites) navFavorites.style.display = 'inline-block';
+      if (navSpace) {
+        navSpace.style.display = 'inline-block';
+        navSpace.textContent = 'Mon Espace Client';
+        navSpace.href = '/page-client';
+      }
+    } else {
+      if (navFavorites) navFavorites.style.display = 'none';
+      if (navSpace) navSpace.style.display = 'none';
     }
 
-    const perInstallment = Math.round(totalPrice / totalDivisions);
-    const unitLabel = type === 'WEEKLY' ? 'par semaine' : 'par mois';
-
-    document.getElementById('instResult').textContent = `${perInstallment.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
-    document.getElementById('instSubText').textContent = `${unitLabel} (sur ${duration} mois)`;
-  }
-
-  // Initialisation via API
-  loadProducts();
-
-  // Adaptation Dynamique Espace Client / Vendeur selon le localStorage
-  const userRole = localStorage.getItem('userRole');
-  const navFavorites = document.getElementById('navFavorites');
-  const navSpace = document.getElementById('navSpace');
-  const authButtons = document.getElementById('authButtons');
-
-  if (userRole === 'vendeur') {
-    // Vendeur connecté : pas de favoris, accès direct à l'espace vendeur
-    if (navFavorites) navFavorites.style.display = 'none';
-    if (navSpace) {
-      navSpace.style.display = 'inline-block';
-      navSpace.textContent = 'Espace Vendeur 📊';
-      navSpace.href = 'page-vendeur.html';
+    if (userRole) {
+      authButtons.innerHTML = `
+        <button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-xs sm:text-sm">
+          Déconnexion
+        </button>
+      `;
     }
-  } else if (userRole === 'client') {
-    // Client connecté : affichage des favoris et de son espace client
-    if (navFavorites) navFavorites.style.display = 'inline-block';
-    if (navSpace) {
-      navSpace.style.display = 'inline-block';
-      navSpace.textContent = 'Mon Espace Client';
-      navSpace.href = 'page-client.html';
+
+    function logout() {
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userName');
+      window.location.reload();
     }
-  } else {
-    // Visiteur non connecté : tout est masqué
-    if (navFavorites) navFavorites.style.display = 'none';
-    if (navSpace) navSpace.style.display = 'none';
-  }
-
-  if (userRole) {
-    authButtons.innerHTML = `
-      <button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-xs sm:text-sm">
-        Déconnexion
-      </button>
-    `;
-  }
-
-  function logout() {
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userName');
-    window.location.reload();
-  }
-</script>
+  </script>
 
 </body>
 </html>

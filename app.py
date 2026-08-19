@@ -7,6 +7,7 @@ from models import db, User, Product, Order, OrderItem
 # 1. Définir les chemins absolus pour Vercel
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
 css_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'css'))
+images_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'images')) # AJOUT : Dossier des images
 
 # 2. Initialiser Flask en lui indiquant le dossier des templates
 app = Flask(__name__, template_folder=template_dir)
@@ -268,7 +269,7 @@ def update_order_status(order_id):
     return jsonify({"message": "Statut manquant"}), 400
 
 # ==========================================
-# ROUTES FRONT-END (HTML / CSS)
+# ROUTES FRONT-END (HTML / CSS / IMAGES)
 # ==========================================
 
 @app.route('/')
@@ -279,13 +280,21 @@ def home():
 def serve_css(filename):
     return send_from_directory(css_dir, filename)
 
+@app.route('/images/<path:filename>')
+def serve_images(filename):
+    return send_from_directory(images_dir, filename)
+
 # ==========================================
 # ROUTE DYNAMIQUE POUR TOUTES LES PAGES HTML
 # ==========================================
 @app.route('/<page_name>')
 def render_html_page(page_name):
+    # Sécurisation pour éviter d'intercepter les requêtes API
+    if page_name.startswith('api'):
+        return jsonify({"error": "API route not found"}), 404
+        
     try:
-        # Si l'utilisateur ou un lien ajoute déjà ".html" à la fin, on l'enlève pour éviter de chercher "page.html.html"
+        # Si l'utilisateur ou un lien ajoute déjà ".html", on l'enlève
         if page_name.endswith('.html'):
             page_name = page_name[:-5]
             

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Accueil - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="bg-gray-50 text-slate-800 flex flex-col min-h-full">
 
@@ -13,23 +13,23 @@
   <header class="bg-white shadow-sm px-4 py-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
     <h1 class="text-xl sm:text-2xl font-bold text-sky-700 text-center sm:text-left">Téléphones du Monde 🌍</h1>
     <nav id="mainNav" class="flex flex-wrap justify-center gap-3 sm:space-x-4 text-sm sm:text-base text-sky-600 font-medium items-center">
-      <a href="Accueil-phone.html" class="font-bold underline text-sky-800 transition">Accueil</a>
-      <a href="catalogue.html" class="hover:text-sky-800 transition">Catalogue</a>
+      <a href="/" class="font-bold underline text-sky-800 transition">Accueil</a>
+      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
       
       <!-- Favoris masqué par défaut (affiché uniquement pour le client connecté) -->
-      <a href="favoris.html" id="navFavorites" class="hover:text-sky-800 transition" style="display: none;">Favoris ❤️</a>
+      <a href="/favoris" id="navFavorites" class="hover:text-sky-800 transition" style="display: none;">Favoris ❤️</a>
       
-      <a href="vendeurs-articles.html" class="hover:text-sky-800 transition">Articles Vendeurs</a>
+      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles Vendeurs</a>
       
       <!-- Espace Client / Vendeur masqué par défaut pour les visiteurs -->
-      <a href="page-client.html" id="navSpace" class="hover:text-sky-800 transition" style="display: none;">Espace Client</a>
+      <a href="/page-client" id="navSpace" class="hover:text-sky-800 transition" style="display: none;">Espace Client</a>
       
       <!-- Zone d'action Auth -->
       <div id="authButtons" class="flex gap-2 items-center">
-        <a href="login.html" class="font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg transition">
+        <a href="/login" class="font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg transition">
           Connexion
         </a>
-        <a href="register.html" class="font-bold bg-sky-600 text-white hover:bg-sky-500 py-1 px-3 rounded-lg transition">
+        <a href="/register" class="font-bold bg-sky-600 text-white hover:bg-sky-500 py-1 px-3 rounded-lg transition">
           Inscription
         </a>
       </div>
@@ -39,7 +39,7 @@
   <!-- Hero -->
   <section class="relative text-center py-10 sm:py-16 px-4 bg-gradient-to-r from-blue-900 to-white overflow-hidden">
     <div class="absolute inset-0 bg-cover bg-center blur-sm opacity-40 animate-zoomTranslate"
-         style="background-image: url('images/phones-background.jpg'); background-attachment: fixed;"></div>
+         style="background-image: url('/images/phones-background.jpg'); background-attachment: fixed;"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-white/20"></div>
 
     <div class="relative z-10 max-w-3xl mx-auto">
@@ -57,7 +57,6 @@
 
   <!-- Tableau de classement -->
   <section id="classement" class="max-w-6xl w-full mx-auto px-4 my-8 sm:my-12 flex-grow">
-    <!-- TITRE CORRIGÉ -->
     <h2 class="text-2xl sm:text-3xl font-bold text-center text-sky-700 mb-6">Classement des meilleurs téléphones</h2>
     <div class="overflow-x-auto shadow-md rounded-lg border border-gray-100 bg-white">
       <table id="phones-table" class="ranking-table w-full border-collapse text-left text-sm sm:text-base">
@@ -82,7 +81,7 @@
 
     <!-- BOUTON : Lien vers les articles des vendeurs -->
     <div class="mt-8 text-center">
-      <a href="vendeurs-articles.html" class="inline-block bg-amber-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold hover:bg-amber-600 transition shadow-lg text-sm sm:text-base">
+      <a href="/vendeurs-articles" class="inline-block bg-amber-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold hover:bg-amber-600 transition shadow-lg text-sm sm:text-base">
         🛒 Voir les articles vendus en boutique
       </a>
     </div>
@@ -103,23 +102,20 @@
     const authButtons = document.getElementById('authButtons');
 
     if (userRole === 'vendeur') {
-      // Vendeur : Pas de favoris, accès à son Espace Vendeur
       if (navFavorites) navFavorites.style.display = 'none';
       if (navSpace) {
         navSpace.style.display = 'inline-block';
         navSpace.textContent = 'Espace Vendeur 📊';
-        navSpace.href = 'page-vendeur.html';
+        navSpace.href = '/page-vendeur';
       }
     } else if (userRole === 'client') {
-      // Client : Affiche les favoris et son Espace Client
       if (navFavorites) navFavorites.style.display = 'inline-block';
       if (navSpace) {
         navSpace.style.display = 'inline-block';
         navSpace.textContent = 'Mon Espace Client';
-        navSpace.href = 'page-client.html';
+        navSpace.href = '/page-client';
       }
     } else {
-      // Visiteur non connecté : Tout masquer (favoris et espaces personnels)
       if (navFavorites) navFavorites.style.display = 'none';
       if (navSpace) navSpace.style.display = 'none';
     }
@@ -134,12 +130,11 @@
 
     function logout() {
       localStorage.removeItem('userRole');
-      localStorage.removeItem('userId'); // Nettoyage de sécurité si stocké
-      window.location.href = 'Accueil-phone.html';
+      localStorage.removeItem('userId');
+      window.location.href = '/';
     }
 
-    // 2. Récupération dynamique depuis l'API Flask et affichage du classement trié
-    // On utilise un chemin relatif '/api/products' au lieu de localhost
+    // 2. Récupération dynamique depuis l'API Flask
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
@@ -170,7 +165,6 @@
         });
       })
       .catch(err => {
-        // Message d'erreur mis à jour pour le mode en ligne
         console.warn("Impossible de joindre le serveur Flask.", err);
       });
   </script>

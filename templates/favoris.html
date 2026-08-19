@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mes Favoris - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chemin CSS corrigé -->
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="bg-gray-50 text-slate-800 flex flex-col min-h-full justify-between">
 
@@ -12,11 +14,12 @@
   <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
     <h1 class="text-2xl font-bold text-sky-700">Téléphones du Monde 🌍</h1>
     <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
-      <a href="Accueil-phone.html" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="catalogue.html" class="hover:text-sky-800 transition">Catalogue</a>
-      <a href="vendeurs-articles.html" class="hover:text-sky-800 transition">Articles Vendeurs</a>
-      <a href="page-client.html" class="hover:text-sky-800 transition">Espace Client</a>
-      <a href="favoris.html" class="font-bold underline text-sky-800">Mes Favoris ❤️</a>
+      <!-- Liens nettoyés (sans .html) -->
+      <a href="/" class="hover:text-sky-800 transition">Accueil</a>
+      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
+      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles Vendeurs</a>
+      <a href="/page-client" class="hover:text-sky-800 transition">Espace Client</a>
+      <a href="/favoris" class="font-bold underline text-sky-800">Mes Favoris ❤️</a>
     </nav>
   </header>
 
@@ -28,7 +31,7 @@
 
       <!-- Liste des favoris sous forme de grille de cartes -->
       <div id="favoritesList" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <p id="emptyMsg" class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>
+        <p id="emptyMsg" class="col-span-full text-gray-400 italic text-center py-8">Chargement de vos favoris...</p>
       </div>
 
       <!-- Action globale : Vider tout -->
@@ -78,16 +81,15 @@
   <script>
     const DEFAULT_SELLER_PHONE = "22900000000";
 
-   // Charger les favoris depuis l'API Flask connectée à la base de données
+    // Charger les favoris depuis l'API Flask connectée à la base de données
     async function loadFavorites() {
       const listContainer = document.getElementById('favoritesList');
       const clearContainer = document.getElementById('clearContainer');
       
-      // Récupérer l'ID de l'utilisateur connecté (stocké lors de la connexion)
       const userId = localStorage.getItem('userId');
       
       if (!userId) {
-        listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Veuillez vous connecter pour voir vos favoris.</p>';
+        listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Veuillez <a href="/login" class="text-sky-600 underline font-bold">vous connecter</a> pour voir vos favoris.</p>';
         return;
       }
 
@@ -99,7 +101,7 @@
         
         listContainer.innerHTML = '';
 
-        if (favorites.length === 0) {
+        if (!favorites || favorites.length === 0) {
           listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
           clearContainer.classList.add('hidden');
           return;
@@ -107,8 +109,8 @@
 
         clearContainer.classList.remove('hidden');
 
-        favorites.forEach((item, index) => {
-          const sellerPhone = item.phone || "22900000000";
+        favorites.forEach((item) => {
+          const sellerPhone = item.phone || DEFAULT_SELLER_PHONE;
           const description = item.desc || "Description non disponible.";
           const message = encodeURIComponent(`Bonjour, je souhaite passer la commande pour cet article : ${item.name} (${item.price}).`);
           const whatsappUrl = `https://wa.me/${sellerPhone}?text=${message}`;
@@ -150,6 +152,30 @@
       }
     }
 
+    // Gestion de la Modale de Détails
+    function openDetails(name, price, desc, phone, favoriteId) {
+      document.getElementById('modalTitle').textContent = name;
+      document.getElementById('modalPrice').textContent = price;
+      document.getElementById('modalDesc').textContent = desc;
+
+      const message = encodeURIComponent(`Bonjour, je souhaite passer la commande pour cet article : ${name} (${price}).`);
+      document.getElementById('modalOrderBtn').href = `https://wa.me/${phone}?text=${message}`;
+      
+      // Assigner l'action du bouton supprimer dans la modale
+      const deleteBtn = document.getElementById('modalDeleteBtn');
+      deleteBtn.onclick = async () => {
+        await removeFavorite(favoriteId);
+        closeDetails();
+      };
+
+      document.getElementById('detailsModal').classList.remove('hidden');
+    }
+
+    function closeDetails() {
+      document.getElementById('detailsModal').classList.add('hidden');
+    }
+
+    // Supprimer un favori individuel
     async function removeFavorite(favoriteId) {
       const userId = localStorage.getItem('userId');
       try {
@@ -157,10 +183,27 @@
           method: 'DELETE'
         });
         if (response.ok) {
-          loadFavorites(); // Recharger la liste
+          loadFavorites();
         }
       } catch (error) {
         console.error("Erreur lors de la suppression :", error);
+      }
+    }
+
+    // Vider toute la liste des favoris
+    async function clearAllFavorites() {
+      if (!confirm("Voulez-vous vraiment vider toute votre liste de favoris ?")) return;
+      
+      const userId = localStorage.getItem('userId');
+      try {
+        const response = await fetch(`/api/favorites/${userId}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          loadFavorites();
+        }
+      } catch (error) {
+        console.error("Erreur lors du nettoyage des favoris :", error);
       }
     }
 

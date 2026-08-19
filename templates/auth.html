@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Récupération - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Chemin CSS corrigé -->
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="bg-gray-50 text-slate-800 flex flex-col min-h-full">
 
@@ -13,9 +14,10 @@
   <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
     <h1 class="text-2xl font-bold text-sky-700">Téléphones du Monde 🌍</h1>
     <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
-      <a href="Accueil-phone.html" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="catalogue.html" class="hover:text-sky-800 transition">Catalogue</a>
-      <a href="login.html" class="hover:text-sky-800 transition font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg">
+      <!-- Liens nettoyés (sans .html) -->
+      <a href="/" class="hover:text-sky-800 transition">Accueil</a>
+      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
+      <a href="/login" class="hover:text-sky-800 transition font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg">
         Connexion
       </a>
     </nav>
@@ -56,7 +58,8 @@
       </form>
 
       <div class="mt-6 text-center text-sm">
-        <a href="login.html" class="text-sky-600 hover:underline font-medium">← Retour à la connexion</a>
+        <!-- Lien nettoyé -->
+        <a href="/login" class="text-sky-600 hover:underline font-medium">← Retour à la connexion</a>
       </div>
     </div>
   </section>
@@ -69,13 +72,16 @@
 
   <!-- Script dynamique -->
   <script>
-  // Configuration de l'URL de ton backend pour Vercel (chemin relatif)
+  // Configuration de l'URL du backend
   const API_URL = '/api';
 
   // Récupération Email
   document.getElementById('recoverEmailForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = e.target.querySelector('input').value;
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
 
     try {
       const response = await fetch(`${API_URL}/recover-email`, {
@@ -85,9 +91,14 @@
       });
       
       const data = await response.json();
-      alert(data.message);
+      alert(data.message || 'Si cette adresse existe, un email a été envoyé.');
+      e.target.reset();
     } catch (err) {
       console.warn("Erreur de connexion au serveur :", err);
+      alert("Une erreur est survenue. Veuillez réessayer plus tard.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer le lien de réinitialisation 📧';
     }
   });
 
@@ -95,6 +106,9 @@
   document.getElementById('recoverPhoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const phone = e.target.querySelector('input').value;
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
 
     try {
       const response = await fetch(`${API_URL}/recover-phone`, {
@@ -104,11 +118,16 @@
       });
       
       const data = await response.json();
-      alert(data.message);
+      alert(data.message || 'Si ce numéro existe, un SMS a été envoyé.');
+      e.target.reset();
     } catch (err) {
       console.warn("Erreur de connexion au serveur :", err);
+      alert("Une erreur est survenue. Veuillez réessayer plus tard.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer le code OTP 📱';
     }
   });
-</script>
+  </script>
 </body>
 </html>
