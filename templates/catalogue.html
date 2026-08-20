@@ -198,11 +198,44 @@
   </footer>
 
   <!-- Script Dynamique -->
-  <<script>
+  <script>
+    // 1. Gestion de la Navigation / Rôles (Identique à l'accueil)
+    const userRole = localStorage.getItem('userRole');
+    const navFavorites = document.getElementById('navFavorites');
+    const navSpace = document.getElementById('navSpace');
+    const authButtons = document.getElementById('authButtons');
+
+    if (userRole === 'vendeur') {
+      if (navFavorites) navFavorites.style.display = 'none';
+      if (navSpace) {
+        navSpace.style.display = 'inline-block';
+        navSpace.textContent = 'Espace Vendeur 📊';
+        navSpace.href = '/page-vendeur';
+      }
+    } else if (userRole === 'client') {
+      if (navFavorites) navFavorites.style.display = 'inline-block';
+      if (navSpace) {
+        navSpace.style.display = 'inline-block';
+        navSpace.textContent = 'Mon Espace Client';
+        navSpace.href = '/page-client';
+      }
+    }
+
+    if (userRole && authButtons) {
+      authButtons.innerHTML = `<button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-sm">Déconnexion</button>`;
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/';
+    }
+
+    // 2. Gestion du Catalogue Intelligent
     const RATES = { USD: 1, EUR: 0.92, XOF: 600 };
     const SYMBOLS = { USD: '$', EUR: '€', XOF: 'FCFA' };
     let currentCurrency = 'XOF';
     let products = [];
+    let selectedProductForInstallment = null;
 
     async function loadProducts() {
       try {
@@ -210,9 +243,12 @@
         if (!response.ok) throw new Error("Erreur de chargement");
         products = await response.json();
         renderProducts(products);
-        renderRanking(products);
       } catch (error) {
         console.error("Erreur:", error);
+        document.getElementById('productsGrid').innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow-sm border border-red-100">
+            <p class="text-red-500 font-bold">Erreur de chargement du catalogue.</p>
+          </div>`;
       }
     }
 
@@ -233,49 +269,153 @@
       if (!grid) return;
       grid.innerHTML = '';
       
+      // Si la base est vide ou aucun résultat de recherche
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-16 bg-white rounded-2xl shadow-sm border border-slate-100">
+            <span class="text-4xl block mb-2">🕵️‍♂️</span>
+            <p class="text-slate-500 font-bold">Aucun téléphone ne correspond à vos critères ou la boutique est vide.</p>
+          </div>`;
+        return;
+      }
+
       items.forEach(p => {
         const displayName = getCleanName(p.brand, p.name);
+        // Sécurisation de l'image
+        const imageSrc = p.image_url || p.photo_url || '';
+        const isValidImg = imageSrc && imageSrc.trim() !== '' && !imageSrc.toLowerCase().includes('photo');
+        const price = p.price_usd || p.prix || p.prix_approx || p.price || 0;
+
         grid.innerHTML += `
-          <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-100 flex flex-col justify-between">
+          <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col justify-between group overflow-hidden">
             <div>
-              <img src="${p.image_url}" alt="${displayName}" class="w-full h-48 object-cover rounded-xl mb-3" onerror="this.src=''">
-              <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-1 rounded-full">${p.brand}</span>
-              <h3 class="font-bold text-slate-800 text-base mt-2">${displayName}</h3>
-              <p class="text-xs text-slate-400 mt-1">${p.specs}</p>
+              <div class="overflow-hidden h-48 bg-slate-100 relative flex items-center justify-center">
+                ${isValidImg 
+                  ? `<img src="/${imageSrc}" alt="${displayName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.outerHTML='<div class=\\'flex items-center justify-center w-full h-full text-5xl bg-slate-100 text-sky-700\\'>📱</div>'">` 
+                  : `<div class="text-5xl text-sky-700">📱</div>`}
+                <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-700 px-2.5 py-1 rounded-full shadow-sm">
+                  ${p.brand || 'Marque'}
+                </span>
+              </div>
+              <div class="p-4 pb-0">
+                <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition truncate" title="${displayName}">${displayName}</h3>
+                <p class="text-xs text-slate-400 mt-1 line-clamp-1">${p.specs || 'Standard'}</p>
+              </div>
             </div>
-            <div class="mt-4">
-              <div class="text-lg font-black text-slate-900 mb-2">${formatPrice(p.price_usd)}</div>
-              <a href="/details?id=${p.id}" class="block text-center bg-sky-600 text-white font-bold py-2 rounded-xl hover:bg-sky-700 text-sm">Détails</a>
+            <div class="p-4 pt-3">
+              <div class="text-lg font-black text-slate-900 mb-3">${formatPrice(price)}</div>
+              
+              <button onclick="openInstallmentModal(${p.id})" class="w-full mb-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold py-1.5 rounded-lg text-xs transition border border-emerald-100 flex items-center justify-center gap-1">
+                💳 Payer par tranche
+              </button>
+
+              <div class="flex gap-2">
+                <button onclick="window.location.href='/details?id=${p.id}'" class="flex-grow bg-sky-600 text-white font-bold py-2 rounded-xl hover:bg-sky-700 active:scale-95 transition text-sm">
+                  Détails
+                </button>
+                <button class="px-3 border border-slate-200 rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 active:scale-95 transition text-sm">
+                  ❤️
+                </button>
+              </div>
             </div>
           </div>`;
       });
     }
 
-    function renderRanking(items) {
-      const tbody = document.getElementById('rankingBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      
-      items.forEach(p => {
-        const displayName = getCleanName(p.brand, p.name);
-        tbody.innerHTML += `
-          <tr class="border-b border-slate-100 hover:bg-slate-50">
-            <td class="p-3"><img src="${p.image_url}" class="w-10 h-10 object-cover rounded-lg"></td>
-            <td class="p-3 font-bold text-slate-800">${displayName}</td>
-            <td class="p-3 text-sm text-slate-600">${p.ecran}</td>
-            <td class="p-3 text-sm text-slate-600">${p.camera}</td>
-            <td class="p-3 text-sm text-slate-600">${p.batterie}</td>
-            <td class="p-3 text-sm text-slate-600">${p.stockage}</td>
-          </tr>`;
+    // 3. Logique de Filtrage (Barre de recherche, Marque, Budget)
+    function filterProducts() {
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const brandSelected = document.getElementById('brandFilter').value;
+      const maxPrice = parseFloat(document.getElementById('maxPriceInput').value);
+
+      const filtered = products.filter(p => {
+        const name = (p.name || '').toLowerCase();
+        const brand = (p.brand || '').toLowerCase();
+        const price = p.price_usd || p.prix || p.price || 0;
+        const convertedPrice = Math.round(price * RATES[currentCurrency]);
+
+        // 1. Recherche texte
+        const matchSearch = name.includes(search) || brand.includes(search);
+        
+        // 2. Filtre par marque
+        let matchBrand = true;
+        if (brandSelected !== 'ALL') {
+           if (brandSelected === 'Samsung-S') matchBrand = p.series === 'Samsung-S' || name.includes('s2') || name.includes('s24');
+           else if (brandSelected === 'Samsung-A') matchBrand = p.series === 'Samsung-A' || name.includes('a1') || name.includes('a5');
+           else matchBrand = brand === brandSelected.toLowerCase();
+        }
+
+        // 3. Filtre par budget
+        let matchPrice = true;
+        if (!isNaN(maxPrice) && maxPrice > 0) {
+          matchPrice = convertedPrice <= maxPrice;
+        }
+
+        return matchSearch && matchBrand && matchPrice;
       });
+
+      renderProducts(filtered);
     }
 
+    // Changement de devise
     function changeCurrency() {
-      const select = document.getElementById('currencySelect');
-      if (select) currentCurrency = select.value;
-      renderProducts(products);
+      currentCurrency = document.getElementById('currencySelect').value;
+      filterProducts();
     }
 
+    // 4. Gestion des Modals (Assistant Virtuel & Simulateur Tranches)
+    function openAssistantModal() { document.getElementById('assistantModal').classList.remove('hidden'); }
+    function closeAssistantModal() { document.getElementById('assistantModal').classList.add('hidden'); }
+    
+    function applyQuizResult() {
+      const budget = document.getElementById('quizBudget').value;
+      const brand = document.getElementById('quizBrand').value;
+      
+      if(budget) document.getElementById('maxPriceInput').value = budget;
+      if(brand !== 'ALL') {
+          const filter = Array.from(document.getElementById('brandFilter').options).find(opt => opt.value.includes(brand));
+          if(filter) document.getElementById('brandFilter').value = filter.value;
+      }
+      
+      filterProducts();
+      closeAssistantModal();
+    }
+
+    function openInstallmentModal(id) {
+      selectedProductForInstallment = products.find(p => p.id === id);
+      if (!selectedProductForInstallment) return;
+
+      const price = selectedProductForInstallment.price_usd || 0;
+      document.getElementById('instTitle').textContent = getCleanName(selectedProductForInstallment.brand, selectedProductForInstallment.name);
+      document.getElementById('instTotalPrice').textContent = `Prix Total : ${formatPrice(price)}`;
+      
+      updateInstallmentCalc();
+      document.getElementById('installmentModal').classList.remove('hidden');
+    }
+
+    function closeInstallmentModal() {
+      document.getElementById('installmentModal').classList.add('hidden');
+    }
+
+    function updateInstallmentCalc() {
+      if (!selectedProductForInstallment) return;
+      
+      const type = document.getElementById('instType').value;
+      const duration = parseInt(document.getElementById('instDuration').value);
+      const price = selectedProductForInstallment.price_usd || 0;
+      
+      const totalPrice = Math.round(price * RATES[currentCurrency]);
+      let divisions = duration;
+      if (type === 'WEEKLY') divisions = duration * 4;
+
+      const perInstallment = Math.round(totalPrice / divisions);
+      const label = type === 'WEEKLY' ? 'par semaine' : 'par mois';
+
+      document.getElementById('instResult').textContent = `${perInstallment.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
+      document.getElementById('instSubText').textContent = `${label} (pendant ${duration} mois)`;
+    }
+
+    // 5. Lancement au chargement de la page
     loadProducts();
 </script>
 

@@ -7,13 +7,14 @@ from models import db, User, Product, Order, OrderItem
 # 1. Définir les chemins absolus pour Vercel
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
 css_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'css'))
-images_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'images')) # AJOUT : Dossier des images
+images_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'images'))
 
 # 2. Initialiser Flask en lui indiquant le dossier des templates
 app = Flask(__name__, template_folder=template_dir)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+# Configuration BDD (compatible Vercel via variable d'environnement)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -95,26 +96,6 @@ def delete_user(user_id):
     db.session.commit()
     return jsonify({"message": "Utilisateur supprimé"}), 200
 
-# ==========================================
-# GESTION RÉCUPÉRATION COMPTE
-# ==========================================
-
-@app.route('/api/recover-email', methods=['POST'])
-def recover_email():
-    data = request.get_json()
-    email = data.get('email')
-    user = User.query.filter_by(email=email).first()
-    
-    if user:
-        return jsonify({"message": "Si cet email existe, un lien a été envoyé."}), 200
-    return jsonify({"message": "Email non trouvé."}), 404
-
-@app.route('/api/recover-phone', methods=['POST'])
-def recover_phone():
-    data = request.get_json()
-    phone = data.get('phone')
-    return jsonify({"message": f"Code OTP envoyé au {phone}"}), 200
-
 
 # ==========================================
 # 2. PRODUITS & CATALOGUE
@@ -127,7 +108,7 @@ def get_products():
         "id": p.id,
         "name": p.name,
         "brand": p.brand,
-        "price_usd": p.price_usd, # Prix brut en nombre pour éviter les erreurs NaN
+        "price_usd": p.price_usd,
         "ecran": getattr(p, 'ecran', '6.7" AMOLED'),
         "camera": getattr(p, 'camera', '50 MP'),
         "batterie": getattr(p, 'batterie', '5000 mAh'),
@@ -138,44 +119,45 @@ def get_products():
         "vendeur": p.vendeur_id if p.vendeur_id else "Boutique"
     } for p in products]), 200
 
-@app.route('/api/vendeur/products', methods=['GET'])
-def get_vendeur_products():
-    vendeur_id = request.args.get('vendeur_id')
-    if not vendeur_id:
-        return jsonify({"message": "ID Vendeur obligatoire"}), 400
+# Route corrigée : Récupérer les produits d'un vendeur spécifique
+@app.route('/api/products/seller/<int:vendeur_id>', methods=['GET'])
+def get_seller_products(vendeur_id):
     products = Product.query.filter_by(vendeur_id=vendeur_id).all()
     return jsonify([p.to_dict() for p in products]), 200
 
-@app.route('/api/vendeur/products', methods=['POST'])
+# Route corrigée : Ajouter un produit (écoute sur /api/products et gère les clés frontend)
+@app.route('/api/products', methods=['POST'])
 def add_product():
     data = request.get_json()
     new_product = Product(
-        name=data.get('nom'),
-        brand=data.get('marque'),
-        price_usd=float(data.get('prix', 0)),
-        currency=data.get('devise', 'F CFA'),
-        specs=data.get('description', ''),
+        name=data.get('name', data.get('nom')),
+        brand=data.get('brand', data.get('marque')),
+        price_usd=float(data.get('price', data.get('prix', 0))),
+        currency=data.get('currency', data.get('devise', 'F CFA')),
+        specs=data.get('desc', data.get('description', '')),
         statut=data.get('statut', 'Actif'),
-        vendeur_id=data.get('vendeur_id')
+        vendeur_id=data.get('seller_id', data.get('vendeur_id'))
     )
     db.session.add(new_product)
     db.session.commit()
     return jsonify({"message": "Produit ajouté", "product": new_product.to_dict()}), 201
 
-@app.route('/api/vendeur/products/<int:product_id>', methods=['PUT'])
+# Route corrigée : Mettre à jour un produit
+@app.route('/api/products/<int:product_id>', methods=['PUT'])
 def update_product(product_id):
     product = Product.query.get_or_404(product_id)
     data = request.get_json()
 
-    if 'nom' in data: product.name = data['nom']
-    if 'prix' in data: product.price_usd = float(data['prix'])
+    if 'name' in data or 'nom' in data: product.name = data.get('name', data.get('nom'))
+    if 'price' in data or 'prix' in data: product.price_usd = float(data.get('price', data.get('prix')))
     if 'statut' in data: product.statut = data['statut']
-    if 'description' in data: product.specs = data['description']
+    if 'desc' in data or 'description' in data: product.specs = data.get('desc', data.get('description'))
 
     db.session.commit()
     return jsonify({"message": "Produit mis à jour", "product": product.to_dict()}), 200
 
-@app.route('/api/vendeur/products/<int:product_id>', methods=['DELETE'])
+# Route corrigée : Supprimer un produit
+@app.route('/api/products/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
     product = Product.query.get_or_404(product_id)
     db.session.delete(product)
@@ -251,6 +233,14 @@ def get_user_orders(user_id):
     orders = Order.query.filter_by(user_id=user_id).order_by(Order.date_creation.desc()).all()
     return jsonify([o.to_dict() for o in orders]), 200
 
+# Route ajoutée : Récupérer les commandes concernant un vendeur spécifique
+@app.route('/api/orders/seller/<int:vendeur_id>', methods=['GET'])
+def get_seller_orders(vendeur_id):
+    orders = Order.query.join(OrderItem).join(Product).filter(Product.vendeur_id == vendeur_id).all()
+    unique_orders = list(set(orders))
+    unique_orders.sort(key=lambda x: x.date_creation, reverse=True)
+    return jsonify([o.to_dict() for o in unique_orders]), 200
+
 @app.route('/api/orders/<int:order_id>/status', methods=['PUT'])
 def update_order_status(order_id):
     order = Order.query.get_or_404(order_id)
@@ -258,8 +248,29 @@ def update_order_status(order_id):
     if statut:
         order.statut = statut
         db.session.commit()
-        return jsonify({"message": "Statut de la commande mis à jour", "order": order.to_dict()}), 200
+        return jsonify({"message": "Statut mis à jour", "order": order.to_dict()}), 200
     return jsonify({"message": "Statut manquant"}), 400
+
+# ==========================================
+# 5. GESTION RÉCUPÉRATION COMPTE
+# ==========================================
+
+@app.route('/api/recover-email', methods=['POST'])
+def recover_email():
+    data = request.get_json()
+    email = data.get('email')
+    user = User.query.filter_by(email=email).first()
+    
+    if user:
+        return jsonify({"message": "Si cet email existe, un lien a été envoyé."}), 200
+    return jsonify({"message": "Email non trouvé."}), 404
+
+@app.route('/api/recover-phone', methods=['POST'])
+def recover_phone():
+    data = request.get_json()
+    phone = data.get('phone')
+    return jsonify({"message": f"Code OTP envoyé au {phone}"}), 200
+
 
 # ==========================================
 # ROUTES FRONT-END (HTML / CSS / IMAGES)
@@ -277,24 +288,17 @@ def serve_css(filename):
 def serve_images(filename):
     return send_from_directory(images_dir, filename)
 
-# ==========================================
-# ROUTE DYNAMIQUE POUR TOUTES LES PAGES HTML
-# ==========================================
 @app.route('/<page_name>')
 def render_html_page(page_name):
-    # Sécurisation pour éviter d'intercepter les requêtes API
     if page_name.startswith('api'):
         return jsonify({"error": "API route not found"}), 404
         
     try:
-        # Si l'utilisateur ou un lien ajoute déjà ".html", on l'enlève
         if page_name.endswith('.html'):
             page_name = page_name[:-5]
-            
         return render_template(f"{page_name}.html")
     except Exception:
         return "Page introuvable (Erreur 404)", 404
 
-# Lancement local (ignoré par Vercel)
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

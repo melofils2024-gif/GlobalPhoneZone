@@ -17,6 +17,7 @@ class User(db.Model):
     role = db.Column(db.String(50), default='client') # 'client', 'vendeur', 'admin'
     nom = db.Column(db.String(80))
     prenom = db.Column(db.String(80))
+    phone = db.Column(db.String(20), nullable=True) # À ajouter sous prenom
     
     # Relations
     products = db.relationship('Product', backref='vendeur', lazy=True)
@@ -30,7 +31,7 @@ class User(db.Model):
             "email": self.email,
             "role": self.role,
             "nom": self.nom,
-            "prenom": self.prenom
+            "prenom": self.prenom,
         }
 
 class Product(db.Model):
@@ -79,9 +80,17 @@ class Order(db.Model):
     items = db.relationship('OrderItem', backref='order', lazy=True, cascade="all, delete-orphan")
 
     def to_dict(self):
+        # Récupérer le nom du premier produit de la commande (pour l'affichage simple côté vendeur)
+        first_product_name = self.items[0].product.name if self.items and self.items[0].product else "Articles multiples"
+
         return {
             "id": self.id,
             "user_id": self.user_id,
+            # On récupère le nom du client grâce à la relation backref='client'
+            "client_name": f"{self.client.prenom or ''} {self.client.nom or ''}".strip() if self.client else "Client Anonyme",
+            # On met un faux numéro en attendant d'avoir une vraie colonne 'phone' dans la table User
+            "client_phone": "22900000000", 
+            "product_name": first_product_name,
             "total": self.total,
             "statut": self.statut,
             "date_creation": self.date_creation.strftime('%Y-%m-%d %H:%M:%S'),

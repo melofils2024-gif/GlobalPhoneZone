@@ -140,16 +140,18 @@
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
-        const tableBody = document.querySelector('#phones-table tbody');
+        // CORRECTION : On cible le bon ID de ton HTML
+        const tableBody = document.getElementById('classement-container');
         if (!tableBody) return;
         
         tableBody.innerHTML = ''; // Nettoyer avant remplissage
 
+        // GESTION DU TABLEAU VIDE
         if (!data || data.length === 0) {
           tableBody.innerHTML = `
             <tr>
-              <td colspan="9" class="text-center py-8 text-slate-400 font-medium">
-                Aucun téléphone enregistré pour le moment.
+              <td colspan="9" class="text-center py-10 text-slate-400 font-bold bg-white">
+                Aucun téléphone disponible pour le moment.
               </td>
             </tr>`;
           return;
@@ -163,25 +165,28 @@
           const nom = phone.nom || phone.name || 'Téléphone';
           const nomComplet = `${marque} ${nom}`.trim();
           
-          // Vérification stricte pour s'assurer que c'est une vraie URL d'image et non du texte brut
-          const imageSrc = phone.image_url || phone.image || '';
-          const isValidImg = imageSrc && (imageSrc.startsWith('http') || imageSrc.startsWith('/'));
+          // Vérification stricte pour l'image
+          const imageSrc = phone.image_url || phone.photo_url || '';
+          const isValidImg = imageSrc && imageSrc.trim() !== '' && !imageSrc.toLowerCase().includes('photo');
 
-          const prix = phone.prix || phone.price || 0;
+          // Vérification des différents noms de variables pour le prix
+          const prix = phone.price_usd || phone.prix_approx || phone.prix || phone.price || 0;
           const tendance = phone.tendance || 85;
 
           const row = `
-            <tr class="hover:bg-gray-50 transition" data-id="${phone.id}">
+            <tr class="hover:bg-gray-50 transition border-b border-gray-100" data-id="${phone.id}">
               <td class="p-3">
-                ${isValidImg ? `<img src="${imageSrc}" alt="${nomComplet}" class="w-12 h-12 rounded-lg object-cover shadow-sm">` : `<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center font-bold text-xs">📱</div>`}
+                ${isValidImg 
+                  ? `<img src="/${imageSrc}" alt="${nomComplet}" class="w-12 h-12 rounded-lg object-cover shadow-sm bg-slate-100" onerror="this.outerHTML='<div class=\\'w-12 h-12 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center font-bold text-xl\\'>📱</div>'">` 
+                  : `<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center font-bold text-xl shadow-sm">📱</div>`}
               </td>
               <td class="p-3 font-semibold text-slate-800">${nomComplet}</td>
-              <td class="p-3 text-gray-600">${phone.ecran || '-'}</td>
-              <td class="p-3 text-gray-600">${phone.camera || '-'}</td>
-              <td class="p-3 text-gray-600">${phone.batterie || '-'}</td>
-              <td class="p-3 text-gray-600">${phone.stockage || '-'}</td>
-              <td class="p-3 text-gray-600">${phone.ram || '-'}</td>
-              <td class="p-3 font-bold text-violet-600">$${prix}</td>
+              <td class="p-3 text-gray-600 text-sm">${phone.ecran || 'Standard'}</td>
+              <td class="p-3 text-gray-600 text-sm">${phone.camera || 'Standard'}</td>
+              <td class="p-3 text-gray-600 text-sm">${phone.batterie || 'Standard'}</td>
+              <td class="p-3 text-gray-600 text-sm">${phone.stockage || 'Standard'}</td>
+              <td class="p-3 text-gray-600 text-sm">${phone.ram || 'Standard'}</td>
+              <td class="p-3 font-bold text-violet-600">${prix} $</td>
               <td class="p-3">
                 <span class="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-1 rounded-full">${tendance}%</span>
               </td>
@@ -189,7 +194,11 @@
           tableBody.insertAdjacentHTML('beforeend', row);
         });
       })
-      .catch(err => console.error("Erreur chargement :", err));
+      .catch(err => {
+          console.error("Erreur chargement :", err);
+          const tableBody = document.getElementById('classement-container');
+          if (tableBody) tableBody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-red-500 font-medium">Erreur lors de la récupération des données.</td></tr>`;
+      });
 </script>
 
 </body>
