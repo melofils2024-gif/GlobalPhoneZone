@@ -62,14 +62,26 @@
       <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full md:w-auto">
         
         <!-- 2. Filtre Marque -->
-        <div class="relative flex-grow sm:flex-grow-0 min-w-[170px]">
-          <select id="brandFilter" onchange="filterProducts()" 
-                  class="w-full appearance-none bg-sky-50 text-sky-800 font-bold py-3 pl-9 pr-8 rounded-xl text-sm border border-sky-200 hover:bg-sky-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
-            <option value="ALL">🏷️ Toutes les marques</option>
-          </select>
-          <span class="absolute left-3 top-3.5 pointer-events-none text-xs">📱</span>
-          <span class="absolute right-3 top-3.5 pointer-events-none text-xs text-sky-600">▼</span>
-        </div>
+<div class="relative flex-grow sm:flex-grow-0 min-w-[170px]">
+  <select id="brandFilter" onchange="filterProducts()" 
+          class="w-full appearance-none bg-sky-50 text-sky-800 font-bold py-3 pl-9 pr-8 rounded-xl text-sm border border-sky-200 hover:bg-sky-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+    <option value="ALL">🏷️ Toutes les marques</option>
+    <option value="Apple">Apple</option>
+    <option value="Samsung">Samsung</option>
+    <option value="Xiaomi">Xiaomi (Redmi, Poco)</option>
+    <option value="Infinix">Infinix</option>
+    <option value="Tecno">Tecno</option>
+    <option value="Itel">Itel</option>
+    <option value="Oppo">Oppo</option>
+    <option value="Vivo">Vivo</option>
+    <option value="Google">Google (Pixel)</option>
+    <option value="Huawei">Huawei</option>
+    <option value="Realme">Realme</option>
+    <option value="Honor">Honor</option>
+  </select>
+  <span class="absolute left-3 top-3.5 pointer-events-none text-xs">📱</span>
+  <span class="absolute right-3 top-3.5 pointer-events-none text-xs text-sky-600">▼</span>
+</div>
 
         <!-- 3. Champ Budget Max (adapté à la devise active) -->
         <div class="relative flex-grow sm:flex-grow-0 min-w-[150px]">
@@ -133,11 +145,17 @@
         </div>
 
         <div>
-          <label class="font-bold text-slate-700 block mb-1">3. Préférence de Marque :</label>
-          <select id="quizBrand" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-semibold text-slate-800">
-            <option value="ALL">Peu importe (Toutes les marques)</option>
-          </select>
-        </div>
+  <label class="font-bold text-slate-700 block mb-1">3. Préférence de Marque :</label>
+  <select id="quizBrand" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-semibold text-slate-800">
+    <option value="ALL">Peu importe (Toutes les marques)</option>
+    <option value="Apple">Apple</option>
+    <option value="Samsung">Samsung</option>
+    <option value="Xiaomi">Xiaomi</option>
+    <option value="Infinix">Infinix</option>
+    <option value="Tecno">Tecno</option>
+    <option value="Itel">Itel</option>
+  </select>
+</div>
 
         <button onclick="runSmartAssistant()" id="btnRunAssistant" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-black py-3.5 rounded-xl hover:shadow-lg hover:scale-102 active:scale-98 transition shadow mt-2 flex items-center justify-center gap-2">
           <span>🚀</span> Trouver mes Meilleurs Téléphones
@@ -244,7 +262,7 @@
         const response = await fetch('/api/products');
         if (!response.ok) throw new Error("Erreur de chargement");
         products = await response.json();
-        populateBrandFilters();
+        // Le code de filtrage des marques a été supprimé car tes marques sont déjà dans le HTML
         renderProducts(products);
       } catch (error) {
         console.error("Erreur:", error);
@@ -252,26 +270,6 @@
           <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow-sm border border-red-100">
             <p class="text-red-500 font-bold">Erreur de chargement du catalogue.</p>
           </div>`;
-      }
-    }
-
-    function populateBrandFilters() {
-      const select = document.getElementById('brandFilter');
-      const quizSelect = document.getElementById('quizBrand');
-      const uniqueBrands = Array.from(new Set(products.map(p => p.brand || p.marque).filter(Boolean))).sort();
-
-      if (select) {
-        select.innerHTML = '<option value="ALL">🏷️ Toutes les marques</option>';
-        uniqueBrands.forEach(b => {
-          select.innerHTML += `<option value="${b}">${b}</option>`;
-        });
-      }
-
-      if (quizSelect) {
-        quizSelect.innerHTML = '<option value="ALL">Peu importe (Toutes les marques)</option>';
-        uniqueBrands.forEach(b => {
-          quizSelect.innerHTML += `<option value="${b}">${b}</option>`;
-        });
       }
     }
 
@@ -313,7 +311,6 @@
         grid.innerHTML += `
           <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200 flex flex-col justify-between group overflow-hidden">
             <div>
-              <!-- En-tête visuel -->
               <div class="h-44 bg-gradient-to-tr from-slate-100 to-sky-50 relative flex items-center justify-center border-b border-slate-100">
                 <span class="text-6xl group-hover:scale-110 transition-transform duration-300">📱</span>
                 <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-800 px-2.5 py-1 rounded-full shadow-sm border border-sky-100">
@@ -324,11 +321,9 @@
                 </span>
               </div>
 
-              <!-- Infos principales -->
               <div class="p-4 pb-2">
                 <h3 class="font-black text-slate-900 text-base group-hover:text-sky-600 transition truncate" title="${displayName}">${displayName}</h3>
                 
-                <!-- Badges Caractéristiques Techniques -->
                 <div class="mt-3 space-y-1.5 text-xs text-slate-600">
                   <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-lg border border-slate-100 truncate" title="${ecran}">
                     <span class="text-sky-600 font-bold">📱</span> <span class="truncate">${ecran}</span>
@@ -346,7 +341,6 @@
               </div>
             </div>
 
-            <!-- Prix & Actions -->
             <div class="p-4 pt-2 border-t border-slate-50">
               <div class="flex justify-between items-center mb-3">
                 <span class="text-xs text-slate-400 font-bold uppercase">Prix</span>
@@ -370,7 +364,6 @@
       });
     }
 
-    // Filtrage dynamique
     function filterProducts() {
       const search = document.getElementById('searchInput').value.toLowerCase().trim();
       const brandSelected = document.getElementById('brandFilter').value;
@@ -383,16 +376,13 @@
         const price = p.price_usd || 0;
         const convertedPrice = Math.round(price * (RATES[currentCurrency] || 600));
 
-        // Recherche texte
         const matchSearch = name.includes(search) || brand.includes(search) || specs.includes(search);
         
-        // Filtre par marque dynamique
         let matchBrand = true;
         if (brandSelected !== 'ALL') {
-          matchBrand = brand.toLowerCase() === brandSelected.toLowerCase() || (p.series && p.series.toLowerCase() === brandSelected.toLowerCase());
+          matchBrand = brand === brandSelected.toLowerCase() || (p.series && p.series.toLowerCase() === brandSelected.toLowerCase());
         }
 
-        // Filtre par budget
         let matchPrice = true;
         if (!isNaN(maxPrice) && maxPrice > 0) {
           matchPrice = convertedPrice <= maxPrice;
@@ -404,7 +394,6 @@
       renderProducts(filtered);
     }
 
-    // Changement de Devise
     function changeCurrency() {
       currentCurrency = document.getElementById('currencySelect').value;
       const qLabel = document.getElementById('quizCurrencyLabel');
@@ -412,7 +401,6 @@
       filterProducts();
     }
 
-    // Gestion des Favoris
     async function toggleFavorite(productId, phoneName) {
       if (!userId) {
         alert("Veuillez vous connecter pour enregistrer vos favoris.");
@@ -434,7 +422,6 @@
       }
     }
 
-    // Gestion de l'Assistant Intelligent (Quiz / Recommandation)
     function openAssistantModal() { 
       document.getElementById('quizCurrencyLabel').textContent = SYMBOLS[currentCurrency] || 'FCFA';
       document.getElementById('assistantModal').classList.remove('hidden'); 
@@ -515,7 +502,6 @@
       }
     }
 
-    // Modal Calculateur de Tranches
     function openInstallmentModal(id) {
       selectedProductForInstallment = products.find(p => p.id === id);
       if (!selectedProductForInstallment) return;
