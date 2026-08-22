@@ -12,7 +12,22 @@ images_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'images'))
 app = Flask(__name__, template_folder=template_dir)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
+# Configuration DB : priorité à DATABASE_URL (prod), sinon SQLite
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+if DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+if DATABASE_URL:
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+else:
+    # Sur Vercel serverless, seul /tmp est en écriture
+    if os.environ.get('VERCEL'):
+        db_path = '/tmp/database.db'
+    else:
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'database.db')
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -36,363 +51,97 @@ def from_usd(price_usd, currency):
     return round(float(price_usd) * rate, 2)
 
 
-# Initialisation et Seeding automatique
+def seed_database():
+    """Initialise et peuple la base de données si elle est vide."""
+    try:
+        db.create_all()
+
+        if Product.query.count() == 0:
+            # 1. Création ou récupération des utilisateurs de test
+            demo_seller = User.query.filter_by(email="vendeur@boutique.com").first()
+            if not demo_seller:
+                demo_seller = User(
+                    email="vendeur@boutique.com",
+                    password_hash=generate_password_hash("pass123"),
+                    role="vendeur",
+                    nom="Diallo",
+                    prenom="Amadou",
+                    phone="22997001122",
+                    nom_boutique="Global Tech Express"
+                )
+                db.session.add(demo_seller)
+
+            demo_client = User.query.filter_by(email="client@gmail.com").first()
+            if not demo_client:
+                demo_client = User(
+                    email="client@gmail.com",
+                    password_hash=generate_password_hash("pass123"),
+                    role="client",
+                    nom="Kouassi",
+                    prenom="Jean",
+                    phone="22995443322"
+                )
+                db.session.add(demo_client)
+            db.session.commit()
+
+            # 2. Classement des 12 MEILLEURS TÉLÉPHONES MONDIAUX
+            best_12_phones = [
+                Product(name="Apple iPhone 15 Pro Max", brand="Apple", series="Apple", price_usd=1199.0, price_original=1199.0, currency="USD", image_url="", specs="256Go \u2022 8Go RAM \u2022 Puce A17 Pro (3nm)", tag="CAMERA", statut="Actif", ecran='6.7" Super Retina XDR OLED 120Hz ProMotion', camera="48 MP Principal + 12 MP Périscope x5 + 12 MP Ultra-Wide", batterie="4422 mAh \u2022 Charge 20W + MagSafe 15W", stockage="256Go", ram="8Go", tendance=99, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy S24 Ultra", brand="Samsung", series="Samsung-S", price_usd=1299.0, price_original=780000.0, currency="FCFA", image_url="", specs="512Go \u2022 12Go RAM \u2022 Snapdragon 8 Gen 3 \u2022 Stylus S-Pen", tag="PERF", statut="Actif", ecran='6.8" Dynamic AMOLED 2X 120Hz QHD+ (2600 nits)', camera="200 MP Principal + 50 MP Zoom x5 + 10 MP Zoom x3 + 12 MP", batterie="5000 mAh \u2022 Charge rapide 45W", stockage="512Go", ram="12Go", tendance=98, whatsapp="22997001122"),
+                Product(name="Google Pixel 8 Pro", brand="Google", series="Google", price_usd=899.0, price_original=899.0, currency="USD", image_url="", specs="256Go \u2022 12Go RAM \u2022 Google Tensor G3 \u2022 IA Avancée", tag="CAMERA", statut="Actif", ecran='6.7" Super Actua LTPO OLED 120Hz', camera="50 MP Principal + 48 MP Téléobjectif x5 + 48 MP Ultra-Wide", batterie="5050 mAh \u2022 Charge 30W", stockage="256Go", ram="12Go", tendance=95, whatsapp="22997001122"),
+                Product(name="Xiaomi 14 Ultra", brand="Xiaomi", series="Xiaomi", price_usd=1099.0, price_original=1050.0, currency="EUR", image_url="", specs="512Go \u2022 16Go RAM \u2022 Optique Leica 1 pouce", tag="CAMERA", statut="Actif", ecran='6.73" AMOLED LTPO WQHD+ 120Hz', camera="50 MP Quad Leica (Capteur 1 pouce LYT-900)", batterie="5000 mAh \u2022 Charge 90W filaire / 80W sans fil", stockage="512Go", ram="16Go", tendance=94, whatsapp="22997001122"),
+                Product(name="OnePlus 12", brand="OnePlus", series="OnePlus", price_usd=799.0, price_original=799.0, currency="USD", image_url="", specs="256Go \u2022 12Go RAM \u2022 Snapdragon 8 Gen 3 \u2022 Hasselblad", tag="PERF", statut="Actif", ecran='6.82" ProXDR AMOLED 120Hz 2K (4500 nits)', camera="50 MP Sony LYT-808 + 64 MP Périscope x3 + 48 MP", batterie="5400 mAh \u2022 Charge Ultra-rapide 100W", stockage="256Go", ram="12Go", tendance=93, whatsapp="22997001122"),
+                Product(name="Apple iPhone 15", brand="Apple", series="Apple", price_usd=799.0, price_original=480000.0, currency="FCFA", image_url="", specs="128Go \u2022 6Go RAM \u2022 Dynamic Island \u2022 Puce A16", tag="ALL", statut="Actif", ecran='6.1" Super Retina XDR OLED', camera="48 MP Principal + 12 MP Ultra grand-angle", batterie="3349 mAh \u2022 USB-C", stockage="128Go", ram="6Go", tendance=92, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy A55 5G", brand="Samsung", series="Samsung-A", price_usd=380.0, price_original=230000.0, currency="FCFA", image_url="", specs="256Go \u2022 8Go RAM \u2022 Exynos 1480 \u2022 Châssis Métal", tag="BUDGET", statut="Actif", ecran='6.6" Super AMOLED 120Hz FHD+', camera="50 MP OIS + 12 MP Ultra-Wide + 5 MP Macro", batterie="5000 mAh \u2022 Charge 25W", stockage="256Go", ram="8Go", tendance=90, whatsapp="22997001122"),
+                Product(name="Infinix Note 40 Pro+ 5G", brand="Infinix", series="Infinix", price_usd=290.0, price_original=175000.0, currency="FCFA", image_url="", specs="256Go \u2022 12Go RAM \u2022 Charge 100W All-Round FastCharge", tag="BATTERY", statut="Actif", ecran='6.78" AMOLED Incurvé 3D 120Hz', camera="108 MP OIS Super-Zoom + 2 MP + 2 MP", batterie="4600 mAh \u2022 Charge 100W + 20W sans fil MagCharge", stockage="256Go", ram="12Go", tendance=89, whatsapp="22997001122"),
+                Product(name="Tecno Camon 30 Premier 5G", brand="Tecno", series="Tecno", price_usd=360.0, price_original=215000.0, currency="FCFA", image_url="", specs="512Go \u2022 12Go RAM \u2022 Puce Imagerie Sony Dual", tag="CAMERA", statut="Actif", ecran='6.77" LTPO AMOLED 1.5K 120Hz', camera="50 MP Sony IMX890 OIS + 50 MP Périscope + 50 MP Ultra", batterie="5000 mAh \u2022 Charge 70W", stockage="512Go", ram="12Go", tendance=88, whatsapp="22997001122"),
+                Product(name="Xiaomi Redmi Note 13 Pro+ 5G", brand="Xiaomi", series="Xiaomi", price_usd=340.0, price_original=205000.0, currency="FCFA", image_url="", specs="256Go \u2022 8Go RAM \u2022 Écran Incurvé 1.5K \u2022 IP68", tag="PERF", statut="Actif", ecran='6.67" CrystalRes AMOLED 120Hz 1.5K', camera="200 MP Samsung ISOCELL HP3 OIS + 8 MP + 2 MP", batterie="5000 mAh \u2022 HyperCharge 120W", stockage="256Go", ram="8Go", tendance=88, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy A15", brand="Samsung", series="Samsung-A", price_usd=160.0, price_original=98000.0, currency="FCFA", image_url="", specs="128Go \u2022 6Go RAM \u2022 Helio G99 \u2022 Super AMOLED", tag="BUDGET", statut="Actif", ecran='6.5" Super AMOLED 90Hz FHD+', camera="50 MP Principal + 5 MP Ultra-Wide + 2 MP", batterie="5000 mAh \u2022 Charge 25W", stockage="128Go", ram="6Go", tendance=86, whatsapp="22997001122"),
+                Product(name="Itel S24", brand="Itel", series="Itel", price_usd=110.0, price_original=68000.0, currency="FCFA", image_url="", specs="128Go \u2022 8Go RAM (4+4) \u2022 Helio G91 Ultra", tag="BUDGET", statut="Actif", ecran='6.6" Punch-hole 90Hz HD+', camera="108 MP Ultra Clear + Capteur IA", batterie="5000 mAh \u2022 Charge 18W Type-C", stockage="128Go", ram="8Go", tendance=85, whatsapp="22997001122"),
+            ]
+            db.session.bulk_save_objects(best_12_phones)
+            db.session.commit()
+
+            # 3. Articles spécifiques publiés par le VENDEUR de démo
+            seller_products = [
+                Product(name="iPhone 13 Pro Max (Occasion Pro)", brand="Apple", series="Apple", price_usd=620.0, price_original=370000.0, currency="FCFA", image_url="", specs="128Go \u2022 État comme neuf 95% batterie \u2022 Facture fournie", tag="CAMERA", statut="Actif", ecran='6.7" Super Retina XDR OLED 120Hz', camera="12 MP Triple Caméra Pro", batterie="4352 mAh", stockage="128Go", ram="6Go", tendance=87, whatsapp="22997001122", vendeur_id=demo_seller.id),
+                Product(name="Samsung Galaxy S23 FE 5G", brand="Samsung", series="Samsung-S", price_usd=480.0, price_original=450.0, currency="EUR", image_url="", specs="256Go \u2022 8Go RAM \u2022 Scellé dans son carton avec garantie 1 an", tag="PERF", statut="Actif", ecran='6.4" Dynamic AMOLED 2X 120Hz', camera="50 MP OIS + 8 MP Téléobjectif + 12 MP", batterie="4500 mAh", stockage="256Go", ram="8Go", tendance=89, whatsapp="22997001122", vendeur_id=demo_seller.id),
+                Product(name="Tecno Spark 20 Pro+", brand="Tecno", series="Tecno", price_usd=190.0, price_original=115000.0, currency="FCFA", image_url="", specs="256Go \u2022 8Go RAM \u2022 Design incurvé haut de gamme", tag="BUDGET", statut="Actif", ecran='6.78" AMOLED Incurvé 120Hz', camera="108 MP Principal + 32 MP Selfie", batterie="5000 mAh \u2022 Charge 33W", stockage="256Go", ram="8Go", tendance=86, whatsapp="22997001122", vendeur_id=demo_seller.id),
+            ]
+            db.session.bulk_save_objects(seller_products)
+            db.session.commit()
+
+            # 4. Favoris & Commande de démo pour le client de test
+            p_fav = Product.query.first()
+            if p_fav and demo_client:
+                demo_client.favorite_products.append(p_fav)
+                sample_order = Order(
+                    user_id=demo_client.id,
+                    total=p_fav.price_usd * 600,
+                    currency="FCFA",
+                    statut="En attente",
+                    client_name=f"{demo_client.prenom} {demo_client.nom}",
+                    client_phone=demo_client.phone
+                )
+                db.session.add(sample_order)
+                db.session.commit()
+                order_item = OrderItem(
+                    order_id=sample_order.id,
+                    product_id=p_fav.id,
+                    quantite=1,
+                    prix_unitaire=p_fav.price_usd * 600
+                )
+                db.session.add(order_item)
+                db.session.commit()
+
+    except Exception as e:
+        print(f"[SEED] Erreur d'initialisation : {e}")
+        db.session.rollback()
+
+
+# Seeding au démarrage (compatible Vercel serverless)
 with app.app_context():
-    db.create_all()
-    
-    if Product.query.count() == 0:
-        # 1. Création ou récupération des utilisateurs de test (Vendeur et Client)
-        demo_seller = User.query.filter_by(email="vendeur@boutique.com").first()
-        if not demo_seller:
-            demo_seller = User(
-                email="vendeur@boutique.com",
-                password_hash=generate_password_hash("pass123"),
-                role="vendeur",
-                nom="Diallo",
-                prenom="Amadou",
-                phone="22997001122",
-                nom_boutique="Global Tech Express"
-            )
-            db.session.add(demo_seller)
-
-        demo_client = User.query.filter_by(email="client@gmail.com").first()
-        if not demo_client:
-            demo_client = User(
-                email="client@gmail.com",
-                password_hash=generate_password_hash("pass123"),
-                role="client",
-                nom="Kouassi",
-                prenom="Jean",
-                phone="22995443322"
-            )
-            db.session.add(demo_client)
-        db.session.commit()
-
-        # 2. Classement des 12 MEILLEURS TÉLÉPHONES MONDIAUX
-        best_12_phones = [
-            Product(
-                name="Apple iPhone 15 Pro Max",
-                brand="Apple",
-                series="Apple",
-                price_usd=1199.0,
-                price_original=1199.0,
-                currency="USD",
-                image_url="",
-                specs="256Go • 8Go RAM • Puce A17 Pro (3nm)",
-                tag="CAMERA",
-                statut="Actif",
-                ecran='6.7" Super Retina XDR OLED 120Hz ProMotion',
-                camera="48 MP Principal + 12 MP Périscope x5 + 12 MP Ultra-Wide",
-                batterie="4422 mAh • Charge 20W + MagSafe 15W",
-                stockage="256Go",
-                ram="8Go",
-                tendance=99,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Samsung Galaxy S24 Ultra",
-                brand="Samsung",
-                series="Samsung-S",
-                price_usd=1299.0,
-                price_original=780000.0,
-                currency="FCFA",
-                image_url="",
-                specs="512Go • 12Go RAM • Snapdragon 8 Gen 3 • Stylus S-Pen",
-                tag="PERF",
-                statut="Actif",
-                ecran='6.8" Dynamic AMOLED 2X 120Hz QHD+ (2600 nits)',
-                camera="200 MP Principal + 50 MP Zoom x5 + 10 MP Zoom x3 + 12 MP",
-                batterie="5000 mAh • Charge rapide 45W",
-                stockage="512Go",
-                ram="12Go",
-                tendance=98,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Google Pixel 8 Pro",
-                brand="Google",
-                series="Google",
-                price_usd=899.0,
-                price_original=899.0,
-                currency="USD",
-                image_url="",
-                specs="256Go • 12Go RAM • Google Tensor G3 • IA Avancée",
-                tag="CAMERA",
-                statut="Actif",
-                ecran='6.7" Super Actua LTPO OLED 120Hz',
-                camera="50 MP Principal + 48 MP Téléobjectif x5 + 48 MP Ultra-Wide",
-                batterie="5050 mAh • Charge 30W",
-                stockage="256Go",
-                ram="12Go",
-                tendance=95,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Xiaomi 14 Ultra",
-                brand="Xiaomi",
-                series="Xiaomi",
-                price_usd=1099.0,
-                price_original=1050.0,
-                currency="EUR",
-                image_url="",
-                specs="512Go • 16Go RAM • Optique Leica 1 pouce",
-                tag="CAMERA",
-                statut="Actif",
-                ecran='6.73" AMOLED LTPO WQHD+ 120Hz',
-                camera="50 MP Quad Leica (Capteur 1 pouce LYT-900)",
-                batterie="5000 mAh • Charge 90W filaire / 80W sans fil",
-                stockage="512Go",
-                ram="16Go",
-                tendance=94,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="OnePlus 12",
-                brand="OnePlus",
-                series="OnePlus",
-                price_usd=799.0,
-                price_original=799.0,
-                currency="USD",
-                image_url="",
-                specs="256Go • 12Go RAM • Snapdragon 8 Gen 3 • Hasselblad",
-                tag="PERF",
-                statut="Actif",
-                ecran='6.82" ProXDR AMOLED 120Hz 2K (4500 nits)',
-                camera="50 MP Sony LYT-808 + 64 MP Périscope x3 + 48 MP",
-                batterie="5400 mAh • Charge Ultra-rapide 100W",
-                stockage="256Go",
-                ram="12Go",
-                tendance=93,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Apple iPhone 15",
-                brand="Apple",
-                series="Apple",
-                price_usd=799.0,
-                price_original=480000.0,
-                currency="FCFA",
-                image_url="",
-                specs="128Go • 6Go RAM • Dynamic Island • Puce A16",
-                tag="ALL",
-                statut="Actif",
-                ecran='6.1" Super Retina XDR OLED',
-                camera="48 MP Principal + 12 MP Ultra grand-angle",
-                batterie="3349 mAh • USB-C",
-                stockage="128Go",
-                ram="6Go",
-                tendance=92,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Samsung Galaxy A55 5G",
-                brand="Samsung",
-                series="Samsung-A",
-                price_usd=380.0,
-                price_original=230000.0,
-                currency="FCFA",
-                image_url="",
-                specs="256Go • 8Go RAM • Exynos 1480 • Châssis Métal",
-                tag="BUDGET",
-                statut="Actif",
-                ecran='6.6" Super AMOLED 120Hz FHD+',
-                camera="50 MP OIS + 12 MP Ultra-Wide + 5 MP Macro",
-                batterie="5000 mAh • Charge 25W",
-                stockage="256Go",
-                ram="8Go",
-                tendance=90,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Infinix Note 40 Pro+ 5G",
-                brand="Infinix",
-                series="Infinix",
-                price_usd=290.0,
-                price_original=175000.0,
-                currency="FCFA",
-                image_url="",
-                specs="256Go • 12Go RAM • Charge 100W All-Round FastCharge",
-                tag="BATTERY",
-                statut="Actif",
-                ecran='6.78" AMOLED Incurvé 3D 120Hz',
-                camera="108 MP OIS Super-Zoom + 2 MP + 2 MP",
-                batterie="4600 mAh • Charge 100W + 20W sans fil MagCharge",
-                stockage="256Go",
-                ram="12Go",
-                tendance=89,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Tecno Camon 30 Premier 5G",
-                brand="Tecno",
-                series="Tecno",
-                price_usd=360.0,
-                price_original=215000.0,
-                currency="FCFA",
-                image_url="",
-                specs="512Go • 12Go RAM • Puce Imagerie Sony Dual",
-                tag="CAMERA",
-                statut="Actif",
-                ecran='6.77" LTPO AMOLED 1.5K 120Hz',
-                camera="50 MP Sony IMX890 OIS + 50 MP Périscope + 50 MP Ultra",
-                batterie="5000 mAh • Charge 70W",
-                stockage="512Go",
-                ram="12Go",
-                tendance=88,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Xiaomi Redmi Note 13 Pro+ 5G",
-                brand="Xiaomi",
-                series="Xiaomi",
-                price_usd=340.0,
-                price_original=205000.0,
-                currency="FCFA",
-                image_url="",
-                specs="256Go • 8Go RAM • Écran Incurvé 1.5K • IP68",
-                tag="PERF",
-                statut="Actif",
-                ecran='6.67" CrystalRes AMOLED 120Hz 1.5K',
-                camera="200 MP Samsung ISOCELL HP3 OIS + 8 MP + 2 MP",
-                batterie="5000 mAh • HyperCharge 120W",
-                stockage="256Go",
-                ram="8Go",
-                tendance=88,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Samsung Galaxy A15",
-                brand="Samsung",
-                series="Samsung-A",
-                price_usd=160.0,
-                price_original=98000.0,
-                currency="FCFA",
-                image_url="",
-                specs="128Go • 6Go RAM • Helio G99 • Super AMOLED",
-                tag="BUDGET",
-                statut="Actif",
-                ecran='6.5" Super AMOLED 90Hz FHD+',
-                camera="50 MP Principal + 5 MP Ultra-Wide + 2 MP",
-                batterie="5000 mAh • Charge 25W",
-                stockage="128Go",
-                ram="6Go",
-                tendance=86,
-                whatsapp="22997001122"
-            ),
-            Product(
-                name="Itel S24",
-                brand="Itel",
-                series="Itel",
-                price_usd=110.0,
-                price_original=68000.0,
-                currency="FCFA",
-                image_url="",
-                specs="128Go • 8Go RAM (4+4) • Helio G91 Ultra",
-                tag="BUDGET",
-                statut="Actif",
-                ecran='6.6" Punch-hole 90Hz HD+',
-                camera="108 MP Ultra Clear + Capteur IA",
-                batterie="5000 mAh • Charge 18W Type-C",
-                stockage="128Go",
-                ram="8Go",
-                tendance=85,
-                whatsapp="22997001122"
-            )
-        ]
-        db.session.bulk_save_objects(best_12_phones)
-        db.session.commit()
-
-        # 3. Articles spécifiques publiés par le VENDEUR de démo
-        seller_products = [
-            Product(
-                name="iPhone 13 Pro Max (Occasion Pro)",
-                brand="Apple",
-                series="Apple",
-                price_usd=620.0,
-                price_original=370000.0,
-                currency="FCFA",
-                image_url="",
-                specs="128Go • État comme neuf 95% batterie • Facture fournie",
-                tag="CAMERA",
-                statut="Actif",
-                ecran='6.7" Super Retina XDR OLED 120Hz',
-                camera="12 MP Triple Caméra Pro",
-                batterie="4352 mAh",
-                stockage="128Go",
-                ram="6Go",
-                tendance=87,
-                whatsapp="22997001122",
-                vendeur_id=demo_seller.id
-            ),
-            Product(
-                name="Samsung Galaxy S23 FE 5G",
-                brand="Samsung",
-                series="Samsung-S",
-                price_usd=480.0,
-                price_original=450.0,
-                currency="EUR",
-                image_url="",
-                specs="256Go • 8Go RAM • Scellé dans son carton avec garantie 1 an",
-                tag="PERF",
-                statut="Actif",
-                ecran='6.4" Dynamic AMOLED 2X 120Hz',
-                camera="50 MP OIS + 8 MP Téléobjectif + 12 MP",
-                batterie="4500 mAh",
-                stockage="256Go",
-                ram="8Go",
-                tendance=89,
-                whatsapp="22997001122",
-                vendeur_id=demo_seller.id
-            ),
-            Product(
-                name="Tecno Spark 20 Pro+",
-                brand="Tecno",
-                series="Tecno",
-                price_usd=190.0,
-                price_original=115000.0,
-                currency="FCFA",
-                image_url="",
-                specs="256Go • 8Go RAM • Design incurvé haut de gamme",
-                tag="BUDGET",
-                statut="Actif",
-                ecran='6.78" AMOLED Incurvé 120Hz',
-                camera="108 MP Principal + 32 MP Selfie",
-                batterie="5000 mAh • Charge 33W",
-                stockage="256Go",
-                ram="8Go",
-                tendance=86,
-                whatsapp="22997001122",
-                vendeur_id=demo_seller.id
-            )
-        ]
-        db.session.bulk_save_objects(seller_products)
-        db.session.commit()
-
-        # 4. Favoris & Commande pour le client de test
-        p_fav = Product.query.first()
-        if p_fav:
-            demo_client.favorite_products.append(p_fav)
-            
-            sample_order = Order(
-                user_id=demo_client.id,
-                total=p_fav.price_usd * 600,
-                currency="FCFA",
-                statut="En attente",
-                client_name=f"{demo_client.prenom} {demo_client.nom}",
-                client_phone=demo_client.phone
-            )
-            db.session.add(sample_order)
-            db.session.commit()
-
-            order_item = OrderItem(
-                order_id=sample_order.id,
-                product_id=p_fav.id,
-                quantite=1,
-                prix_unitaire=p_fav.price_usd * 600
-            )
-            db.session.add(order_item)
-            db.session.commit()
-
+    seed_database()
 
 # ==========================================
 # 1. AUTHENTIFICATION & UTILISATEURS
