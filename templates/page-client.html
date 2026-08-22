@@ -5,218 +5,165 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Espace Client - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chemin CSS corrigé -->
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-gray-50 text-slate-800 flex flex-col min-h-full justify-between">
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-full font-sans antialiased">
 
   <!-- Header Client Connecté -->
-  <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
-    <h1 class="text-2xl font-bold text-sky-700">Téléphones du Monde 🌍</h1>
-    <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
-      <!-- Liens nettoyés (sans .html) -->
-      <a href="/" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
-      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles Vendeurs</a>
-      <a href="/favoris" class="hover:text-sky-800 transition font-semibold">Mes Favoris ❤️</a>
-      <a href="/login" onclick="localStorage.clear()" class="text-rose-600 hover:text-rose-800 transition font-bold border border-rose-200 px-3 py-1 rounded-lg hover:bg-rose-50">
+  <header class="bg-white shadow-sm px-4 py-3 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">👤</span>
+      <h1 class="text-xl sm:text-2xl font-black tracking-tight text-sky-700">
+        Mon Espace Client
+      </h1>
+    </div>
+
+    <nav class="flex flex-wrap justify-center gap-3 text-sm sm:text-base font-semibold items-center">
+      <a href="/" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Accueil</a>
+      <a href="/catalogue" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Catalogue</a>
+      <a href="/vendeurs-articles" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Articles Vendeurs</a>
+      <a href="/favoris" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Mes Favoris ❤️</a>
+      <button onclick="logout()" class="text-rose-600 hover:text-rose-800 transition font-bold border border-rose-200 px-3 py-1.5 rounded-lg hover:bg-rose-50 text-xs sm:text-sm">
         Déconnexion 🚪
-      </a>
+      </button>
     </nav>
   </header>
 
   <!-- Contenu Espace Client -->
-  <section class="p-4 sm:p-8 bg-gradient-to-r from-blue-900 to-violet-700 flex-grow">
-    <div class="max-w-4xl mx-auto space-y-8">
-      
-      <!-- En-tête Tableau de Bord -->
-      <div class="bg-white shadow-lg rounded-xl p-6 sm:p-8">
-        <h2 class="text-2xl font-bold text-center text-sky-700 mb-2">Mon Espace Client 📱</h2>
-        <p class="text-center text-gray-600 mb-6">Bienvenue sur votre tableau de bord. Consultez les détails, commandez en direct ou sauvegardez vos favoris.</p>
-
-        <!-- Lien vers le Classement Mondial -->
-        <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div>
-            <h3 class="font-semibold text-sky-900">Besoin d'inspiration ? 🏆</h3>
-            <p class="text-sm text-sky-700">Consultez le classement mondial des meilleures tendances téléphoniques.</p>
-          </div>
-          <!-- Lien ancré vers l'accueil -->
-          <a href="/#classement" class="bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-sky-500 transition shadow whitespace-nowrap">
-            Voir le classement 🌍
-          </a>
-        </div>
-
-        <!-- Sélection du moment -->
-        <h3 class="text-xl font-semibold text-violet-700 mb-4">Sélection des téléphones du moment</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          
-          <!-- Carte 1 -->
-          <div class="border rounded-xl p-5 shadow-sm bg-gray-50 flex flex-col justify-between hover:shadow-md transition">
-            <div>
-              <div class="w-full h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400 font-bold">
-                📱 Photo iPhone 15 Pro
-              </div>
-              <h4 class="text-lg font-bold text-slate-800">Apple iPhone 15 Pro</h4>
-              <p class="text-sm text-violet-600 font-bold mt-1">750 000 F CFA</p>
-              <p class="text-xs text-gray-500 mt-2">Vendeur : Tech Bénin Express</p>
-            </div>
-
-            <div class="mt-5 space-y-2">
-              <button onclick="openDetails('Apple iPhone 15 Pro', '750 000 F CFA', 'Puce A17 Pro ultra rapide, Boîtier en titane résistant, Écran Super Retina XDR 120Hz, Appareil photo 48 MP avec zoom optique x3, Batterie 3274 mAh.', '22900000000')" 
-                      class="w-full bg-slate-100 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 transition text-sm">
-                🔍 Fiche technique & Détails
-              </button>
-              
-              <div class="flex gap-2">
-                <a href="https://wa.me/22900000000?text=Bonjour,%20je%20souhaite%20commander%20l'Apple%20iPhone%2015%20Pro%20à%20750%20000%20F%20CFA." 
-                   target="_blank" 
-                   class="w-1/2 bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-xs text-center flex items-center justify-center gap-1">
-                  💬 Commander
-                </a>
-                <button onclick="addToFavorites('Apple iPhone 15 Pro', '750 000 F CFA', '22900000000')" 
-                        class="w-1/2 bg-sky-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-sky-500 transition shadow text-xs">
-                  ❤️ Favoris
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Carte 2 -->
-          <div class="border rounded-xl p-5 shadow-sm bg-gray-50 flex flex-col justify-between hover:shadow-md transition">
-            <div>
-              <div class="w-full h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400 font-bold">
-                📱 Photo Galaxy S24 Ultra
-              </div>
-              <h4 class="text-lg font-bold text-slate-800">Samsung Galaxy S24 Ultra</h4>
-              <p class="text-sm text-violet-600 font-bold mt-1">700 000 F CFA</p>
-              <p class="text-xs text-gray-500 mt-2">Vendeur : Mobile Store Cotonou</p>
-            </div>
-
-            <div class="mt-5 space-y-2">
-              <button onclick="openDetails('Samsung Galaxy S24 Ultra', '700 000 F CFA', 'Snapdragon 8 Gen 3, Intégration Galaxy AI complète, Écran Dynamic AMOLED 2X 120Hz, Capteur principal 200 MP, Stylus S-Pen inclus, Batterie 5000 mAh.', '22900000000')" 
-                      class="w-full bg-slate-100 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 transition text-sm">
-                🔍 Fiche technique & Détails
-              </button>
-              
-              <div class="flex gap-2">
-                <a href="https://wa.me/22900000000?text=Bonjour,%20je%20souhaite%20commander%20le%20Samsung%20Galaxy%20S24%20Ultra%20à%20700%20000%20F%20CFA." 
-                   target="_blank" 
-                   class="w-1/2 bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-xs text-center flex items-center justify-center gap-1">
-                  💬 Commander
-                </a>
-                <button onclick="addToFavorites('Samsung Galaxy S24 Ultra', '700 000 F CFA', '22900000000')" 
-                        class="w-1/2 bg-sky-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-sky-500 transition shadow text-xs">
-                  ❤️ Favoris
-                </button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Lien vers la page favoris -->
-        <div class="text-center border-t pt-6">
-          <p class="text-gray-600 mb-3">Vous préférez regrouper plusieurs choix ?</p>
-          <a href="/favoris" class="inline-block bg-violet-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-violet-500 transition shadow-md">
-            Voir ma liste de favoris ❤️
-          </a>
-        </div>
+  <main class="max-w-6xl mx-auto px-4 py-8 sm:py-12 flex-grow w-full space-y-8">
+    
+    <!-- En-tête Tableau de Bord -->
+    <div class="bg-gradient-to-r from-slate-900 via-sky-950 to-sky-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <span class="bg-sky-500/30 text-sky-200 border border-sky-400/30 text-xs font-black uppercase px-3 py-1 rounded-full">
+          Compte Client
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-black text-white mt-2" id="clientName">Bienvenue</h2>
+        <p class="text-slate-300 text-xs sm:text-sm mt-1">Consultez l'historique de vos commandes, gérez vos favoris et trouvez vos smartphones idéaux.</p>
       </div>
 
-    </div>
-  </section>
-
-  <!-- Modale Détails Produit -->
-  <div id="detailsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-fadeIn">
-      <button onclick="closeDetails()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 font-bold text-xl">✕</button>
-      
-      <h3 id="modalTitle" class="text-2xl font-bold text-slate-800 mb-1"></h3>
-      <p id="modalPrice" class="text-lg font-bold text-violet-600 mb-4"></p>
-      
-      <div class="bg-gray-50 border p-4 rounded-xl mb-6">
-        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Caractéristiques & Description</h4>
-        <p id="modalDesc" class="text-sm text-gray-700 leading-relaxed"></p>
-      </div>
-
-      <div class="flex gap-3">
-        <a id="modalOrderBtn" href="#" target="_blank" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-center text-sm flex items-center justify-center gap-1">
-          💬 Commander (WhatsApp)
+      <div class="flex flex-wrap gap-2">
+        <a href="/catalogue" class="bg-sky-500 hover:bg-sky-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition shadow">
+          🛍️ Explorer le Catalogue
         </a>
-        <button id="modalFavBtn" class="flex-1 bg-sky-600 text-white py-2.5 rounded-lg font-bold hover:bg-sky-500 transition shadow text-sm">
-          ❤️ Favoris
-        </button>
+        <a href="/favoris" class="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition border border-white/20">
+          ❤️ Mes Favoris
+        </a>
       </div>
     </div>
-  </div>
+
+    <!-- Mes Commandes Récentes -->
+    <div class="bg-white shadow-sm border border-slate-200 rounded-3xl p-6 sm:p-8">
+      <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+        <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+          <span>📦</span> Mes Commandes Passées
+        </h3>
+        <span class="text-xs font-bold text-slate-400" id="ordersCount">0 commande(s)</span>
+      </div>
+
+      <div id="clientOrdersList" class="space-y-3">
+        <p class="text-center py-6 text-slate-400 text-sm">Chargement de vos commandes...</p>
+      </div>
+    </div>
+
+    <!-- Mes Favoris Aperçu -->
+    <div class="bg-white shadow-sm border border-slate-200 rounded-3xl p-6 sm:p-8">
+      <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+        <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+          <span>❤️</span> Aperçu de Mes Favoris
+        </h3>
+        <a href="/favoris" class="text-xs font-bold text-sky-600 hover:underline">Voir toute ma liste →</a>
+      </div>
+
+      <div id="clientFavsPreview" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <p class="col-span-full text-center py-6 text-slate-400 text-sm">Chargement de vos favoris...</p>
+      </div>
+    </div>
+
+  </main>
 
   <!-- Footer -->
-  <footer class="bg-gradient-to-r from-blue-900 to-violet-700 text-white text-center p-6">
-    <p>© 2026 Téléphones du Monde</p>
-    <p class="text-sm mt-2">Interface client – gérez votre profil en toute simplicité</p>
+  <footer class="bg-slate-900 text-slate-300 text-center p-8 mt-auto border-t border-slate-800">
+    <p class="font-bold text-white">© 2026 Téléphones du Monde 🌍</p>
+    <p class="text-xs sm:text-sm mt-1 text-slate-400">Interface client sécurisée & suivi de commandes</p>
   </footer>
 
   <script>
-    // Fonction pour ajouter aux favoris via l'API Backend
-    async function addToFavorites(name, price, phone = "22900000000") {
-      const userId = localStorage.getItem('userId');
-      
-      if (!userId) {
-        alert("Veuillez vous connecter pour ajouter des favoris.");
-        window.location.href = '/login';
-        return;
-      }
+    const API_URL = '/api';
+    const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
+    const userName = localStorage.getItem('userName') || 'Client';
 
+    if (!userId || userRole !== 'client') {
+      alert("Veuillez vous connecter à votre compte client.");
+      window.location.href = '/login';
+    }
+
+    document.getElementById('clientName').textContent = `Bienvenue, ${userName} 👋`;
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/';
+    }
+
+    async function loadClientData() {
+      // Charger les commandes du client
       try {
-        const response = await fetch('/api/favorites', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            user_id: userId, 
-            name: name, 
-            price: price, 
-            phone: phone 
-          })
-        });
+        const ordRes = await fetch(`${API_URL}/users/${userId}/orders`);
+        const orders = ordRes.ok ? await ordRes.json() : [];
+        const ordContainer = document.getElementById('clientOrdersList');
+        document.getElementById('ordersCount').textContent = `${orders.length} commande(s)`;
 
-        const data = await response.json();
-
-        if (response.ok) {
-          alert(name + " a été ajouté à vos favoris avec succès !");
+        if (orders.length === 0) {
+          ordContainer.innerHTML = `<p class="text-slate-400 text-center py-4 text-xs font-medium">Vous n'avez pas encore passé de commande.</p>`;
         } else {
-          alert(data.message || "Erreur lors de l'ajout.");
+          ordContainer.innerHTML = orders.map(o => `
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div>
+                <span class="font-extrabold text-slate-900">${o.product_name}</span>
+                <p class="text-xs text-slate-400 mt-0.5">Commande #${o.id} • ${o.date_creation}</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-black text-slate-900">${Number(o.total).toLocaleString()} ${o.currency || 'FCFA'}</span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-800">
+                  ${o.statut}
+                </span>
+              </div>
+            </div>
+          `).join('');
         }
-      } catch (error) {
-        console.error("Erreur:", error);
-        alert("Impossible de contacter le serveur.");
+      } catch (err) {
+        console.error(err);
+      }
+
+      // Charger l'aperçu des favoris
+      try {
+        const favRes = await fetch(`${API_URL}/users/${userId}/favorites`);
+        const favs = favRes.ok ? await favRes.json() : [];
+        const favContainer = document.getElementById('clientFavsPreview');
+
+        if (favs.length === 0) {
+          favContainer.innerHTML = `<p class="col-span-full text-slate-400 text-center py-4 text-xs font-medium">Aucun téléphone favori enregistré.</p>`;
+        } else {
+          favContainer.innerHTML = favs.slice(0, 3).map(f => `
+            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between">
+              <div>
+                <div class="text-3xl mb-2">📱</div>
+                <div class="font-bold text-slate-900 text-sm">${f.nom || f.name}</div>
+                <p class="text-xs text-sky-700 font-black mt-1">${(f.price_usd * 600).toLocaleString()} FCFA</p>
+              </div>
+              <a href="/details?id=${f.id}" class="mt-3 block text-center bg-sky-600 text-white font-bold py-1.5 rounded-xl text-xs hover:bg-sky-700 transition">
+                Voir la fiche 🔍
+              </a>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error(err);
       }
     }
 
-    // Mise à jour de la modale pour fonctionner avec l'API
-    function openDetails(name, price, description, phone) {
-      document.getElementById('modalTitle').textContent = name;
-      document.getElementById('modalPrice').textContent = price;
-      document.getElementById('modalDesc').textContent = description;
-      
-      const whatsappMsg = encodeURIComponent(`Bonjour, je souhaite commander l'article : ${name} au prix de ${price}.`);
-      document.getElementById('modalOrderBtn').href = `https://wa.me/${phone}?text=${whatsappMsg}`;
-      
-      document.getElementById('modalFavBtn শক্তির').onclick = function() { // Safe mapping
-        addToFavorites(name, price, phone);
-        closeDetails();
-      };
-      // Correction propre de l'assignation du bouton favoris dans la modale :
-      document.getElementById('modalFavBtn').onclick = function() {
-        addToFavorites(name, price, phone);
-        closeDetails();
-      };
-
-      document.getElementById('detailsModal').classList.remove('hidden');
-    }
-
-    function closeDetails() {
-      document.getElementById('detailsModal').classList.add('hidden');
-    }
+    loadClientData();
   </script>
 </body>
 </html>

@@ -5,209 +5,237 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mes Favoris - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chemin CSS corrigé -->
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-gray-50 text-slate-800 flex flex-col min-h-full justify-between">
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-full font-sans antialiased">
 
   <!-- Header -->
-  <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
-    <h1 class="text-2xl font-bold text-sky-700">Téléphones du Monde 🌍</h1>
-    <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
-      <!-- Liens nettoyés (sans .html) -->
-      <a href="/" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
-      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles Vendeurs</a>
-      <a href="/page-client" class="hover:text-sky-800 transition">Espace Client</a>
-      <a href="/favoris" class="font-bold underline text-sky-800">Mes Favoris ❤️</a>
+  <header class="bg-white/95 backdrop-blur-md shadow-sm px-4 py-3 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">❤️</span>
+      <h1 class="text-xl sm:text-2xl font-black tracking-tight text-sky-700">
+        Mes Téléphones Favoris
+      </h1>
+    </div>
+
+    <nav id="mainNav" class="flex flex-wrap justify-center gap-2 sm:space-x-3 text-sm sm:text-base font-semibold items-center">
+      <a href="/" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Accueil</a>
+      <a href="/catalogue" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Catalogue</a>
+      <a href="/vendeurs-articles" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Articles Vendeurs</a>
+      <a href="/favoris" class="text-sky-700 font-bold bg-sky-50 px-3 py-1.5 rounded-lg border border-sky-100">Mes Favoris ❤️</a>
+      <a href="/page-client" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Mon Espace</a>
+      <button onclick="logout()" class="text-rose-600 hover:text-rose-800 transition font-bold border border-rose-200 px-3 py-1.5 rounded-lg hover:bg-rose-50 text-xs sm:text-sm">
+        Déconnexion 🚪
+      </button>
     </nav>
   </header>
 
-  <!-- Contenu Favoris -->
-  <section class="p-4 sm:p-8 bg-gradient-to-r from-blue-900 to-violet-700 flex-grow">
-    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6 sm:p-8">
-      <h2 class="text-2xl font-bold text-center text-sky-700 mb-2">Ma Collection de Favoris ❤️</h2>
-      <p class="text-center text-gray-500 mb-6">Examinez la fiche technique, passez commande directement sur WhatsApp ou retirez les articles de votre liste.</p>
-
-      <!-- Liste des favoris sous forme de grille de cartes -->
-      <div id="favoritesList" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <p id="emptyMsg" class="col-span-full text-gray-400 italic text-center py-8">Chargement de vos favoris...</p>
+  <!-- Contenu Principal -->
+  <main class="max-w-6xl mx-auto px-4 py-8 sm:py-12 flex-grow w-full space-y-6">
+    
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900">Ma Liste de Favoris ❤️</h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          Comparez vos téléphones sauvegardés et passez commande instantanément.
+        </p>
       </div>
 
-      <!-- Action globale : Vider tout -->
-      <div id="clearContainer" class="border-t pt-4 text-right hidden">
-        <button onclick="clearAllFavorites()" class="text-xs font-semibold text-rose-600 hover:text-rose-800 transition">
-          🗑️ Vider toute ma liste
+      <!-- Sélecteur de Devise & Vider Tout -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+          <span class="text-xs font-bold text-slate-600 px-1.5">Devise :</span>
+          <button onclick="setFavCurrency('FCFA')" id="fcur-FCFA" class="px-2.5 py-1 rounded-lg text-xs font-black transition bg-sky-600 text-white shadow-sm">FCFA</button>
+          <button onclick="setFavCurrency('USD')" id="fcur-USD" class="px-2.5 py-1 rounded-lg text-xs font-black transition text-slate-700 hover:bg-white">USD</button>
+          <button onclick="setFavCurrency('EUR')" id="fcur-EUR" class="px-2.5 py-1 rounded-lg text-xs font-black transition text-slate-700 hover:bg-white">EUR</button>
+        </div>
+
+        <button onclick="clearAllFavorites()" id="clearAllBtn" class="bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm hidden">
+          🗑️ Vider tout
         </button>
       </div>
     </div>
-  </section>
 
-  <!-- Modale Fiche Technique / Détails -->
-  <div id="detailsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-      <button onclick="closeDetails()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 font-bold text-xl">✕</button>
-      
-      <div class="w-full h-44 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-500 font-bold">
-        📱 Aperçu du modèle
-      </div>
-
-      <h3 id="modalTitle" class="text-2xl font-bold text-slate-800 mb-1"></h3>
-      <p id="modalPrice" class="text-lg font-bold text-violet-600 mb-4"></p>
-      
-      <div class="bg-gray-50 border p-4 rounded-xl mb-6">
-        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Caractéristiques & Description</h4>
-        <p id="modalDesc" class="text-sm text-gray-700 leading-relaxed"></p>
-      </div>
-
-      <div class="flex gap-3">
-        <a id="modalOrderBtn" href="#" target="_blank" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-center text-sm flex items-center justify-center gap-1">
-          💬 Commander (WhatsApp)
-        </a>
-        <button id="modalDeleteBtn" class="bg-rose-600 text-white px-4 py-2.5 rounded-lg font-bold hover:bg-rose-500 transition shadow text-sm">
-          ❌ Supprimer
-        </button>
+    <!-- Grille des Favoris -->
+    <div id="favoritesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="col-span-full text-center py-12 text-slate-400 font-medium">
+        Chargement de vos favoris...
       </div>
     </div>
-  </div>
+
+  </main>
 
   <!-- Footer -->
-  <footer class="bg-gradient-to-r from-blue-900 to-violet-700 text-white text-center p-6">
-    <p>© 2026 Téléphones du Monde</p>
-    <p class="text-sm mt-2">Votre collection personnelle de téléphones</p>
+  <footer class="bg-slate-900 text-slate-300 text-center p-8 mt-auto border-t border-slate-800">
+    <p class="font-bold text-white">© 2026 Téléphones du Monde 🌍</p>
+    <p class="text-xs sm:text-sm mt-1 text-slate-400">Votre sélection personnalisée de smartphones</p>
   </footer>
 
-  <!-- Script de gestion des favoris -->
+  <!-- Script Favoris -->
   <script>
-    const DEFAULT_SELLER_PHONE = "22900000000";
+    const API_URL = '/api';
+    const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
 
-    // Charger les favoris depuis l'API Flask connectée à la base de données
+    if (!userId) {
+      alert("Veuillez vous connecter pour accéder à vos favoris.");
+      window.location.href = '/login';
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/';
+    }
+
+    const RATES = { USD: 1, EUR: 0.92, FCFA: 600, XOF: 600 };
+    const SYMBOLS = { USD: '$', EUR: '€', FCFA: 'FCFA', XOF: 'FCFA' };
+    let currentCurrency = 'FCFA';
+    let favorites = [];
+
+    function setFavCurrency(curr) {
+      currentCurrency = curr;
+      ['FCFA', 'USD', 'EUR'].forEach(c => {
+        const btn = document.getElementById(`fcur-${c}`);
+        if (btn) {
+          if (c === curr) {
+            btn.className = "px-2.5 py-1 rounded-lg text-xs font-black transition bg-sky-600 text-white shadow-sm";
+          } else {
+            btn.className = "px-2.5 py-1 rounded-lg text-xs font-black transition text-slate-700 hover:bg-white";
+          }
+        }
+      });
+      renderFavorites();
+    }
+
+    function formatPrice(priceUsd) {
+      const val = Math.round((Number(priceUsd) || 0) * (RATES[currentCurrency] || 600));
+      return `${val.toLocaleString()} ${SYMBOLS[currentCurrency] || 'FCFA'}`;
+    }
+
     async function loadFavorites() {
-      const listContainer = document.getElementById('favoritesList');
-      const clearContainer = document.getElementById('clearContainer');
-      
-      const userId = localStorage.getItem('userId');
-      
-      if (!userId) {
-        listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Veuillez <a href="/login" class="text-sky-600 underline font-bold">vous connecter</a> pour voir vos favoris.</p>';
+      try {
+        const res = await fetch(`${API_URL}/users/${userId}/favorites`);
+        if (!res.ok) throw new Error("Erreur");
+        favorites = await res.json();
+        renderFavorites();
+      } catch (err) {
+        console.error(err);
+        document.getElementById('favoritesList').innerHTML = `<p class="col-span-full text-center text-red-500 py-8 font-bold">Erreur de chargement des favoris.</p>`;
+      }
+    }
+
+    function renderFavorites() {
+      const container = document.getElementById('favoritesList');
+      const clearBtn = document.getElementById('clearAllBtn');
+      if (!container) return;
+
+      if (favorites.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200 space-y-3">
+            <span class="text-5xl block">💔</span>
+            <p class="text-slate-600 font-bold">Votre liste de favoris est vide pour le moment.</p>
+            <a href="/catalogue" class="inline-block bg-sky-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-sky-700 transition">
+              Explorer le catalogue
+            </a>
+          </div>`;
+        if (clearBtn) clearBtn.classList.add('hidden');
         return;
       }
 
-      try {
-        const response = await fetch(`/api/favorites/${userId}`);
-        if (!response.ok) throw new Error("Erreur réseau");
-        
-        const favorites = await response.json();
-        
-        listContainer.innerHTML = '';
+      if (clearBtn) clearBtn.classList.remove('hidden');
 
-        if (!favorites || favorites.length === 0) {
-          listContainer.innerHTML = '<p class="col-span-full text-gray-400 italic text-center py-8">Votre liste de favoris est vide pour le moment.</p>';
-          clearContainer.classList.add('hidden');
-          return;
-        }
+      container.innerHTML = favorites.map(item => {
+        const nom = item.name || item.nom;
+        const brand = item.brand || item.marque || 'Marque';
+        const price = formatPrice(item.price_usd);
+        const whatsapp = item.whatsapp || "22997001122";
+        const fullName = nom.toLowerCase().startsWith(brand.toLowerCase()) ? nom : `${brand} ${nom}`;
 
-        clearContainer.classList.remove('hidden');
-
-        favorites.forEach((item) => {
-          const sellerPhone = item.phone || DEFAULT_SELLER_PHONE;
-          const description = item.desc || "Description non disponible.";
-          const message = encodeURIComponent(`Bonjour, je souhaite passer la commande pour cet article : ${item.name} (${item.price}).`);
-          const whatsappUrl = `https://wa.me/${sellerPhone}?text=${message}`;
-
-          const card = document.createElement('div');
-          card.className = "border rounded-xl p-5 shadow-sm bg-gray-50 flex flex-col justify-between hover:shadow-md transition";
-          
-          card.innerHTML = `
+        return `
+          <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-lg transition">
             <div>
-              <div class="w-full h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400 font-bold">
-                📱 ${item.name}
-              </div>
-              <h4 class="text-lg font-bold text-slate-800">${item.name}</h4>
-              <p class="text-sm text-violet-600 font-bold mt-1">${item.price}</p>
-            </div>
-
-            <div class="mt-5 space-y-2">
-              <button onclick="openDetails('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${description.replace(/'/g, "\\'")}', '${sellerPhone}', ${item.id})" 
-                      class="w-full bg-slate-100 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 transition text-sm">
-                🔍 Fiche technique & Détails
-              </button>
-              
-              <div class="flex gap-2">
-                <a href="${whatsappUrl}" target="_blank" class="w-1/2 bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-emerald-500 transition shadow text-xs text-center flex items-center justify-center gap-1">
-                  💬 Commander
-                </a>
-                <button onclick="removeFavorite(${item.id})" class="w-1/2 bg-rose-600 text-white px-3 py-2 rounded-lg font-bold hover:bg-rose-500 transition shadow text-xs">
-                  Supprimer ❌
+              <div class="w-full h-40 bg-gradient-to-tr from-slate-100 to-rose-50 rounded-2xl mb-4 flex items-center justify-center text-5xl relative border border-slate-100">
+                📱
+                <span class="absolute top-3 left-3 bg-white/90 text-sky-800 text-[10px] font-black uppercase px-2.5 py-1 rounded-full border border-sky-100">
+                  ${brand}
+                </span>
+                <button onclick="removeFavorite(${item.id})" class="absolute top-3 right-3 bg-white text-rose-500 hover:bg-rose-500 hover:text-white w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-sm transition" title="Retirer">
+                  ✕
                 </button>
               </div>
+
+              <h3 class="text-base font-black text-slate-900 truncate" title="${fullName}">${fullName}</h3>
+              
+              <div class="mt-3 space-y-1 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                <div class="truncate">📱 <strong>Écran :</strong> ${item.ecran || 'AMOLED'}</div>
+                <div class="truncate">📸 <strong>Caméra :</strong> ${item.camera || '50 MP'}</div>
+                <div>🔋 <strong>Batterie :</strong> ${item.batterie || '5000 mAh'}</div>
+                <div>💾 <strong>Mémoire :</strong> ${item.stockage || '128Go'} / ${item.ram || '8Go'}</div>
+              </div>
+
+              <div class="mt-4 flex justify-between items-center">
+                <span class="text-xs text-slate-400 font-bold uppercase">Prix</span>
+                <div class="text-lg font-black text-slate-900">${price}</div>
+              </div>
             </div>
-          `;
-          listContainer.appendChild(card);
-        });
 
-      } catch (error) {
-        console.error("Erreur lors du chargement des favoris :", error);
-        listContainer.innerHTML = '<p class="col-span-full text-red-500 text-center py-8">Impossible de charger les favoris depuis la base de données.</p>';
+            <div class="mt-4 pt-3 border-t border-slate-100 flex gap-2">
+              <button onclick="orderOnWhatsApp('${fullName.replace(/'/g, "\\'")}', ${item.id}, '${whatsapp}', '${price}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-black transition shadow text-xs flex items-center justify-center gap-1">
+                <span>💬</span> Commander
+              </button>
+              <a href="/details?id=${item.id}" class="px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center">
+                🔍 Fiche
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function orderOnWhatsApp(phoneName, productId, whatsappPhone, priceFormatted) {
+      if (userId) {
+        try {
+          await fetch(`${API_URL}/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: parseInt(userId),
+              product_id: productId,
+              quantite: 1,
+              currency: currentCurrency
+            })
+          });
+        } catch (e) {}
       }
+
+      const message = encodeURIComponent(`Bonjour, je souhaite commander mon téléphone favori : ${phoneName} (${priceFormatted}). Pouvez-vous me donner les détails de commande ?`);
+      window.open(`https://wa.me/${whatsappPhone}?text=${message}`, '_blank');
     }
 
-    // Gestion de la Modale de Détails
-    function openDetails(name, price, desc, phone, favoriteId) {
-      document.getElementById('modalTitle').textContent = name;
-      document.getElementById('modalPrice').textContent = price;
-      document.getElementById('modalDesc').textContent = desc;
-
-      const message = encodeURIComponent(`Bonjour, je souhaite passer la commande pour cet article : ${name} (${price}).`);
-      document.getElementById('modalOrderBtn').href = `https://wa.me/${phone}?text=${message}`;
-      
-      // Assigner l'action du bouton supprimer dans la modale
-      const deleteBtn = document.getElementById('modalDeleteBtn');
-      deleteBtn.onclick = async () => {
-        await removeFavorite(favoriteId);
-        closeDetails();
-      };
-
-      document.getElementById('detailsModal').classList.remove('hidden');
-    }
-
-    function closeDetails() {
-      document.getElementById('detailsModal').classList.add('hidden');
-    }
-
-    // Supprimer un favori individuel
-    async function removeFavorite(favoriteId) {
-      const userId = localStorage.getItem('userId');
+    async function removeFavorite(productId) {
       try {
-        const response = await fetch(`/api/favorites/${userId}/${favoriteId}`, {
-          method: 'DELETE'
-        });
-        if (response.ok) {
+        const res = await fetch(`${API_URL}/users/${userId}/favorites/${productId}`, { method: 'DELETE' });
+        if (res.ok) {
           loadFavorites();
         }
-      } catch (error) {
-        console.error("Erreur lors de la suppression :", error);
+      } catch (err) {
+        console.error(err);
       }
     }
 
-    // Vider toute la liste des favoris
     async function clearAllFavorites() {
       if (!confirm("Voulez-vous vraiment vider toute votre liste de favoris ?")) return;
-      
-      const userId = localStorage.getItem('userId');
       try {
-        const response = await fetch(`/api/favorites/${userId}`, {
-          method: 'DELETE'
-        });
-        if (response.ok) {
+        const res = await fetch(`${API_URL}/users/${userId}/favorites`, { method: 'DELETE' });
+        if (res.ok) {
           loadFavorites();
         }
-      } catch (error) {
-        console.error("Erreur lors du nettoyage des favoris :", error);
+      } catch (err) {
+        console.error(err);
       }
     }
 
-    window.onload = loadFavorites;
+    loadFavorites();
   </script>
 </body>
 </html>

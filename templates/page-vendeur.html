@@ -5,151 +5,295 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Espace Vendeur - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-gray-50 text-slate-800 flex flex-col min-h-full justify-between">
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-full font-sans antialiased">
 
   <!-- Header Vendeur Connecté -->
-  <header class="bg-white shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
-    <h1 class="text-2xl font-bold text-violet-700">Téléphones du Monde 🌍</h1>
-    <nav class="flex flex-wrap justify-center space-x-4 text-sky-600 font-medium items-center">
-      <a href="/" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
-      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles des Vendeurs</a>
-      <button id="logoutBtn" type="button" class="text-rose-600 hover:text-rose-800 transition font-bold border border-rose-200 px-3 py-1 rounded-lg hover:bg-rose-50">
+  <header class="bg-white shadow-sm px-4 py-3 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🏪</span>
+      <h1 class="text-xl sm:text-2xl font-black tracking-tight text-indigo-700">
+        Espace Vendeur Pro
+      </h1>
+    </div>
+    
+    <nav class="flex flex-wrap justify-center gap-3 text-sm sm:text-base font-semibold items-center">
+      <a href="/" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Accueil</a>
+      <a href="/catalogue" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Catalogue</a>
+      <a href="/vendeurs-articles" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Articles Boutique</a>
+      <button id="logoutBtn" type="button" class="text-rose-600 hover:text-rose-800 transition font-bold border border-rose-200 px-3 py-1.5 rounded-lg hover:bg-rose-50 text-xs sm:text-sm">
         Déconnexion 🚪
       </button>
     </nav>
   </header>
 
-  <!-- Tableau de bord vendeur -->
-  <section class="p-4 sm:p-8 bg-gradient-to-r from-blue-900 to-violet-700 flex-grow">
-    <div class="max-w-5xl mx-auto space-y-8">
-      
-      <!-- En-tête du dashboard -->
-      <div class="bg-white shadow-lg rounded-xl p-6 sm:p-8">
-        <h2 class="text-2xl font-bold text-center text-violet-700 mb-2">Espace Vendeur 🛒</h2>
-        <p id="welcomeMessage" class="text-center text-gray-600 mb-6">Gérez votre inventaire, vos devises et vos commandes clients en un clin d'œil.</p>
+  <!-- Tableau de bord Vendeur -->
+  <main class="max-w-7xl w-full mx-auto px-4 py-8 flex-grow space-y-8">
+    
+    <!-- En-tête & Statistiques Vendeur -->
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-xs font-black uppercase px-3 py-1 rounded-full">
+            Tableau de Bord Vendeur
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black text-white mt-2" id="sellerTitle">Bienvenue sur votre Espace</h2>
+          <p id="welcomeMessage" class="text-slate-300 text-xs sm:text-sm mt-1">Gérez vos téléphones publiés, définissez vos devises et suivez les commandes de vos clients.</p>
+        </div>
+        <button onclick="document.getElementById('formSection').scrollIntoView({behavior: 'smooth'})" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-5 py-3 rounded-2xl shadow-lg transition text-xs sm:text-sm flex items-center gap-2">
+          <span>➕</span> Publier un Nouveau Téléphone
+        </button>
+      </div>
 
-        <!-- Formulaire ajout produit -->
-        <form id="addProductForm" class="space-y-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h3 class="text-lg font-semibold text-sky-700 mb-2">Publier un nouveau téléphone</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="text" id="prodName" placeholder="Nom du produit (ex: iPhone 13)" required 
-                   class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
-            <input type="text" id="prodBrand" placeholder="Marque (ex: Apple)" required 
-                   class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+      <!-- Compteurs Statistiques -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+          <span class="text-xs text-slate-300 font-bold block">Mes Téléphones Publiés</span>
+          <span class="text-2xl sm:text-3xl font-black text-white" id="statProductsCount">0</span>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+          <span class="text-xs text-slate-300 font-bold block">Commandes Reçues</span>
+          <span class="text-2xl sm:text-3xl font-black text-emerald-400" id="statOrdersCount">0</span>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+          <span class="text-xs text-slate-300 font-bold block">Boutique & Numéro WhatsApp</span>
+          <span class="text-sm font-black text-amber-300 block truncate" id="statPhoneDisplay">WhatsApp configuré</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Formulaire d'Ajout de Téléphone -->
+    <div id="formSection" class="bg-white shadow-sm border border-slate-200 rounded-3xl p-6 sm:p-8">
+      <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+        <span class="text-2xl">📱</span>
+        <div>
+          <h3 class="text-xl font-black text-slate-900">Publier un Téléphone dans votre Inventaire</h3>
+          <p class="text-xs text-slate-500">Renseignez les détails techniques et fixez votre prix dans la devise de votre choix (FCFA, EUR, USD).</p>
+        </div>
+      </div>
+
+      <form id="addProductForm" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-black uppercase text-slate-600 mb-1">Nom du Téléphone *</label>
+            <input type="text" id="prodName" placeholder="Ex: iPhone 14 Pro Max" required 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-semibold">
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="number" id="prodPrice" step="0.01" placeholder="Prix" required 
-                   class="md:col-span-2 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
-            <select id="currency" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none bg-white">
-              <option value="FCFA">F CFA (XOF)</option>
+          <div>
+            <label class="block text-xs font-black uppercase text-slate-600 mb-1">Marque *</label>
+            <select id="prodBrand" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-semibold">
+              <option value="Apple">Apple iPhone</option>
+              <option value="Samsung">Samsung</option>
+              <option value="Xiaomi">Xiaomi / Redmi</option>
+              <option value="Google">Google Pixel</option>
+              <option value="OnePlus">OnePlus</option>
+              <option value="Infinix">Infinix</option>
+              <option value="Tecno">Tecno</option>
+              <option value="Itel">Itel</option>
+              <option value="Autre">Autre marque</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-black uppercase text-slate-600 mb-1">Catégorie Prioritaire</label>
+            <select id="prodTag" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-semibold">
+              <option value="ALL">Usage Général</option>
+              <option value="CAMERA">Photophone Pro</option>
+              <option value="PERF">Gaming & Puissance</option>
+              <option value="BATTERY">Grande Autonomie</option>
+              <option value="BUDGET">Rapport Qualité/Prix</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Prix et Devise personnalisée -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-black uppercase text-indigo-900 mb-1">Prix de Vente *</label>
+            <input type="number" id="prodPrice" step="any" placeholder="Ex: 350000" required 
+                   class="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-black text-indigo-950">
+          </div>
+          <div>
+            <label class="block text-xs font-black uppercase text-indigo-900 mb-1">Devise du Prix *</label>
+            <select id="currency" class="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-black text-sm text-indigo-950">
+              <option value="FCFA" selected>Franc CFA (FCFA)</option>
               <option value="EUR">Euros (€)</option>
               <option value="USD">Dollars ($)</option>
             </select>
           </div>
-          <textarea id="prodDesc" placeholder="Description du téléphone (état, stockage...)" required rows="3"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none"></textarea>
-          <button type="submit" class="w-full bg-violet-600 text-white py-2.5 rounded-lg font-bold hover:bg-violet-500 transition shadow-md">
-            Ajouter à l'inventaire 🚀
-          </button>
-        </form>
-      </div>
-
-      <!-- Inventaire / Mes publications -->
-      <div class="bg-white shadow-lg rounded-xl p-6 sm:p-8">
-        <h3 class="text-xl font-semibold text-sky-700 mb-4">Inventaire de mes publications 📦</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full border-collapse border border-gray-300 text-sm">
-            <thead>
-              <tr class="bg-gray-100 text-gray-700">
-                <th class="border p-2.5 text-left">Nom</th>
-                <th class="border p-2.5 text-left">Marque</th>
-                <th class="border p-2.5 text-left">Prix</th>
-                <th class="border p-2.5 text-center">Statut</th>
-                <th class="border p-2.5 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="productList">
-              <!-- Chargé dynamiquement par JS -->
-            </tbody>
-          </table>
         </div>
-      </div>
 
-      <!-- Commandes lancées par les clients -->
-      <div class="bg-white shadow-lg rounded-xl p-6 sm:p-8">
-        <h3 class="text-xl font-semibold text-sky-700 mb-4">Commandes & Demandes Clients 💬</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full border-collapse border border-gray-300 text-sm">
-            <thead>
-              <tr class="bg-gray-100 text-gray-700">
-                <th class="border p-2.5 text-left">Client</th>
-                <th class="border p-2.5 text-left">Téléphone demandé</th>
-                <th class="border p-2.5 text-center">Statut Commande</th>
-                <th class="border p-2.5 text-center">Répondre sur WhatsApp</th>
-              </tr>
-            </thead>
-            <tbody id="ordersList">
-              <!-- Chargé dynamiquement par JS -->
-            </tbody>
-          </table>
+        <!-- Caractéristiques Techniques -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Écran</label>
+            <input type="text" id="prodEcran" placeholder="Ex: 6.7'' OLED 120Hz" 
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Appareil Photo</label>
+            <input type="text" id="prodCamera" placeholder="Ex: 48 MP + 12 MP" 
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Batterie</label>
+            <input type="text" id="prodBatterie" placeholder="Ex: 5000 mAh 33W" 
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Stockage & RAM</label>
+            <input type="text" id="prodStockage" placeholder="Ex: 256Go / 8Go RAM" 
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
+          </div>
         </div>
-      </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Numéro WhatsApp pour les commandes</label>
+            <input type="tel" id="prodWhatsapp" placeholder="Ex: 22997001122" 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Statut du Téléphone</label>
+            <select id="prodStatut" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold">
+              <option value="Actif">En Stock / Actif</option>
+              <option value="Neuf">Neuf Scellé</option>
+              <option value="Occasion Pro">Occasion Pro (Reconditionné)</option>
+              <option value="Rupture">En Rupture</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Description & État général</label>
+          <textarea id="prodDesc" placeholder="Précisez l'état, la garantie, les accessoires inclus..." rows="3"
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm"></textarea>
+        </div>
+
+        <button type="submit" id="submitProdBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-black transition shadow-md flex items-center justify-center gap-2">
+          <span>🚀</span> Publier ce Téléphone sur la Plateforme
+        </button>
+      </form>
     </div>
-  </section>
+
+    <!-- Inventaire : Uniquement les téléphones publiés par CE VENDEUR -->
+    <div class="bg-white shadow-sm border border-slate-200 rounded-3xl p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+        <div>
+          <h3 class="text-xl font-black text-slate-900">Mes Téléphones en Vente 📦</h3>
+          <p class="text-xs text-slate-500">Seuls vos propres articles publiés sont visibles et gérables ici.</p>
+        </div>
+        <span class="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-100" id="inventoryCountBadge">
+          0 article(s)
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead>
+            <tr class="bg-slate-50 text-slate-600 uppercase text-xs font-black border-b">
+              <th class="p-3.5">Modèle & Marque</th>
+              <th class="p-3.5">Prix & Devise</th>
+              <th class="p-3.5">Spécifications</th>
+              <th class="p-3.5 text-center">Statut</th>
+              <th class="p-3.5 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productList" class="divide-y divide-slate-100">
+            <!-- Chargé dynamiquement par JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Commandes & Demandes Clients pour CE VENDEUR -->
+    <div class="bg-white shadow-sm border border-slate-200 rounded-3xl p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+        <div>
+          <h3 class="text-xl font-black text-slate-900">Commandes & Demandes Clients Reçues 💬</h3>
+          <p class="text-xs text-slate-500">Clients ayant commandé ou demandé un devis pour vos téléphones.</p>
+        </div>
+        <span class="text-xs font-bold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-100" id="ordersCountBadge">
+          0 commande(s)
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead>
+            <tr class="bg-slate-50 text-slate-600 uppercase text-xs font-black border-b">
+              <th class="p-3.5">Client & Date</th>
+              <th class="p-3.5">Téléphone Demandé</th>
+              <th class="p-3.5">Montant Total</th>
+              <th class="p-3.5 text-center">Statut</th>
+              <th class="p-3.5 text-center">Action Directe</th>
+            </tr>
+          </thead>
+          <tbody id="ordersList" class="divide-y divide-slate-100">
+            <!-- Chargé dynamiquement par JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
 
   <!-- Footer -->
-  <footer class="bg-gradient-to-r from-blue-900 to-violet-700 text-white text-center p-6">
-    <p>© 2026 Téléphones du Monde</p>
-    <p class="text-sm mt-2">Interface vendeur – gérez vos annonces et clients facilement</p>
+  <footer class="bg-slate-900 text-slate-300 text-center p-8 mt-auto border-t border-slate-800">
+    <p class="font-bold text-white">© 2026 Téléphones du Monde 🌍</p>
+    <p class="text-xs sm:text-sm mt-1 text-slate-400">Espace Vendeur Pro - Gestion autonome d'inventaire et ventes directes</p>
   </footer>
 
   <!-- Script Vendeur Dynamique -->
   <script>
     const API_URL = '/api';
+    const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
+    const userName = localStorage.getItem('userName') || 'Vendeur';
 
     document.addEventListener('DOMContentLoaded', () => {
-      const userId = localStorage.getItem('userId');
-      const userRole = localStorage.getItem('userRole');
-      const userName = localStorage.getItem('userName') || 'Vendeur';
-
-      // 1. Vérification d'accès vendeur
+      // 1. Vérification stricte du rôle vendeur
       if (!userId || userRole !== 'vendeur') {
-        alert("Accès réservé aux vendeurs. Veuillez vous connecter.");
+        alert("Accès réservé aux vendeurs enregistrés. Veuillez vous connecter.");
         window.location.href = '/login';
         return;
       }
 
-      // Personnaliser le message de bienvenue
-      const welcomeEl = document.getElementById('welcomeMessage');
-      if (welcomeEl) {
-        welcomeEl.textContent = `Bienvenue ${userName} ! Gérez vos articles et répondez aux demandes clients.`;
-      }
-
+      // Personnalisation des titres
+      document.getElementById('sellerTitle').textContent = `Boutique de ${userName}`;
+      
       // Déconnexion
       document.getElementById('logoutBtn')?.addEventListener('click', () => {
         localStorage.clear();
         window.location.href = '/';
       });
 
-      // Chargement initial des données
+      // Chargement initial des données exclusives au vendeur
       loadSellerProducts(userId);
       loadSellerOrders(userId);
 
-      // 2. Publication d'un nouveau produit
+      // 2. Publication d'un nouveau produit par le vendeur
       const form = document.getElementById('addProductForm');
       if (form) {
         form.addEventListener('submit', async (e) => {
           e.preventDefault();
+          const btn = document.getElementById('submitProdBtn');
+          btn.disabled = true;
+          btn.textContent = "Publication en cours...";
           
           const newProduct = {
-            seller_id: userId,
+            seller_id: parseInt(userId),
             name: document.getElementById('prodName').value.trim(),
-            brand: document.getElementById('prodBrand').value.trim(),
+            brand: document.getElementById('prodBrand').value,
+            tag: document.getElementById('prodTag').value,
             price: parseFloat(document.getElementById('prodPrice').value),
             currency: document.getElementById('currency').value,
+            ecran: document.getElementById('prodEcran').value.trim() || '6.7" AMOLED',
+            camera: document.getElementById('prodCamera').value.trim() || '50 MP',
+            batterie: document.getElementById('prodBatterie').value.trim() || '5000 mAh',
+            stockage: document.getElementById('prodStockage').value.trim() || '128Go',
+            whatsapp: document.getElementById('prodWhatsapp').value.trim() || '22900000000',
+            statut: document.getElementById('prodStatut').value,
             desc: document.getElementById('prodDesc').value.trim()
           };
 
@@ -161,20 +305,25 @@
             });
 
             if (res.ok) {
+              alert("Votre téléphone a été publié avec succès !");
               form.reset();
               loadSellerProducts(userId);
             } else {
-              alert("Erreur lors de l'ajout de l'article.");
+              const errData = await res.json();
+              alert(errData.message || "Erreur lors de la publication.");
             }
           } catch (err) {
             console.error("Erreur ajout :", err);
-            alert("Impossible de contacter le serveur.");
+            alert("Impossible de joindre le serveur Flask.");
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<span>🚀</span> Publier ce Téléphone sur la Plateforme`;
           }
         });
       }
     });
 
-    // 3. Charger l'inventaire vendeur
+    // 3. Charger UNIQUEMENT les produits du vendeur connecté
     async function loadSellerProducts(sellerId) {
       const tbody = document.getElementById('productList');
       if (!tbody) return;
@@ -184,42 +333,53 @@
         const products = res.ok ? await res.json() : [];
 
         tbody.innerHTML = '';
+        document.getElementById('statProductsCount').textContent = products.length;
+        document.getElementById('inventoryCountBadge').textContent = `${products.length} article(s)`;
 
         if (!products || products.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">Vous n'avez publié aucun téléphone pour le moment.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">Vous n'avez publié aucun téléphone pour le moment. Remplissez le formulaire ci-dessus pour commencer.</td></tr>`;
           return;
         }
 
         products.forEach(p => {
           const name = p.name || p.nom || 'Téléphone';
           const brand = p.brand || p.marque || 'Générique';
-          const price = p.price || p.prix || 0;
-          const currency = p.currency || 'FCFA';
+          const price = p.price_original || p.prix || p.price_usd || 0;
+          const currency = p.currency || p.devise || 'FCFA';
+          const specs = `${p.ecran || ''} • ${p.camera || ''} • ${p.stockage || ''}`;
 
           tbody.innerHTML += `
-            <tr class="hover:bg-gray-50 border-b border-gray-100">
-              <td class="border p-2.5 font-semibold text-slate-800">${name}</td>
-              <td class="border p-2.5 text-gray-600">${brand}</td>
-              <td class="border p-2.5 font-bold text-violet-600">${price} ${currency}</td>
-              <td class="border p-2.5 text-center">
-                <span class="px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">En ligne</span>
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+              <td class="p-3.5 font-extrabold text-slate-900">
+                ${name}
+                <span class="block text-xs font-bold text-indigo-600">${brand}</span>
               </td>
-              <td class="border p-2.5 text-center">
-                <button onclick="deleteProduct(${p.id})" class="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded-lg text-xs font-bold transition shadow">
+              <td class="p-3.5 font-black text-indigo-700 text-sm">
+                ${Number(price).toLocaleString()} ${currency}
+              </td>
+              <td class="p-3.5 text-xs text-slate-500 max-w-xs truncate" title="${specs}">
+                ${specs}
+              </td>
+              <td class="p-3.5 text-center">
+                <span class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800">
+                  ${p.statut || 'En ligne'}
+                </span>
+              </td>
+              <td class="p-3.5 text-center whitespace-nowrap">
+                <button onclick="deleteProduct(${p.id})" class="bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">
                   Supprimer 🗑️
                 </button>
               </td>
             </tr>`;
         });
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Erreur de chargement de l'inventaire.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500">Erreur de chargement de l'inventaire.</td></tr>`;
       }
     }
 
-    // Supprimer un produit de l'inventaire
+    // Supprimer un produit
     async function deleteProduct(productId) {
-      if (!confirm("Voulez-vous vraiment retirer ce téléphone de la vente ?")) return;
-      const userId = localStorage.getItem('userId');
+      if (!confirm("Voulez-vous vraiment retirer ce téléphone de votre boutique ?")) return;
 
       try {
         const res = await fetch(`${API_URL}/products/${productId}`, { method: 'DELETE' });
@@ -233,7 +393,7 @@
       }
     }
 
-    // 4. Charger les commandes clients
+    // 4. Charger les commandes concernant le vendeur
     async function loadSellerOrders(sellerId) {
       const tbody = document.getElementById('ordersList');
       if (!tbody) return;
@@ -243,9 +403,11 @@
         const orders = res.ok ? await res.json() : [];
 
         tbody.innerHTML = '';
+        document.getElementById('statOrdersCount').textContent = orders.length;
+        document.getElementById('ordersCountBadge').textContent = `${orders.length} commande(s)`;
 
         if (!orders || orders.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">Aucune commande reçue pour le moment.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">Aucune commande reçue pour le moment. Vos demandes clients apparaîtront ici.</td></tr>`;
           return;
         }
 
@@ -253,29 +415,36 @@
           const clientName = ord.client_name || 'Client';
           const clientPhone = ord.client_phone || '22900000000';
           const productName = ord.product_name || 'Téléphone';
-          const status = ord.status || 'En attente';
+          const total = ord.total || 0;
+          const currency = ord.currency || 'FCFA';
+          const status = ord.statut || 'En attente';
+          const date = ord.date_creation || '';
 
-          const msg = encodeURIComponent(`Bonjour ${clientName}, je vous contacte concernant votre commande pour le ${productName}.`);
+          const msg = encodeURIComponent(`Bonjour ${clientName}, je suis votre vendeur sur GlobalPhoneZone concernant votre commande pour le ${productName} (${total} ${currency}).`);
           const whatsappUrl = `https://wa.me/${clientPhone}?text=${msg}`;
 
           tbody.innerHTML += `
-            <tr class="hover:bg-gray-50 border-b border-gray-100">
-              <td class="border p-2.5 font-medium">${clientName}</td>
-              <td class="border p-2.5">${productName}</td>
-              <td class="border p-2.5 text-center">
-                <span class="px-2 py-1 rounded-full text-xs font-bold ${status === 'Livré' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+              <td class="p-3.5">
+                <div class="font-bold text-slate-900">${clientName}</div>
+                <span class="text-xs text-slate-400 font-medium">${date} • ${clientPhone}</span>
+              </td>
+              <td class="p-3.5 font-semibold text-slate-800">${productName}</td>
+              <td class="p-3.5 font-black text-slate-900">${Number(total).toLocaleString()} ${currency}</td>
+              <td class="p-3.5 text-center">
+                <span class="px-2.5 py-1 rounded-full text-xs font-black ${status === 'Livré' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                   ${status}
                 </span>
               </td>
-              <td class="border p-2.5 text-center">
-                <a href="${whatsappUrl}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-500 transition shadow">
-                  💬 Discuter sur WhatsApp
+              <td class="p-3.5 text-center">
+                <a href="${whatsappUrl}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-black transition shadow">
+                  <span>💬</span> Discuter WhatsApp
                 </a>
               </td>
             </tr>`;
         });
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">Aucune commande reçue pour le moment.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500">Erreur de chargement des commandes.</td></tr>`;
       }
     }
   </script>

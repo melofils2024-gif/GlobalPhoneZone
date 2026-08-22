@@ -137,13 +137,14 @@
 
         if (response.ok) {
           // Sauvegarde de la session dans le navigateur
+          const displayName = data.nom_boutique || payload.nom_boutique || `${payload.prenom || ''} ${payload.nom || ''}`.trim() || 'Utilisateur';
           localStorage.setItem('userRole', payload.role);
           localStorage.setItem('userEmail', payload.email);
-          localStorage.setItem('userName', `${payload.prenom} ${payload.nom}`.trim());
+          localStorage.setItem('userName', displayName);
           if (data.user_id || data.id) localStorage.setItem('userId', data.user_id || data.id);
           if (data.token) localStorage.setItem('authToken', data.token);
 
-          // Redirection corrigée vers les routes Flask sans .html
+          // Redirection vers la page appropriée
           if (payload.role === 'vendeur') {
             window.location.href = '/page-vendeur';
           } else {

@@ -3,120 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails du Téléphone - Téléphones du Monde</title>
+    <title>Fiche Technique - Téléphones du Monde</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-slate-50 p-4 sm:p-6 min-h-full flex flex-col items-center justify-center">
+<body class="bg-slate-100 p-4 sm:p-8 min-h-full flex flex-col items-center justify-center font-sans antialiased">
     
-    <div class="max-w-3xl w-full mx-auto bg-white rounded-3xl shadow-lg border border-slate-100 p-6 sm:p-8" id="productDetails">
-        <div class="flex flex-col items-center justify-center py-12">
+    <div class="max-w-4xl w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-6 sm:p-10" id="productDetails">
+        <div class="flex flex-col items-center justify-center py-16">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mb-4"></div>
-            <p class="text-center text-slate-500 font-medium">Chargement des détails...</p>
+            <p class="text-center text-slate-500 font-bold">Chargement de la fiche technique...</p>
         </div>
     </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
+        const userId = localStorage.getItem('userId');
+
+        const RATES = { USD: 1, EUR: 0.92, FCFA: 600, XOF: 600 };
+        const SYMBOLS = { USD: '$', EUR: '€', FCFA: 'FCFA', XOF: 'FCFA' };
+        let activeCurrency = 'FCFA';
+        let currentProduct = null;
+
+        function setDetailsCurrency(curr) {
+            activeCurrency = curr;
+            renderDetailsView();
+        }
+
+        function formatPrice(priceUsd) {
+            const val = Math.round((Number(priceUsd) || 0) * (RATES[activeCurrency] || 600));
+            return `${val.toLocaleString()} ${SYMBOLS[activeCurrency] || 'FCFA'}`;
+        }
+
+        function getCleanName(brand, name) {
+            if (!name) return 'Téléphone';
+            if (!brand) return name;
+            if (name.toLowerCase().startsWith(brand.toLowerCase())) return name;
+            return `${brand} ${name}`;
+        }
 
         async function loadDetails() {
             const container = document.getElementById('productDetails');
             
             try {
-                const res = await fetch('/api/products');
-                if (!res.ok) throw new Error("Erreur serveur");
-                
-                const products = await res.json();
-                const product = products.find(p => p.id == productId);
-
-                if (!product) {
-                    container.innerHTML = `
-                        <div class="text-center py-10">
-                            <span class="text-5xl block mb-4">🕵️‍♂️</span>
-                            <p class="text-red-500 font-bold text-xl mb-4">Téléphone introuvable.</p>
-                            <a href="/catalogue" class="text-sky-600 font-medium hover:underline">Retourner au catalogue</a>
-                        </div>`;
-                    return;
-                }
-
-                // Sécurisation des données (pour éviter les affichages "undefined")
-                const imageSrc = product.image_url || product.photo_url || '';
-                const isValidImg = imageSrc && imageSrc.trim() !== '' && !imageSrc.toLowerCase().includes('photo');
-                const brand = product.brand || product.marque || 'Marque';
-                const name = product.name || product.nom || 'Téléphone';
-                const price = product.price_usd || product.prix || product.price || 0;
-                
-                // Éviter d'écrire "Apple Apple iPhone"
-                const displayName = name.toLowerCase().startsWith(brand.toLowerCase()) ? name : `${brand} ${name}`;
-
-                // Message WhatsApp pré-rempli
-                const whatsappMsg = encodeURIComponent(`Bonjour, je suis intéressé(e) par la fiche de ce téléphone : ${displayName} à ${price} $. Est-il disponible ?`);
-
+                const res = await fetch(`/api/products/${productId}`);
+                if (!res.ok) throw new Error("Téléphone non trouvé");
+                currentProduct = await res.json();
+                renderDetailsView();
+            } catch (error) {
+                console.error(error);
                 container.innerHTML = `
-                    <!-- Gestion de l'image ou de l'émoji par défaut -->
-                    <div class="w-full h-64 sm:h-80 bg-slate-100 rounded-2xl mb-6 relative overflow-hidden flex items-center justify-center shadow-inner">
-                        ${isValidImg 
-                          ? `<img src="/${imageSrc}" alt="${displayName}" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=\\'text-7xl text-sky-700\\'>📱</div>'">` 
-                          : `<div class="text-7xl text-sky-700">📱</div>`}
-                        <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-sky-700 text-xs font-black px-3 py-1.5 rounded-full shadow-sm uppercase tracking-wider">
+                    <div class="text-center py-12">
+                        <span class="text-6xl block mb-4">🕵️‍♂️</span>
+                        <h2 class="text-2xl font-black text-slate-900 mb-2">Téléphone introuvable</h2>
+                        <p class="text-slate-500 text-sm mb-6">Ce modèle n'existe pas ou a été retiré de la vente.</p>
+                        <a href="/catalogue" class="inline-block bg-sky-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-sky-700 transition text-sm">
+                            ← Retourner au catalogue
+                        </a>
+                    </div>`;
+            }
+        }
+
+        function renderDetailsView() {
+            const container = document.getElementById('productDetails');
+            if (!currentProduct) return;
+
+            const p = currentProduct;
+            const brand = p.brand || p.marque || 'Marque';
+            const name = p.name || p.nom || 'Téléphone';
+            const displayName = getCleanName(brand, name);
+            const priceFormatted = formatPrice(p.price_usd);
+            const whatsapp = p.whatsapp || '22997001122';
+            const vendeur = p.vendeur || 'Boutique Officielle';
+
+            const whatsappMsg = encodeURIComponent(`Bonjour, je suis intéressé(e) par la fiche complète du ${displayName} à ${priceFormatted}. Pouvez-vous me donner les détails de disponibilité et de livraison ?`);
+
+            container.innerHTML = `
+                <!-- Barre supérieure : Retour & Devise -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4 mb-6">
+                    <button onclick="window.history.back()" class="text-slate-500 hover:text-slate-900 font-bold text-xs flex items-center gap-1.5 transition">
+                        <span>←</span> Retour à la liste
+                    </button>
+                    
+                    <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-600 px-2">Devise :</span>
+                        <button onclick="setDetailsCurrency('FCFA')" class="px-2.5 py-1 rounded-lg text-xs font-black transition ${activeCurrency === 'FCFA' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-700 hover:bg-white'}">FCFA</button>
+                        <button onclick="setDetailsCurrency('USD')" class="px-2.5 py-1 rounded-lg text-xs font-black transition ${activeCurrency === 'USD' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-700 hover:bg-white'}">USD ($)</button>
+                        <button onclick="setDetailsCurrency('EUR')" class="px-2.5 py-1 rounded-lg text-xs font-black transition ${activeCurrency === 'EUR' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-700 hover:bg-white'}">EUR (€)</button>
+                    </div>
+                </div>
+
+                <!-- Aperçu Visuel & En-tête -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                    <div class="md:col-span-5 bg-gradient-to-tr from-slate-100 to-sky-50 rounded-3xl h-64 sm:h-72 flex items-center justify-center relative border border-slate-200 shadow-inner">
+                        <span class="text-8xl">📱</span>
+                        <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-sky-800 text-xs font-black px-3 py-1 rounded-full shadow-sm uppercase border border-sky-100">
                             ${brand}
+                        </span>
+                        <span class="absolute top-4 right-4 bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">
+                            🔥 ${p.tendance || 85}% Popularité
                         </span>
                     </div>
 
-                    <!-- En-tête : Titre et Prix -->
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-6">
+                    <div class="md:col-span-7 space-y-4">
                         <div>
-                            <h1 class="text-2xl sm:text-3xl font-black text-slate-900">${displayName}</h1>
-                            <p class="text-sm text-slate-500 mt-1">${product.specs || 'Modèle standard'}</p>
+                            <span class="text-xs font-black text-indigo-600 uppercase tracking-wider">Fiche Technique Certifiée</span>
+                            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">${displayName}</h1>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">${p.specs || 'Smartphone Hautes Performances'}</p>
+                            <p class="text-xs font-bold text-slate-700 mt-2">🏪 Vendu et garanti par : <span class="text-indigo-600">${vendeur}</span></p>
                         </div>
-                        <div class="text-2xl font-black text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 shrink-0">
-                            ${price} $
-                        </div>
-                    </div>
-                    
-                    <!-- Fiche technique avec valeurs par défaut -->
-                    <div class="mt-6">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">Fiche Technique Complète</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-700">
-                            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <span class="text-xl">📱</span> 
-                                <div><span class="block text-xs text-slate-400 font-bold uppercase">Écran</span> ${product.ecran || 'Non spécifié'}</div>
+
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex justify-between items-center">
+                            <div>
+                                <span class="text-xs text-slate-400 font-bold uppercase block">Prix du téléphone</span>
+                                <span class="text-2xl sm:text-3xl font-black text-slate-900">${priceFormatted}</span>
                             </div>
-                            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <span class="text-xl">📸</span> 
-                                <div><span class="block text-xs text-slate-400 font-bold uppercase">Caméra</span> ${product.camera || 'Non spécifié'}</div>
-                            </div>
-                            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <span class="text-xl">🔋</span> 
-                                <div><span class="block text-xs text-slate-400 font-bold uppercase">Batterie</span> ${product.batterie || 'Non spécifié'}</div>
-                            </div>
-                            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <span class="text-xl">💾</span> 
-                                <div><span class="block text-xs text-slate-400 font-bold uppercase">Stockage</span> ${product.stockage || 'Non spécifié'}</div>
-                            </div>
-                            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <span class="text-xl">⚡</span> 
-                                <div><span class="block text-xs text-slate-400 font-bold uppercase">RAM</span> ${product.ram || 'Non spécifié'}</div>
-                            </div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1.5 rounded-xl">
+                                ${p.statut || 'En Stock'}
+                            </span>
                         </div>
                     </div>
-                    
-                    <!-- Boutons d'action -->
-                    <div class="mt-8 flex flex-col sm:flex-row gap-3">
-                        <button onclick="window.history.back()" class="flex-1 text-center bg-white border-2 border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition flex items-center justify-center gap-2">
-                            ⬅ Retour
-                        </button>
-                        <a href="https://wa.me/22900000000?text=${whatsappMsg}" target="_blank" class="flex-1 text-center bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-500 transition shadow-lg flex items-center justify-center gap-2">
-                            💬 Contacter le vendeur
-                        </a>
+                </div>
+
+                <!-- Grille Caractéristiques Détaillées -->
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+                        <span>⚙️</span> Caractéristiques Techniques & Performances
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 text-sm">
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+                            <span class="text-2xl">📱</span>
+                            <div>
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase">Écran</span>
+                                <span class="font-extrabold text-slate-800 text-xs sm:text-sm">${p.ecran || '6.7" AMOLED'}</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+                            <span class="text-2xl">📸</span>
+                            <div>
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase">Appareil Photo</span>
+                                <span class="font-extrabold text-slate-800 text-xs sm:text-sm">${p.camera || '50 MP Ultra'}</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+                            <span class="text-2xl">🔋</span>
+                            <div>
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase">Batterie & Charge</span>
+                                <span class="font-extrabold text-slate-800 text-xs sm:text-sm">${p.batterie || '5000 mAh'}</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+                            <span class="text-2xl">💾</span>
+                            <div>
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase">Stockage Interne</span>
+                                <span class="font-extrabold text-slate-800 text-xs sm:text-sm">${p.stockage || '256Go'}</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+                            <span class="text-2xl">⚡</span>
+                            <div>
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase">Mémoire RAM</span>
+                                <span class="font-extrabold text-slate-800 text-xs sm:text-sm">${p.ram || '8Go'}</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+                            <span class="text-2xl">🏷️</span>
+                            <div>
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase">Série / Catégorie</span>
+                                <span class="font-extrabold text-slate-800 text-xs sm:text-sm">${p.series || p.tag || 'Standard'}</span>
+                            </div>
+                        </div>
                     </div>
-                `;
-            } catch (error) {
-                console.error(error);
-                container.innerHTML = `<div class="text-center py-8"><p class="text-red-500 font-bold">Erreur de chargement des données. Veuillez réessayer.</p></div>`;
+                </div>
+
+                <!-- Boutons d'actions -->
+                <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
+                    <a href="https://wa.me/${whatsapp}?text=${whatsappMsg}" target="_blank" class="flex-1 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-2xl transition shadow-lg flex items-center justify-center gap-2 text-sm">
+                        <span>💬</span> Commander Directement sur WhatsApp
+                    </a>
+                    <button onclick="addToFavoritesDetails(${p.id}, '${displayName.replace(/'/g, "\\'")}')" class="px-6 py-3.5 bg-sky-50 hover:bg-rose-50 text-sky-700 hover:text-rose-600 border border-sky-200 hover:border-rose-300 font-black rounded-2xl transition text-sm flex items-center justify-center gap-2">
+                        <span>❤️</span> Ajouter aux Favoris
+                    </button>
+                </div>
+            `;
+        }
+
+        async function addToFavoritesDetails(prodId, phoneName) {
+            if (!userId) {
+                alert("Veuillez vous connecter pour sauvegarder ce téléphone dans vos favoris.");
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/users/${userId}/favorites`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: prodId })
+                });
+                const data = await res.json();
+                alert(data.message || `${phoneName} ajouté aux favoris !`);
+            } catch (err) {
+                console.error(err);
+                alert("Erreur d'ajout aux favoris.");
             }
         }
-        
+
         loadDetails();
     </script>
 </body>

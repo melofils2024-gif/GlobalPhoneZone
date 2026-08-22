@@ -3,52 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catalogue - Téléphones du Monde</title>
+  <title>Catalogue Intelligent - Téléphones du Monde</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 flex flex-col min-h-full font-sans">
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-full font-sans antialiased">
 
   <!-- Header -->
-  <header class="bg-white/90 backdrop-blur-md shadow-sm px-4 py-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50 border-b border-slate-100">
-    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-sky-700 text-center sm:text-left">
-      Téléphones du Monde <span class="text-base">🌍</span>
-    </h1>
-    <nav id="mainNav" class="flex flex-wrap justify-center gap-3 sm:space-x-4 text-sm sm:text-base text-sky-600 font-medium items-center">
-      <a href="/" class="hover:text-sky-800 transition">Accueil</a>
-      <a href="/catalogue" class="font-bold underline text-sky-800 transition">Catalogue</a>
+  <header class="bg-white/95 backdrop-blur-md shadow-sm px-4 py-3 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🌍</span>
+      <h1 class="text-xl sm:text-2xl font-black tracking-tight text-sky-700">
+        Téléphones du Monde
+      </h1>
+    </div>
+
+    <nav id="mainNav" class="flex flex-wrap justify-center gap-2 sm:space-x-3 text-sm sm:text-base font-semibold items-center">
+      <a href="/" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Accueil</a>
+      <a href="/catalogue" class="text-sky-700 font-bold bg-sky-50 px-3 py-1.5 rounded-lg border border-sky-100">Catalogue</a>
       
-      <a href="/favoris" id="navFavorites" class="hover:text-sky-800 transition" style="display: none;">Favoris ❤️</a>
-      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles Vendeurs</a>
-      <a href="/page-client" id="navSpace" class="hover:text-sky-800 transition" style="display: none;">Espace Client</a>
+      <a href="/favoris" id="navFavorites" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition hidden">Favoris ❤️</a>
+      <a href="/vendeurs-articles" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Articles Vendeurs 🛍️</a>
+      <a href="/page-client" id="navSpace" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition hidden">Mon Espace</a>
       
-      <div id="authButtons" class="flex gap-2 items-center">
-        <a href="/login" class="font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg transition text-sm">Connexion</a>
-        <a href="/register" class="font-bold bg-sky-600 text-white hover:bg-sky-500 py-1 px-3 rounded-lg transition text-sm">Inscription</a>
+      <div id="authButtons" class="flex gap-2 items-center ml-2">
+        <a href="/login" class="font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1.5 px-3 rounded-lg transition text-xs sm:text-sm">Connexion</a>
+        <a href="/register" class="font-bold bg-sky-600 text-white hover:bg-sky-500 py-1.5 px-3.5 rounded-lg transition text-xs sm:text-sm shadow-sm">Inscription</a>
       </div>
     </nav>
   </header>
 
   <!-- En-tête de section -->
-  <section class="max-w-7xl w-full mx-auto px-4 mt-8">
+  <section class="max-w-7xl w-full mx-auto px-4 mt-6">
     <div class="text-center max-w-2xl mx-auto mb-6">
-      <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Catalogue Intelligent</h2>
+      <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Catalogue des Marques</h2>
       <p class="text-slate-500 mt-2 text-sm sm:text-base">
-        Trouvez instantanément le téléphone correspondant à vos critères et à votre budget exact.
+        Explorez toutes les marques mondiales avec caractéristiques détaillées et conversion instantanée des prix.
       </p>
       
-      <button onclick="openAssistantModal()" class="mt-4 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold py-2.5 px-5 rounded-full shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition text-sm flex items-center gap-2 mx-auto">
-        ✨ Hésitant ? Laisser l'assistant vous guider !
+      <!-- Bouton Assistant Intelligent -->
+      <button onclick="openAssistantModal()" class="mt-4 bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white font-black py-3 px-6 rounded-full shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition text-sm flex items-center gap-2 mx-auto">
+        <span>✨</span> Hésitant ? Laisser l'Assistant Virtuel vous guider !
       </button>
     </div>
 
-    <!-- PANNEAU DE CONTRÔLE ÉPURÉ -->
-    <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg border border-slate-100 flex flex-col md:flex-row gap-3 items-center">
+    <!-- PANNEAU DE CONTRÔLE & FILTRES -->
+    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-3 items-center">
       
       <!-- 1. Barre de recherche principale -->
       <div class="relative flex-grow w-full">
         <input type="text" id="searchInput" oninput="filterProducts()" 
-               placeholder="Rechercher (ex: Samsung S24, Galaxy A15, Redmi, iPhone)..." 
+               placeholder="Rechercher un modèle, marque, processeur (ex: S24 Ultra, iPhone 15, Redmi, Pixel)..." 
                class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
         <span class="absolute left-3.5 top-3.5 text-slate-400">🔍</span>
       </div>
@@ -56,41 +61,34 @@
       <!-- Conteneur des Filtres -->
       <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full md:w-auto">
         
-        <!-- 2. Filtre Marque & Gamme -->
-        <div class="relative flex-grow sm:flex-grow-0">
+        <!-- 2. Filtre Marque -->
+        <div class="relative flex-grow sm:flex-grow-0 min-w-[170px]">
           <select id="brandFilter" onchange="filterProducts()" 
-                  class="w-full appearance-none bg-sky-50 text-sky-700 font-bold py-3 pl-10 pr-8 rounded-xl text-sm border border-sky-100 hover:bg-sky-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                  class="w-full appearance-none bg-sky-50 text-sky-800 font-bold py-3 pl-9 pr-8 rounded-xl text-sm border border-sky-200 hover:bg-sky-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
             <option value="ALL">🏷️ Toutes les marques</option>
-            <option value="Apple">Apple iPhone</option>
-            <option value="Samsung-S">Samsung Galaxy S (Haut de gamme)</option>
-            <option value="Samsung-A">Samsung Galaxy A (Série A)</option>
-            <option value="Xiaomi">Xiaomi / Redmi</option>
-            <option value="Infinix">Infinix</option>
-            <option value="Tecno">Tecno</option>
-            <option value="Itel">Itel</option>
-            <option value="Google">Google Pixel</option>
           </select>
+          <span class="absolute left-3 top-3.5 pointer-events-none text-xs">📱</span>
           <span class="absolute right-3 top-3.5 pointer-events-none text-xs text-sky-600">▼</span>
         </div>
 
-        <!-- 3. Champ Budget Max -->
+        <!-- 3. Champ Budget Max (adapté à la devise active) -->
         <div class="relative flex-grow sm:flex-grow-0 min-w-[150px]">
           <input type="number" id="maxPriceInput" oninput="filterProducts()" 
-                 placeholder="Prix max..." 
-                 class="w-full pl-9 pr-3 py-3 bg-amber-50 text-amber-900 placeholder-amber-400 font-semibold border border-amber-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition">
+                 placeholder="Budget max..." 
+                 class="w-full pl-9 pr-3 py-3 bg-amber-50 text-amber-900 placeholder-amber-500 font-bold border border-amber-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition">
           <span class="absolute left-3 top-3.5 text-amber-600 font-bold text-xs">💰</span>
         </div>
 
-        <!-- 4. Sélecteur de Devise -->
-        <div class="relative flex-grow sm:flex-grow-0">
+        <!-- 4. Sélecteur de Devise ($ / € / FCFA) -->
+        <div class="relative flex-grow sm:flex-grow-0 min-w-[130px]">
           <select id="currencySelect" onchange="changeCurrency()" 
-                  class="w-full appearance-none bg-emerald-50 text-emerald-800 font-bold py-3 pl-9 pr-8 rounded-xl text-sm border border-emerald-200 hover:bg-emerald-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
-            <option value="XOF" selected>FCFA</option>
+                  class="w-full appearance-none bg-emerald-50 text-emerald-900 font-black py-3 pl-9 pr-8 rounded-xl text-sm border border-emerald-300 hover:bg-emerald-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+            <option value="XOF" selected>FCFA (XOF)</option>
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
           </select>
           <span class="absolute left-3 top-3.5 pointer-events-none text-xs">💱</span>
-          <span class="absolute right-3 top-3.5 pointer-events-none text-xs text-emerald-600">▼</span>
+          <span class="absolute right-3 top-3.5 pointer-events-none text-xs text-emerald-700">▼</span>
         </div>
 
       </div>
@@ -104,47 +102,52 @@
     </div>
   </main>
 
-  <!-- MODAL ASSISTANT VIRTUEL -->
-  <div id="assistantModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border border-slate-100">
-      <button onclick="closeAssistantModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+  <!-- MODAL ASSISTANT INTELLIGENT DE RECOMMANDATION -->
+  <div id="assistantModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative border border-slate-100 animate-fadeIn max-h-[90vh] overflow-y-auto">
+      <button onclick="closeAssistantModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 font-black text-2xl">✕</button>
       
       <div class="text-center mb-6">
-        <span class="text-4xl">🤖</span>
-        <h3 class="text-xl font-bold text-slate-900 mt-2">Assistant de Choix</h3>
-        <p class="text-xs text-slate-500">Répondez à ces 3 questions pour trouver votre téléphone idéal.</p>
+        <div class="w-14 h-14 bg-gradient-to-tr from-sky-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-md mb-2">
+          🤖
+        </div>
+        <h3 class="text-2xl font-black text-slate-900">Assistant Recommandation IA</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">Répondez à ces questions pour obtenir instantanément les 3 téléphones les plus adaptés à vos besoins.</p>
       </div>
 
       <div class="space-y-4 text-sm">
         <div>
-          <label class="font-bold text-slate-700 block mb-1">1. Votre Budget Maximal :</label>
-          <input type="number" id="quizBudget" placeholder="Ex: 150000" class="w-full p-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+          <label class="font-bold text-slate-700 block mb-1">1. Votre Budget Maximal (<span id="quizCurrencyLabel">FCFA</span>) :</label>
+          <input type="number" id="quizBudget" placeholder="Ex: 250000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-bold text-slate-800">
         </div>
 
         <div>
           <label class="font-bold text-slate-700 block mb-1">2. Votre Priorité Principale :</label>
-          <select id="quizPriority" class="w-full p-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-medium">
-            <option value="ALL">Tout-en-un / Usage Quotidien</option>
-            <option value="CAMERA">Super Caméra / Photo & Vidéo</option>
-            <option value="BATTERY">Autonomie & Grande Batterie</option>
-            <option value="PERF">Performance & Gaming</option>
+          <select id="quizPriority" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-semibold text-slate-800">
+            <option value="ALL">🌟 Usage Polyvalent & Équilibré</option>
+            <option value="CAMERA">📸 Photographie Pro & Vidéo Haute Qualité</option>
+            <option value="BATTERY">🔋 Grande Autonomie & Charge Ultra-Rapide</option>
+            <option value="PERF">⚡ Puissance Processeur, RAM & Gaming</option>
+            <option value="BUDGET">💰 Meilleur Prix Accessible (Économique)</option>
           </select>
         </div>
 
         <div>
           <label class="font-bold text-slate-700 block mb-1">3. Préférence de Marque :</label>
-          <select id="quizBrand" class="w-full p-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-medium">
+          <select id="quizBrand" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-semibold text-slate-800">
             <option value="ALL">Peu importe (Toutes les marques)</option>
-            <option value="Samsung">Samsung</option>
-            <option value="Apple">Apple</option>
-            <option value="Xiaomi">Xiaomi / Redmi</option>
-            <option value="Infinix">Infinix / Tecno / Itel</option>
           </select>
         </div>
 
-        <button onclick="applyQuizResult()" class="w-full bg-sky-600 text-white font-bold py-3 rounded-xl hover:bg-sky-700 transition shadow-lg mt-2">
-          Trouver mon téléphone idéal 🚀
+        <button onclick="runSmartAssistant()" id="btnRunAssistant" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-black py-3.5 rounded-xl hover:shadow-lg hover:scale-102 active:scale-98 transition shadow mt-2 flex items-center justify-center gap-2">
+          <span>🚀</span> Trouver mes Meilleurs Téléphones
         </button>
+
+        <!-- Zone des Résultats de l'Assistant -->
+        <div id="quizResults" class="mt-6 space-y-4 hidden">
+          <h4 class="font-black text-slate-900 text-base border-t pt-4">🎯 Top 3 Recommandations Sur-Mesure :</h4>
+          <div id="recommendationsList" class="space-y-3"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -156,14 +159,14 @@
       
       <div class="text-center mb-4">
         <span class="text-3xl">💳</span>
-        <h3 class="text-lg font-bold text-slate-900 mt-1" id="instTitle">Simulateur de Paiement</h3>
+        <h3 class="text-lg font-bold text-slate-900 mt-1" id="instTitle">Simulateur de Paiement Échelonné</h3>
         <p class="text-xs text-sky-600 font-bold" id="instTotalPrice"></p>
       </div>
 
       <div class="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
         <div>
           <label class="text-xs font-bold text-slate-600 block mb-1">Fréquence de paiement :</label>
-          <select id="instType" onchange="updateInstallmentCalc()" class="w-full p-2 bg-white border rounded-lg text-sm font-bold">
+          <select id="instType" onchange="updateInstallmentCalc()" class="w-full p-2.5 bg-white border rounded-lg text-sm font-bold">
             <option value="MONTHLY">Mensuel (Par mois)</option>
             <option value="WEEKLY">Hebdomadaire (Par semaine)</option>
           </select>
@@ -171,7 +174,7 @@
 
         <div>
           <label class="text-xs font-bold text-slate-600 block mb-1">Durée du paiement :</label>
-          <select id="instDuration" onchange="updateInstallmentCalc()" class="w-full p-2 bg-white border rounded-lg text-sm font-bold">
+          <select id="instDuration" onchange="updateInstallmentCalc()" class="w-full p-2.5 bg-white border rounded-lg text-sm font-bold">
             <option value="3">3 Mois / Tranches</option>
             <option value="6" selected>6 Mois / Tranches</option>
             <option value="12">12 Mois / Tranches</option>
@@ -192,37 +195,36 @@
   </div>
 
   <!-- Footer -->
-  <footer class="bg-gradient-to-r from-blue-900 to-violet-700 text-white text-center p-6 mt-auto">
-    <p>© 2026 Téléphones du Monde</p>
-    <p class="text-xs sm:text-sm mt-2">Votre partenaire de confiance pour l’achat de téléphones</p>
+  <footer class="bg-slate-900 text-slate-300 text-center p-8 mt-auto border-t border-slate-800">
+    <p class="font-bold text-white">© 2026 Téléphones du Monde 🌍</p>
+    <p class="text-xs sm:text-sm mt-1 text-slate-400">Catalogue complet multi-devises et fiches techniques certifiées</p>
   </footer>
 
-  <!-- Script Dynamique -->
+  <!-- Script Dynamique Multi-Devises et Assistant -->
   <script>
-    // 1. Gestion de la Navigation / Rôles (Identique à l'accueil)
     const userRole = localStorage.getItem('userRole');
+    const userId = localStorage.getItem('userId');
     const navFavorites = document.getElementById('navFavorites');
     const navSpace = document.getElementById('navSpace');
     const authButtons = document.getElementById('authButtons');
 
     if (userRole === 'vendeur') {
-      if (navFavorites) navFavorites.style.display = 'none';
       if (navSpace) {
-        navSpace.style.display = 'inline-block';
+        navSpace.classList.remove('hidden');
         navSpace.textContent = 'Espace Vendeur 📊';
         navSpace.href = '/page-vendeur';
       }
     } else if (userRole === 'client') {
-      if (navFavorites) navFavorites.style.display = 'inline-block';
+      if (navFavorites) navFavorites.classList.remove('hidden');
       if (navSpace) {
-        navSpace.style.display = 'inline-block';
-        navSpace.textContent = 'Mon Espace Client';
+        navSpace.classList.remove('hidden');
+        navSpace.textContent = 'Mon Espace Client 👤';
         navSpace.href = '/page-client';
       }
     }
 
     if (userRole && authButtons) {
-      authButtons.innerHTML = `<button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-sm">Déconnexion</button>`;
+      authButtons.innerHTML = `<button onclick="logout()" class="font-bold border border-rose-500 text-rose-500 hover:bg-rose-500 hover:text-white py-1.5 px-3 rounded-lg transition text-xs sm:text-sm">Déconnexion 🚪</button>`;
     }
 
     function logout() {
@@ -230,9 +232,9 @@
       window.location.href = '/';
     }
 
-    // 2. Gestion du Catalogue Intelligent
-    const RATES = { USD: 1, EUR: 0.92, XOF: 600 };
-    const SYMBOLS = { USD: '$', EUR: '€', XOF: 'FCFA' };
+    // Gestion Devises & Taux
+    const RATES = { USD: 1, EUR: 0.92, XOF: 600, FCFA: 600 };
+    const SYMBOLS = { USD: '$', EUR: '€', XOF: 'FCFA', FCFA: 'FCFA' };
     let currentCurrency = 'XOF';
     let products = [];
     let selectedProductForInstallment = null;
@@ -242,6 +244,7 @@
         const response = await fetch('/api/products');
         if (!response.ok) throw new Error("Erreur de chargement");
         products = await response.json();
+        populateBrandFilters();
         renderProducts(products);
       } catch (error) {
         console.error("Erreur:", error);
@@ -252,9 +255,29 @@
       }
     }
 
+    function populateBrandFilters() {
+      const select = document.getElementById('brandFilter');
+      const quizSelect = document.getElementById('quizBrand');
+      const uniqueBrands = Array.from(new Set(products.map(p => p.brand || p.marque).filter(Boolean))).sort();
+
+      if (select) {
+        select.innerHTML = '<option value="ALL">🏷️ Toutes les marques</option>';
+        uniqueBrands.forEach(b => {
+          select.innerHTML += `<option value="${b}">${b}</option>`;
+        });
+      }
+
+      if (quizSelect) {
+        quizSelect.innerHTML = '<option value="ALL">Peu importe (Toutes les marques)</option>';
+        uniqueBrands.forEach(b => {
+          quizSelect.innerHTML += `<option value="${b}">${b}</option>`;
+        });
+      }
+    }
+
     function formatPrice(priceUSD) {
-      const converted = Math.round((Number(priceUSD) || 0) * RATES[currentCurrency]);
-      return `${converted.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
+      const converted = Math.round((Number(priceUSD) || 0) * (RATES[currentCurrency] || 600));
+      return `${converted.toLocaleString()} ${SYMBOLS[currentCurrency] || 'FCFA'}`;
     }
 
     function getCleanName(brand, name) {
@@ -269,51 +292,76 @@
       if (!grid) return;
       grid.innerHTML = '';
       
-      // Si la base est vide ou aucun résultat de recherche
       if (items.length === 0) {
         grid.innerHTML = `
           <div class="col-span-full text-center py-16 bg-white rounded-2xl shadow-sm border border-slate-100">
             <span class="text-4xl block mb-2">🕵️‍♂️</span>
-            <p class="text-slate-500 font-bold">Aucun téléphone ne correspond à vos critères ou la boutique est vide.</p>
+            <p class="text-slate-600 font-bold">Aucun téléphone ne correspond à vos critères de recherche.</p>
           </div>`;
         return;
       }
 
       items.forEach(p => {
         const displayName = getCleanName(p.brand, p.name);
-        // Sécurisation de l'image
-        const imageSrc = p.image_url || p.photo_url || '';
-        const isValidImg = imageSrc && imageSrc.trim() !== '' && !imageSrc.toLowerCase().includes('photo');
-        const price = p.price_usd || p.prix || p.prix_approx || p.price || 0;
+        const price = p.price_usd || 0;
+        const brand = p.brand || 'Marque';
+        const ecran = p.ecran || '6.7" AMOLED';
+        const camera = p.camera || '50 MP';
+        const batterie = p.batterie || '5000 mAh';
+        const memoire = `${p.stockage || '128Go'} • ${p.ram || '8Go'}`;
 
         grid.innerHTML += `
-          <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col justify-between group overflow-hidden">
+          <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200 flex flex-col justify-between group overflow-hidden">
             <div>
-              <div class="overflow-hidden h-48 bg-slate-100 relative flex items-center justify-center">
-                ${isValidImg 
-                  ? `<img src="/${imageSrc}" alt="${displayName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.outerHTML='<div class=\\'flex items-center justify-center w-full h-full text-5xl bg-slate-100 text-sky-700\\'>📱</div>'">` 
-                  : `<div class="text-5xl text-sky-700">📱</div>`}
-                <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-700 px-2.5 py-1 rounded-full shadow-sm">
-                  ${p.brand || 'Marque'}
+              <!-- En-tête visuel -->
+              <div class="h-44 bg-gradient-to-tr from-slate-100 to-sky-50 relative flex items-center justify-center border-b border-slate-100">
+                <span class="text-6xl group-hover:scale-110 transition-transform duration-300">📱</span>
+                <span class="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur-md text-sky-800 px-2.5 py-1 rounded-full shadow-sm border border-sky-100">
+                  ${brand}
+                </span>
+                <span class="absolute top-3 right-3 text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                  🔥 ${p.tendance || 85}%
                 </span>
               </div>
-              <div class="p-4 pb-0">
-                <h3 class="font-bold text-slate-800 text-base group-hover:text-sky-600 transition truncate" title="${displayName}">${displayName}</h3>
-                <p class="text-xs text-slate-400 mt-1 line-clamp-1">${p.specs || 'Standard'}</p>
+
+              <!-- Infos principales -->
+              <div class="p-4 pb-2">
+                <h3 class="font-black text-slate-900 text-base group-hover:text-sky-600 transition truncate" title="${displayName}">${displayName}</h3>
+                
+                <!-- Badges Caractéristiques Techniques -->
+                <div class="mt-3 space-y-1.5 text-xs text-slate-600">
+                  <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-lg border border-slate-100 truncate" title="${ecran}">
+                    <span class="text-sky-600 font-bold">📱</span> <span class="truncate">${ecran}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-lg border border-slate-100 truncate" title="${camera}">
+                    <span class="text-sky-600 font-bold">📸</span> <span class="truncate">${camera}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-lg border border-slate-100">
+                    <span class="text-sky-600 font-bold">🔋</span> <span>${batterie}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-lg border border-slate-100">
+                    <span class="text-sky-600 font-bold">💾</span> <span>${memoire}</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="p-4 pt-3">
-              <div class="text-lg font-black text-slate-900 mb-3">${formatPrice(price)}</div>
+
+            <!-- Prix & Actions -->
+            <div class="p-4 pt-2 border-t border-slate-50">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-xs text-slate-400 font-bold uppercase">Prix</span>
+                <div class="text-lg font-black text-slate-900 text-right">${formatPrice(price)}</div>
+              </div>
               
-              <button onclick="openInstallmentModal(${p.id})" class="w-full mb-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold py-1.5 rounded-lg text-xs transition border border-emerald-100 flex items-center justify-center gap-1">
-                💳 Payer par tranche
+              <button onclick="openInstallmentModal(${p.id})" class="w-full mb-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold py-1.5 rounded-xl text-xs transition border border-emerald-200 flex items-center justify-center gap-1">
+                💳 Simulateur de mensualités
               </button>
 
               <div class="flex gap-2">
-                <button onclick="window.location.href='/details?id=${p.id}'" class="flex-grow bg-sky-600 text-white font-bold py-2 rounded-xl hover:bg-sky-700 active:scale-95 transition text-sm">
-                  Détails
+                <button onclick="window.location.href='/details?id=${p.id}'" class="flex-grow bg-sky-600 text-white font-bold py-2 rounded-xl hover:bg-sky-700 active:scale-95 transition text-xs flex items-center justify-center gap-1">
+                  🔍 Fiche Technique
                 </button>
-                <button class="px-3 border border-slate-200 rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 active:scale-95 transition text-sm">
+                <button onclick="toggleFavorite(${p.id}, '${displayName.replace(/'/g, "\\'")}')" class="px-3 border border-slate-200 rounded-xl hover:bg-rose-50 hover:text-rose-500 hover:border-rose-200 active:scale-95 transition text-sm" title="Ajouter aux favoris">
                   ❤️
                 </button>
               </div>
@@ -322,7 +370,7 @@
       });
     }
 
-    // 3. Logique de Filtrage (Barre de recherche, Marque, Budget)
+    // Filtrage dynamique
     function filterProducts() {
       const search = document.getElementById('searchInput').value.toLowerCase().trim();
       const brandSelected = document.getElementById('brandFilter').value;
@@ -331,21 +379,20 @@
       const filtered = products.filter(p => {
         const name = (p.name || '').toLowerCase();
         const brand = (p.brand || '').toLowerCase();
-        const price = p.price_usd || p.prix || p.price || 0;
-        const convertedPrice = Math.round(price * RATES[currentCurrency]);
+        const specs = (p.specs || '').toLowerCase();
+        const price = p.price_usd || 0;
+        const convertedPrice = Math.round(price * (RATES[currentCurrency] || 600));
 
-        // 1. Recherche texte
-        const matchSearch = name.includes(search) || brand.includes(search);
+        // Recherche texte
+        const matchSearch = name.includes(search) || brand.includes(search) || specs.includes(search);
         
-        // 2. Filtre par marque
+        // Filtre par marque dynamique
         let matchBrand = true;
         if (brandSelected !== 'ALL') {
-           if (brandSelected === 'Samsung-S') matchBrand = p.series === 'Samsung-S' || name.includes('s2') || name.includes('s24');
-           else if (brandSelected === 'Samsung-A') matchBrand = p.series === 'Samsung-A' || name.includes('a1') || name.includes('a5');
-           else matchBrand = brand === brandSelected.toLowerCase();
+          matchBrand = brand.toLowerCase() === brandSelected.toLowerCase() || (p.series && p.series.toLowerCase() === brandSelected.toLowerCase());
         }
 
-        // 3. Filtre par budget
+        // Filtre par budget
         let matchPrice = true;
         if (!isNaN(maxPrice) && maxPrice > 0) {
           matchPrice = convertedPrice <= maxPrice;
@@ -357,30 +404,118 @@
       renderProducts(filtered);
     }
 
-    // Changement de devise
+    // Changement de Devise
     function changeCurrency() {
       currentCurrency = document.getElementById('currencySelect').value;
+      const qLabel = document.getElementById('quizCurrencyLabel');
+      if (qLabel) qLabel.textContent = SYMBOLS[currentCurrency] || 'FCFA';
       filterProducts();
     }
 
-    // 4. Gestion des Modals (Assistant Virtuel & Simulateur Tranches)
-    function openAssistantModal() { document.getElementById('assistantModal').classList.remove('hidden'); }
-    function closeAssistantModal() { document.getElementById('assistantModal').classList.add('hidden'); }
-    
-    function applyQuizResult() {
-      const budget = document.getElementById('quizBudget').value;
-      const brand = document.getElementById('quizBrand').value;
-      
-      if(budget) document.getElementById('maxPriceInput').value = budget;
-      if(brand !== 'ALL') {
-          const filter = Array.from(document.getElementById('brandFilter').options).find(opt => opt.value.includes(brand));
-          if(filter) document.getElementById('brandFilter').value = filter.value;
+    // Gestion des Favoris
+    async function toggleFavorite(productId, phoneName) {
+      if (!userId) {
+        alert("Veuillez vous connecter pour enregistrer vos favoris.");
+        window.location.href = '/login';
+        return;
       }
-      
-      filterProducts();
-      closeAssistantModal();
+
+      try {
+        const res = await fetch(`/api/users/${userId}/favorites`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: productId })
+        });
+        const data = await res.json();
+        alert(data.message || `${phoneName} ajouté aux favoris !`);
+      } catch (err) {
+        console.error(err);
+        alert("Erreur lors de l'ajout aux favoris.");
+      }
     }
 
+    // Gestion de l'Assistant Intelligent (Quiz / Recommandation)
+    function openAssistantModal() { 
+      document.getElementById('quizCurrencyLabel').textContent = SYMBOLS[currentCurrency] || 'FCFA';
+      document.getElementById('assistantModal').classList.remove('hidden'); 
+    }
+    
+    function closeAssistantModal() { 
+      document.getElementById('assistantModal').classList.add('hidden'); 
+    }
+
+    async function runSmartAssistant() {
+      const budget = document.getElementById('quizBudget').value;
+      const priority = document.getElementById('quizPriority').value;
+      const brand = document.getElementById('quizBrand').value;
+      const btn = document.getElementById('btnRunAssistant');
+      
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳</span> Recherche intelligente en cours...`;
+
+      try {
+        const res = await fetch('/api/assistant/recommend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            budget: budget,
+            priority: priority,
+            brand: brand,
+            currency: currentCurrency === 'XOF' ? 'FCFA' : currentCurrency
+          })
+        });
+
+        const data = await res.json();
+        const resultsContainer = document.getElementById('quizResults');
+        const list = document.getElementById('recommendationsList');
+        
+        list.innerHTML = '';
+
+        if (data.recommendations && data.recommendations.length > 0) {
+          data.recommendations.forEach((item, idx) => {
+            const dName = getCleanName(item.brand, item.name);
+            const pFormatted = formatPrice(item.price_usd);
+            
+            list.innerHTML += `
+              <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col justify-between hover:border-sky-300 transition">
+                <div class="flex justify-between items-start gap-2">
+                  <div>
+                    <span class="text-xs font-black text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">Recommandation #${idx+1}</span>
+                    <h5 class="font-extrabold text-slate-900 mt-1">${dName}</h5>
+                    <p class="text-xs text-slate-500 mt-0.5">${item.recommendation_reason || ''}</p>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-xs font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">${item.match_score}% Match</span>
+                    <div class="font-black text-slate-900 mt-1 text-sm">${pFormatted}</div>
+                  </div>
+                </div>
+                <div class="mt-3 flex gap-2">
+                  <a href="/details?id=${item.id}" class="flex-1 text-center bg-sky-600 text-white font-bold py-1.5 rounded-xl text-xs hover:bg-sky-700 transition">
+                    Voir la Fiche 🔍
+                  </a>
+                  <button onclick="toggleFavorite(${item.id}, '${dName.replace(/'/g, "\\'")}')" class="px-3 bg-white border border-slate-200 rounded-xl text-xs hover:bg-rose-50 hover:text-rose-600 transition">
+                    ❤️
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+          resultsContainer.classList.remove('hidden');
+        } else {
+          list.innerHTML = `<p class="text-xs text-slate-500 text-center py-3">Aucun résultat trouvé pour ces critères.</p>`;
+          resultsContainer.classList.remove('hidden');
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert("Erreur lors de la recommandation.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🚀</span> Trouver mes Meilleurs Téléphones`;
+      }
+    }
+
+    // Modal Calculateur de Tranches
     function openInstallmentModal(id) {
       selectedProductForInstallment = products.find(p => p.id === id);
       if (!selectedProductForInstallment) return;
@@ -404,20 +539,18 @@
       const duration = parseInt(document.getElementById('instDuration').value);
       const price = selectedProductForInstallment.price_usd || 0;
       
-      const totalPrice = Math.round(price * RATES[currentCurrency]);
+      const totalPrice = Math.round(price * (RATES[currentCurrency] || 600));
       let divisions = duration;
       if (type === 'WEEKLY') divisions = duration * 4;
 
       const perInstallment = Math.round(totalPrice / divisions);
       const label = type === 'WEEKLY' ? 'par semaine' : 'par mois';
 
-      document.getElementById('instResult').textContent = `${perInstallment.toLocaleString()} ${SYMBOLS[currentCurrency]}`;
+      document.getElementById('instResult').textContent = `${perInstallment.toLocaleString()} ${SYMBOLS[currentCurrency] || 'FCFA'}`;
       document.getElementById('instSubText').textContent = `${label} (pendant ${duration} mois)`;
     }
 
-    // 5. Lancement au chargement de la page
     loadProducts();
-</script>
-
+  </script>
 </body>
 </html>

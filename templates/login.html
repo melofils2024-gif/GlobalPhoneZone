@@ -97,13 +97,15 @@
 
         if (response.ok) {
           const userRole = data.role || role;
+          const displayName = data.nom_boutique || `${data.prenom || ''} ${data.nom || ''}`.trim() || 'Utilisateur';
           localStorage.setItem('userRole', userRole);
           localStorage.setItem('userEmail', email);
           if (data.user_id || data.id) localStorage.setItem('userId', data.user_id || data.id);
           if (data.token) localStorage.setItem('authToken', data.token);
-          if (data.nom || data.prenom) localStorage.setItem('userName', `${data.prenom || ''} ${data.nom || ''}`.trim());
+          localStorage.setItem('userName', displayName);
+          if (data.phone) localStorage.setItem('userPhone', data.phone);
 
-          // Redirection corrigée vers les routes Flask sans .html
+          // Redirection vers les routes Flask selon le rôle
           if (userRole === 'vendeur') {
             window.location.href = '/page-vendeur';
           } else {

@@ -3,203 +3,589 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Accueil - Téléphones du Monde</title>
+  <title>Accueil - Téléphones du Monde 🌍</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-gray-50 text-slate-800 flex flex-col min-h-full">
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-full font-sans antialiased">
 
-  <!-- Header -->
-  <header class="bg-white shadow-sm px-4 py-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50">
-    <h1 class="text-xl sm:text-2xl font-bold text-sky-700 text-center sm:text-left">Téléphones du Monde 🌍</h1>
-    <nav id="mainNav" class="flex flex-wrap justify-center gap-3 sm:space-x-4 text-sm sm:text-base text-sky-600 font-medium items-center">
-      <a href="/" class="font-bold underline text-sky-800 transition">Accueil</a>
-      <a href="/catalogue" class="hover:text-sky-800 transition">Catalogue</a>
+  <!-- Header Dynamique -->
+  <header class="bg-white/95 backdrop-blur-md shadow-sm px-4 py-3 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-3 sticky top-0 z-50 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">📱</span>
+      <h1 class="text-xl sm:text-2xl font-black tracking-tight text-sky-700">
+        Téléphones du Monde <span class="text-xs bg-sky-100 text-sky-800 font-bold px-2 py-0.5 rounded-full ml-1">2026</span>
+      </h1>
+    </div>
+    
+    <nav id="mainNav" class="flex flex-wrap justify-center gap-2 sm:space-x-3 text-sm sm:text-base font-semibold items-center">
+      <a href="/" class="text-sky-700 font-bold bg-sky-50 px-3 py-1.5 rounded-lg border border-sky-100">Accueil</a>
+      <a href="/catalogue" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Catalogue</a>
+      <a href="/favoris" id="navFavorites" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition hidden">Favoris ❤️</a>
+      <a href="/vendeurs-articles" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition">Articles Vendeurs 🛍️</a>
+      <a href="/page-client" id="navSpace" class="text-slate-600 hover:text-sky-700 px-3 py-1.5 rounded-lg transition hidden">Mon Espace</a>
       
-      <!-- Favoris masqué par défaut (affiché uniquement pour le client connecté) -->
-      <a href="/favoris" id="navFavorites" class="hover:text-sky-800 transition" style="display: none;">Favoris ❤️</a>
-      
-      <a href="/vendeurs-articles" class="hover:text-sky-800 transition">Articles Vendeurs</a>
-      
-      <!-- Espace Client / Vendeur masqué par défaut pour les visiteurs -->
-      <a href="/page-client" id="navSpace" class="hover:text-sky-800 transition" style="display: none;">Espace Client</a>
-      
-      <!-- Zone d'action Auth -->
-      <div id="authButtons" class="flex gap-2 items-center">
-        <a href="/login" class="font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1 px-3 rounded-lg transition">
+      <div id="authButtons" class="flex gap-2 items-center ml-2">
+        <a href="/login" class="font-bold border border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white py-1.5 px-3 rounded-lg transition text-xs sm:text-sm">
           Connexion
         </a>
-        <a href="/register" class="font-bold bg-sky-600 text-white hover:bg-sky-500 py-1 px-3 rounded-lg transition">
+        <a href="/register" class="font-bold bg-sky-600 text-white hover:bg-sky-500 py-1.5 px-3.5 rounded-lg transition text-xs sm:text-sm shadow-sm">
           Inscription
         </a>
       </div>
     </nav>
   </header>
 
-  <!-- Hero -->
-  <section class="relative text-center py-10 sm:py-16 px-4 bg-gradient-to-r from-blue-900 to-white overflow-hidden">
-    <div class="absolute inset-0 bg-cover bg-center blur-sm opacity-40 animate-zoomTranslate"
-         style="background-image: url('/images/phones-background.jpg'); background-attachment: fixed;"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-white/20"></div>
+  <!-- Hero Section Dynamique -->
+  <section class="relative text-center py-12 sm:py-16 px-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-sky-900 text-white overflow-hidden shadow-inner">
+    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
-    <div class="relative z-10 max-w-3xl mx-auto">
-      <h2 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
-        Comparatif mondial de téléphones 📱
+    <div class="relative z-10 max-w-4xl mx-auto space-y-5">
+      <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-sky-200 border border-white/10">
+        ✨ Le comparateur et guide mondial n°1 des smartphones
+      </div>
+      
+      <h2 class="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight tracking-tight">
+        Les Meilleurs Smartphones <br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-300">
+          au Monde selon la Tendance
+        </span> 🏆
       </h2>
-      <p class="text-sm sm:text-base text-gray-200 mb-6 px-2">
-        Trouvez le téléphone idéal adapté à votre budget : des modèles haut de gamme aux choix les plus accessibles.
+      
+      <p class="text-slate-300 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed">
+        Découvrez automatiquement le classement des 10 à 12 meilleurs smartphones actuels, leurs caractéristiques complètes et les prix dans votre devise préférée.
       </p>
-      <a href="#classement" class="inline-block bg-violet-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-violet-500 transition shadow-md">
-        Explorer le classement
-      </a>
+
+      <div class="pt-2 flex flex-wrap justify-center gap-3">
+        <a href="#classement" class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 py-3.5 rounded-xl font-bold hover:shadow-lg hover:scale-105 active:scale-95 transition text-sm flex items-center gap-2">
+          📊 Voir le Classement Mondial
+        </a>
+        <button onclick="openHomeAssistant()" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3.5 rounded-xl font-bold hover:shadow-lg hover:scale-105 active:scale-95 transition text-sm flex items-center gap-2 shadow">
+          🤖 Lancer l'Assistant Recommandation
+        </button>
+        <a href="/catalogue" class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-6 py-3.5 rounded-xl font-bold hover:scale-105 active:scale-95 transition text-sm flex items-center gap-2">
+          🛍️ Tout le Catalogue
+        </a>
+      </div>
     </div>
   </section>
 
-  <!-- Tableau de classement -->
-  <section id="classement" class="max-w-6xl w-full mx-auto px-4 my-8 sm:my-12 flex-grow">
-    <h2 class="text-2xl sm:text-3xl font-bold text-center text-sky-700 mb-6">Classement des meilleurs téléphones</h2>
-    <div class="overflow-x-auto shadow-md rounded-lg border border-gray-100 bg-white">
-     <table class="w-full text-left border-collapse">
-  <thead>
-    <tr class="border-b bg-gray-50 text-xs text-gray-500 uppercase">
-      <th class="p-3">Photo</th>
-      <th class="p-3">Marque & Modèle</th>
-      <th class="p-3">Écran</th>
-      <th class="p-3">Caméra</th>
-      <th class="p-3">Batterie</th>
-      <th class="p-3">Stockage</th>
-      <th class="p-3">RAM</th>
-      <th class="p-3">Prix Approx.</th>
-      <th class="p-3">Tendance</th>
-    </tr>
-  </thead>
-  <tbody id="classement-container">
-    <!-- Rempli dynamiquement par JavaScript -->
-  </tbody>
-</table>
-    </div>
-
-    <!-- BOUTON : Lien vers les articles des vendeurs -->
-    <div class="mt-8 text-center">
-      <a href="/vendeurs-articles" class="inline-block bg-amber-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold hover:bg-amber-600 transition shadow-lg text-sm sm:text-base">
-        🛒 Voir les articles vendus en boutique
-      </a>
+  <!-- SECTION PODIUM : TOP 3 MONDIAL EN TEMPS RÉEL (100% DYNAMIQUE) -->
+  <section class="max-w-7xl w-full mx-auto px-4 -mt-8 relative z-20">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="podium-container">
+      <!-- Généré dynamiquement par JS -->
     </div>
   </section>
+
+  <!-- SECTION PRINCIPALE CLASSEMENT TOP 10-12 -->
+  <section id="classement" class="max-w-7xl w-full mx-auto px-4 py-10 sm:py-14 flex-grow">
+    
+    <!-- Contrôles et Filtres du Classement -->
+    <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200 mb-8 space-y-4">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-2">
+            🏆 Classement Mondial Dynamique (Top 10 - 12)
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">Généré en temps réel selon les scores de tendance, puissance, batterie et caméra.</p>
+        </div>
+
+        <!-- Sélecteur de Devise en Temps Réel -->
+        <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 self-stretch md:self-auto">
+          <span class="text-xs font-bold text-slate-600 px-2">Devise :</span>
+          <button onclick="setCurrency('FCFA')" id="cur-FCFA" class="px-3 py-1.5 rounded-lg text-xs font-black transition bg-sky-600 text-white shadow-sm">FCFA</button>
+          <button onclick="setCurrency('USD')" id="cur-USD" class="px-3 py-1.5 rounded-lg text-xs font-black transition text-slate-700 hover:bg-white">USD ($)</button>
+          <button onclick="setCurrency('EUR')" id="cur-EUR" class="px-3 py-1.5 rounded-lg text-xs font-black transition text-slate-700 hover:bg-white">EUR (€)</button>
+        </div>
+      </div>
+
+      <!-- Onglets Filtres Thématiques -->
+      <div class="flex flex-wrap gap-2 pt-1">
+        <button onclick="filterRanking('ALL')" class="rank-tab-btn active-tab bg-sky-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm" data-filter="ALL">
+          🌟 Tous les Meilleurs (Top 12)
+        </button>
+        <button onclick="filterRanking('CAMERA')" class="rank-tab-btn bg-slate-100 text-slate-700 hover:bg-slate-200 px-3.5 py-1.5 rounded-lg text-xs font-bold transition" data-filter="CAMERA">
+          📸 Meilleurs Photophones
+        </button>
+        <button onclick="filterRanking('PERF')" class="rank-tab-btn bg-slate-100 text-slate-700 hover:bg-slate-200 px-3.5 py-1.5 rounded-lg text-xs font-bold transition" data-filter="PERF">
+          ⚡ Puissance & Gaming
+        </button>
+        <button onclick="filterRanking('BATTERY')" class="rank-tab-btn bg-slate-100 text-slate-700 hover:bg-slate-200 px-3.5 py-1.5 rounded-lg text-xs font-bold transition" data-filter="BATTERY">
+          🔋 Grande Autonomie
+        </button>
+        <button onclick="filterRanking('BUDGET')" class="rank-tab-btn bg-slate-100 text-slate-700 hover:bg-slate-200 px-3.5 py-1.5 rounded-lg text-xs font-bold transition" data-filter="BUDGET">
+          💰 Rapport Qualité/Prix
+        </button>
+      </div>
+    </div>
+
+    <!-- Tableau de Classement Haute Qualité -->
+    <div class="overflow-x-auto shadow-md rounded-3xl border border-slate-200 bg-white">
+      <table class="w-full text-left border-collapse ranking-table">
+        <thead>
+          <tr class="border-b bg-slate-100/80 text-xs text-slate-600 uppercase font-black tracking-wider">
+            <th class="p-4 text-center">Rang</th>
+            <th class="p-4">Smartphone & Marque</th>
+            <th class="p-4">Écran</th>
+            <th class="p-4">Caméra</th>
+            <th class="p-4">Batterie & Charge</th>
+            <th class="p-4">Mémoire</th>
+            <th class="p-4 text-right">Prix Estimé</th>
+            <th class="p-4 text-center">Tendance</th>
+            <th class="p-4 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody id="classement-container" class="divide-y divide-slate-100 text-sm">
+          <tr>
+            <td colspan="9" class="p-8 text-center text-slate-400">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mb-2"></div>
+              <p class="font-bold">Chargement automatique du classement mondial...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bannière Vendeurs & Assistant Interactif -->
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-6 sm:p-8 text-white shadow-lg flex flex-col justify-between">
+        <div>
+          <span class="text-4xl">🏪</span>
+          <h3 class="text-xl sm:text-2xl font-black mt-2">Boutiques & Vendeurs Partenaires</h3>
+          <p class="text-amber-100 text-xs sm:text-sm mt-1">Consultez les offres publiées en direct par les vendeurs indépendants et négociez sur WhatsApp.</p>
+        </div>
+        <div class="mt-6">
+          <a href="/vendeurs-articles" class="inline-block bg-white text-orange-700 font-bold px-5 py-2.5 rounded-xl hover:bg-amber-50 transition text-sm shadow">
+            🛒 Explorer les annonces vendeurs
+          </a>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg flex flex-col justify-between">
+        <div>
+          <span class="text-4xl">🤖</span>
+          <h3 class="text-xl sm:text-2xl font-black mt-2">Assistant Virtuel de Recommandation</h3>
+          <p class="text-indigo-100 text-xs sm:text-sm mt-1">Indiquez votre budget et vos besoins, notre assistant analyse le marché pour vous recommander le téléphone parfait.</p>
+        </div>
+        <div class="mt-6">
+          <button onclick="openHomeAssistant()" class="inline-block bg-white text-indigo-700 font-bold px-5 py-2.5 rounded-xl hover:bg-indigo-50 transition text-sm shadow">
+            ✨ Obtenir un Conseil Personnalisé
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- MODAL ASSISTANT INTELLIGENT DE RECOMMANDATION -->
+  <div id="homeAssistantModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative border border-slate-100 animate-fadeIn max-h-[90vh] overflow-y-auto">
+      <button onclick="closeHomeAssistant()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 font-black text-2xl">✕</button>
+      
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 bg-gradient-to-tr from-sky-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-md mb-2">
+          🤖
+        </div>
+        <h3 class="text-2xl font-black text-slate-900">Assistant Recommandation IA</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">Trouvez immédiatement le smartphone le plus adapté à vos besoins et à votre budget.</p>
+      </div>
+
+      <div class="space-y-4 text-sm">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">1. Votre Budget Maximal (<span id="homeQuizCurrencyLabel">FCFA</span>) :</label>
+          <input type="number" id="homeQuizBudget" placeholder="Ex: 300000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-bold text-slate-800">
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">2. Votre Priorité Principale :</label>
+          <select id="homeQuizPriority" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-semibold text-slate-800">
+            <option value="ALL">🌟 Usage Polyvalent & Équilibré</option>
+            <option value="CAMERA">📸 Photographie Pro & Vidéo Haute Qualité</option>
+            <option value="BATTERY">🔋 Grande Autonomie & Charge Ultra-Rapide</option>
+            <option value="PERF">⚡ Puissance Processeur, RAM & Gaming</option>
+            <option value="BUDGET">💰 Meilleur Prix Accessible (Économique)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">3. Préférence de Marque :</label>
+          <select id="homeQuizBrand" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-semibold text-slate-800">
+            <option value="ALL">Peu importe (Toutes les marques)</option>
+          </select>
+        </div>
+
+        <button onclick="runHomeAssistant()" id="btnRunHomeAssistant" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-black py-3.5 rounded-xl hover:shadow-lg transition shadow mt-2 flex items-center justify-center gap-2">
+          <span>🚀</span> Calculer mes Meilleures Recommandations
+        </button>
+
+        <!-- Résultats de l'assistant -->
+        <div id="homeQuizResults" class="mt-6 space-y-4 hidden">
+          <h4 class="font-black text-slate-900 text-base border-t pt-4">🎯 Vos Meilleurs Choix Recommandés :</h4>
+          <div id="homeRecommendationsList" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Footer -->
-  <footer class="bg-gradient-to-r from-blue-900 to-violet-700 text-white text-center p-6 mt-auto">
-    <p>© 2026 Téléphones du Monde</p>
-    <p class="text-xs sm:text-sm mt-2">Votre partenaire de confiance pour l’achat de téléphones</p>
+  <footer class="bg-slate-900 text-slate-300 text-center p-8 mt-auto border-t border-slate-800">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs sm:text-sm">
+      <p class="font-bold text-white">© 2026 Téléphones du Monde 🌍</p>
+      <p class="text-slate-400">Plateforme de comparatif mondial 100% dynamique et automatisée.</p>
+      <div class="flex gap-4">
+        <a href="/" class="hover:text-white">Accueil</a>
+        <a href="/catalogue" class="hover:text-white">Catalogue</a>
+        <a href="/vendeurs-articles" class="hover:text-white">Vendeurs</a>
+      </div>
+    </div>
   </footer>
 
-  <!-- Scripts -->
- <script>
-    // 1. Adaptation dynamique de l'interface (Rôles)
+  <!-- Logique Dynamique JavaScript -->
+  <script>
+    const RATES = { USD: 1, EUR: 0.92, FCFA: 600, XOF: 600 };
+    const SYMBOLS = { USD: '$', EUR: '€', FCFA: 'FCFA', XOF: 'FCFA' };
+    let currentCurrency = 'FCFA';
+    let rawProducts = [];
+    let currentFilter = 'ALL';
+
+    // 1. Session et Rôles
     const userRole = localStorage.getItem('userRole');
     const navFavorites = document.getElementById('navFavorites');
     const navSpace = document.getElementById('navSpace');
     const authButtons = document.getElementById('authButtons');
 
     if (userRole === 'vendeur') {
-      if (navFavorites) navFavorites.style.display = 'none';
       if (navSpace) {
-        navSpace.style.display = 'inline-block';
+        navSpace.classList.remove('hidden');
         navSpace.textContent = 'Espace Vendeur 📊';
         navSpace.href = '/page-vendeur';
       }
     } else if (userRole === 'client') {
-      if (navFavorites) navFavorites.style.display = 'inline-block';
+      if (navFavorites) navFavorites.classList.remove('hidden');
       if (navSpace) {
-        navSpace.style.display = 'inline-block';
-        navSpace.textContent = 'Mon Espace Client';
+        navSpace.classList.remove('hidden');
+        navSpace.textContent = 'Mon Espace Client 👤';
         navSpace.href = '/page-client';
       }
-    } else {
-      if (navFavorites) navFavorites.style.display = 'none';
-      if (navSpace) navSpace.style.display = 'none';
     }
 
     if (userRole && authButtons) {
       authButtons.innerHTML = `
-        <button onclick="logout()" class="font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 px-3 rounded-lg transition text-xs sm:text-sm">
-          Déconnexion
+        <button onclick="logout()" class="font-bold border border-rose-500 text-rose-500 hover:bg-rose-500 hover:text-white py-1 px-3 rounded-lg transition text-xs sm:text-sm">
+          Déconnexion 🚪
         </button>
       `;
     }
 
     function logout() {
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userName');
+      localStorage.clear();
       window.location.href = '/';
     }
 
-    // 2. Récupération et affichage automatique du classement mondial
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(data => {
-        // CORRECTION : On cible le bon ID de ton HTML
-        const tableBody = document.getElementById('classement-container');
-        if (!tableBody) return;
-        
-        tableBody.innerHTML = ''; // Nettoyer avant remplissage
+    // 2. Gestion de la Devise
+    function setCurrency(curr) {
+      currentCurrency = curr;
+      const label = document.getElementById('homeQuizCurrencyLabel');
+      if (label) label.textContent = curr;
 
-        // GESTION DU TABLEAU VIDE
-        if (!data || data.length === 0) {
-          tableBody.innerHTML = `
-            <tr>
-              <td colspan="9" class="text-center py-10 text-slate-400 font-bold bg-white">
-                Aucun téléphone disponible pour le moment.
-              </td>
-            </tr>`;
+      ['FCFA', 'USD', 'EUR'].forEach(c => {
+        const btn = document.getElementById(`cur-${c}`);
+        if (btn) {
+          if (c === curr) {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition bg-sky-600 text-white shadow-sm";
+          } else {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition text-slate-700 hover:bg-white";
+          }
+        }
+      });
+      renderPodium();
+      renderRanking();
+    }
+
+    function formatPrice(priceUsd) {
+      const val = Math.round((Number(priceUsd) || 0) * (RATES[currentCurrency] || 600));
+      return `${val.toLocaleString()} ${SYMBOLS[currentCurrency] || 'FCFA'}`;
+    }
+
+    // 3. Filtrage du Classement
+    function filterRanking(filterType) {
+      currentFilter = filterType;
+      document.querySelectorAll('.rank-tab-btn').forEach(btn => {
+        if (btn.dataset.filter === filterType) {
+          btn.className = "rank-tab-btn active-tab bg-sky-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm";
+        } else {
+          btn.className = "rank-tab-btn bg-slate-100 text-slate-700 hover:bg-slate-200 px-3.5 py-1.5 rounded-lg text-xs font-bold transition";
+        }
+      });
+      renderRanking();
+    }
+
+    // 4. Chargement des données depuis l'API dès l'arrivée de l'utilisateur
+    async function loadRankingData() {
+      try {
+        const res = await fetch('/api/products');
+        if (!res.ok) throw new Error("Erreur de récupération");
+        rawProducts = await res.json();
+        populateHomeBrands();
+        renderPodium();
+        renderRanking();
+      } catch (err) {
+        console.error(err);
+        const container = document.getElementById('classement-container');
+        if (container) {
+          container.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-red-500 font-bold">Erreur de chargement du classement.</td></tr>`;
+        }
+      }
+    }
+
+    function populateHomeBrands() {
+      const select = document.getElementById('homeQuizBrand');
+      if (!select) return;
+      const uniqueBrands = Array.from(new Set(rawProducts.map(p => p.brand || p.marque).filter(Boolean))).sort();
+      select.innerHTML = '<option value="ALL">Peu importe (Toutes les marques)</option>';
+      uniqueBrands.forEach(b => {
+        select.innerHTML += `<option value="${b}">${b}</option>`;
+      });
+    }
+
+    // Rendu du Podium Top 3
+    function renderPodium() {
+      const podium = document.getElementById('podium-container');
+      if (!podium || rawProducts.length === 0) return;
+
+      const top3 = [...rawProducts].sort((a, b) => (b.tendance || 0) - (a.tendance || 0)).slice(0, 3);
+      const medals = [
+        { rank: '🥇 #1 MONDIAL', border: 'border-amber-400', badge: 'bg-amber-100 text-amber-900 border-amber-300' },
+        { rank: '🥈 #2 MONDIAL', border: 'border-slate-300', badge: 'bg-slate-100 text-slate-800 border-slate-300' },
+        { rank: '🥉 #3 MONDIAL', border: 'border-amber-700/40', badge: 'bg-orange-100 text-orange-900 border-orange-300' }
+      ];
+
+      podium.innerHTML = top3.map((p, idx) => {
+        const m = medals[idx] || medals[0];
+        const brand = p.brand || p.marque || 'Marque';
+        const name = p.name || p.nom || 'Téléphone';
+        const fullName = name.toLowerCase().startsWith(brand.toLowerCase()) ? name : `${brand} ${name}`;
+        const price = formatPrice(p.price_usd);
+
+        return `
+          <div class="bg-white rounded-3xl p-5 shadow-xl border-2 ${m.border} flex flex-col justify-between hover:scale-102 transition duration-300">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-black px-3 py-1 rounded-full border ${m.badge}">
+                  ${m.rank}
+                </span>
+                <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  🔥 ${p.tendance || 99}% Tendance
+                </span>
+              </div>
+
+              <div class="h-28 bg-gradient-to-tr from-slate-50 to-sky-50 rounded-2xl flex items-center justify-center text-5xl mb-3 border border-slate-100">
+                📱
+              </div>
+
+              <h3 class="text-base font-black text-slate-900 truncate" title="${fullName}">${fullName}</h3>
+              <p class="text-xs text-slate-500 font-medium truncate mt-0.5">${p.specs || 'Smartphone de pointe'}</p>
+              
+              <div class="mt-2 text-xs text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-100 space-y-1">
+                <div>📸 <strong>Photo :</strong> ${p.camera || '50 MP'}</div>
+                <div>🔋 <strong>Batterie :</strong> ${p.batterie || '5000 mAh'}</div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+              <div>
+                <span class="text-[10px] text-slate-400 font-bold uppercase block">Prix</span>
+                <span class="text-base font-black text-slate-900">${price}</span>
+              </div>
+              <a href="/details?id=${p.id}" class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-black px-3.5 py-2 rounded-xl transition shadow">
+                Fiche 🔍
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Rendu du Tableau Top 10-12
+    function renderRanking() {
+      const container = document.getElementById('classement-container');
+      if (!container) return;
+
+      let filtered = [...rawProducts];
+
+      // Filtrage thématique
+      if (currentFilter === 'CAMERA') {
+        filtered = filtered.filter(p => p.tag === 'CAMERA' || (p.camera && (p.camera.includes('200') || p.camera.includes('Leica') || p.camera.includes('Périscope'))));
+      } else if (currentFilter === 'PERF') {
+        filtered = filtered.filter(p => p.tag === 'PERF' || (p.ram && (p.ram.includes('12Go') || p.ram.includes('16Go'))));
+      } else if (currentFilter === 'BATTERY') {
+        filtered = filtered.filter(p => p.tag === 'BATTERY' || (p.batterie && (p.batterie.includes('5000') || p.batterie.includes('5400'))));
+      } else if (currentFilter === 'BUDGET') {
+        filtered = filtered.filter(p => (p.price_usd || 0) <= 400);
+      }
+
+      // Tri strict par tendance décroissante et limitation au top 12
+      filtered.sort((a, b) => (b.tendance || 0) - (a.tendance || 0));
+      const top12 = filtered.slice(0, 12);
+
+      if (top12.length === 0) {
+        container.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-bold">Aucun téléphone ne correspond à ce filtre.</td></tr>`;
+        return;
+      }
+
+      container.innerHTML = top12.map((p, index) => {
+        const rank = index + 1;
+        let rankBadge = `<span class="font-bold text-slate-500 text-sm">#${rank}</span>`;
+        let rankBg = "bg-slate-50";
+
+        if (rank === 1) {
+          rankBadge = `<span class="bg-amber-100 text-amber-900 border border-amber-300 font-black text-xs px-2.5 py-1 rounded-full shadow-sm">🥇 #1</span>`;
+          rankBg = "bg-amber-50/40";
+        } else if (rank === 2) {
+          rankBadge = `<span class="bg-slate-200 text-slate-800 border border-slate-300 font-black text-xs px-2.5 py-1 rounded-full shadow-sm">🥈 #2</span>`;
+          rankBg = "bg-slate-50/50";
+        } else if (rank === 3) {
+          rankBadge = `<span class="bg-amber-800/10 text-amber-900 border border-amber-700/30 font-black text-xs px-2.5 py-1 rounded-full shadow-sm">🥉 #3</span>`;
+          rankBg = "bg-orange-50/30";
+        }
+
+        const tendance = p.tendance || 85;
+        let tendanceColor = "bg-emerald-500 text-white";
+        if (tendance < 90) tendanceColor = "bg-sky-500 text-white";
+        if (tendance < 87) tendanceColor = "bg-indigo-500 text-white";
+
+        const brand = p.brand || p.marque || 'Marque';
+        const name = p.name || p.nom || 'Téléphone';
+        const fullName = name.toLowerCase().startsWith(brand.toLowerCase()) ? name : `${brand} ${name}`;
+
+        return `
+          <tr class="hover:bg-sky-50/50 transition border-b border-slate-100 ${rankBg}">
+            <td class="p-4 text-center font-bold">${rankBadge}</td>
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-slate-100 text-sky-700 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm border border-slate-200 shrink-0">
+                  📱
+                </div>
+                <div>
+                  <div class="font-extrabold text-slate-900 hover:text-sky-600 transition cursor-pointer" onclick="window.location.href='/details?id=${p.id}'">
+                    ${fullName}
+                  </div>
+                  <span class="text-[11px] font-black uppercase text-sky-700 tracking-wider bg-sky-100/70 px-2 py-0.5 rounded">${brand}</span>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 text-slate-700 text-xs font-medium max-w-[140px] truncate" title="${p.ecran}">${p.ecran || 'Standard'}</td>
+            <td class="p-4 text-slate-700 text-xs font-medium max-w-[160px] truncate" title="${p.camera}">${p.camera || 'Standard'}</td>
+            <td class="p-4 text-slate-700 text-xs font-medium">${p.batterie || 'Standard'}</td>
+            <td class="p-4 text-slate-700 text-xs font-medium">${p.stockage || '128Go'} / ${p.ram || '8Go'}</td>
+            <td class="p-4 text-right font-black text-slate-900 text-sm whitespace-nowrap">
+              ${formatPrice(p.price_usd)}
+            </td>
+            <td class="p-4 text-center">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-black text-xs ${tendanceColor} shadow-sm">
+                <span>🔥</span> ${tendance}%
+              </div>
+            </td>
+            <td class="p-4 text-center whitespace-nowrap">
+              <a href="/details?id=${p.id}" class="bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-600 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">
+                Fiche 🔍
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Modal Assistant Recommandation sur la Page d'Accueil
+    function openHomeAssistant() {
+      const modal = document.getElementById('homeAssistantModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeHomeAssistant() {
+      const modal = document.getElementById('homeAssistantModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function runHomeAssistant() {
+      const budget = parseFloat(document.getElementById('homeQuizBudget').value);
+      const priority = document.getElementById('homeQuizPriority').value;
+      const brand = document.getElementById('homeQuizBrand').value;
+      const btn = document.getElementById('btnRunHomeAssistant');
+      const resultsDiv = document.getElementById('homeQuizResults');
+      const listContainer = document.getElementById('homeRecommendationsList');
+
+      if (!budget || budget <= 0) {
+        alert("Veuillez indiquer votre budget maximum.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin">🔄</span> Analyse intelligente du marché...`;
+
+      try {
+        const res = await fetch('/api/assistant/recommend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            budget: budget,
+            currency: currentCurrency,
+            priority: priority,
+            brand: brand
+          })
+        });
+
+        const data = await res.json();
+        listContainer.innerHTML = '';
+        resultsDiv.classList.remove('hidden');
+
+        if (!data.recommendations || data.recommendations.length === 0) {
+          listContainer.innerHTML = `<div class="p-4 bg-amber-50 text-amber-900 rounded-xl text-xs font-bold border border-amber-200">Aucun smartphone ne correspond exactement à ce budget. Essayez d'augmenter légèrement le montant.</div>`;
           return;
         }
 
-        // Tri et limitation aux 12 meilleurs
-        const top12 = data.sort((a, b) => (b.tendance || 0) - (a.tendance || 0)).slice(0, 12);
+        data.recommendations.forEach((item, index) => {
+          const badgeClass = index === 0 ? 'bg-emerald-600 text-white' : 'bg-sky-100 text-sky-900 border border-sky-200';
+          const priceStr = `${Number(item.price_converted).toLocaleString()} ${item.active_currency}`;
 
-        top12.forEach(phone => {
-          const marque = phone.marque || phone.brand || '';
-          const nom = phone.nom || phone.name || 'Téléphone';
-          const nomComplet = `${marque} ${nom}`.trim();
-          
-          // Vérification stricte pour l'image
-          const imageSrc = phone.image_url || phone.photo_url || '';
-          const isValidImg = imageSrc && imageSrc.trim() !== '' && !imageSrc.toLowerCase().includes('photo');
+          listContainer.innerHTML += `
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col gap-2 hover:bg-white hover:shadow-md transition">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${badgeClass}">
+                    🎯 ${item.match_score}% Match • Choix #${index + 1}
+                  </span>
+                  <h5 class="text-base font-black text-slate-900 mt-1">${item.name}</h5>
+                </div>
+                <div class="text-right font-black text-slate-900 text-sm">
+                  ${priceStr}
+                </div>
+              </div>
 
-          // Vérification des différents noms de variables pour le prix
-          const prix = phone.price_usd || phone.prix_approx || phone.prix || phone.price || 0;
-          const tendance = phone.tendance || 85;
+              <p class="text-xs text-slate-600 bg-white p-2.5 rounded-xl border border-slate-100">
+                💡 <strong>Pourquoi ce choix :</strong> ${item.recommendation_reason}
+              </p>
 
-          const row = `
-            <tr class="hover:bg-gray-50 transition border-b border-gray-100" data-id="${phone.id}">
-              <td class="p-3">
-                ${isValidImg 
-                  ? `<img src="/${imageSrc}" alt="${nomComplet}" class="w-12 h-12 rounded-lg object-cover shadow-sm bg-slate-100" onerror="this.outerHTML='<div class=\\'w-12 h-12 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center font-bold text-xl\\'>📱</div>'">` 
-                  : `<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center font-bold text-xl shadow-sm">📱</div>`}
-              </td>
-              <td class="p-3 font-semibold text-slate-800">${nomComplet}</td>
-              <td class="p-3 text-gray-600 text-sm">${phone.ecran || 'Standard'}</td>
-              <td class="p-3 text-gray-600 text-sm">${phone.camera || 'Standard'}</td>
-              <td class="p-3 text-gray-600 text-sm">${phone.batterie || 'Standard'}</td>
-              <td class="p-3 text-gray-600 text-sm">${phone.stockage || 'Standard'}</td>
-              <td class="p-3 text-gray-600 text-sm">${phone.ram || 'Standard'}</td>
-              <td class="p-3 font-bold text-violet-600">${prix} $</td>
-              <td class="p-3">
-                <span class="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-1 rounded-full">${tendance}%</span>
-              </td>
-            </tr>`;
-          tableBody.insertAdjacentHTML('beforeend', row);
+              <div class="flex justify-between items-center text-xs text-slate-500 pt-1">
+                <span>📱 ${item.ecran || ''} • 📸 ${item.camera || ''}</span>
+                <a href="/details?id=${item.id}" class="bg-sky-600 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-sky-700 transition">
+                  Consulter la fiche 🔍
+                </a>
+              </div>
+            </div>
+          `;
         });
-      })
-      .catch(err => {
-          console.error("Erreur chargement :", err);
-          const tableBody = document.getElementById('classement-container');
-          if (tableBody) tableBody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-red-500 font-medium">Erreur lors de la récupération des données.</td></tr>`;
-      });
-</script>
+      } catch (err) {
+        console.error(err);
+        alert("Erreur lors de l'appel de l'assistant.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🚀</span> Calculer mes Meilleures Recommandations`;
+      }
+    }
 
+    // Chargement automatique au démarrage
+    document.addEventListener('DOMContentLoaded', loadRankingData);
+  </script>
 </body>
 </html>
