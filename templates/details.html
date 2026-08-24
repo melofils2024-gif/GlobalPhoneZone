@@ -26,6 +26,75 @@
         let activeCurrency = 'FCFA';
         let currentProduct = null;
 
+        // BASE DE SECOURS DES 50 TÉLÉPHONES TENDANCES
+        const SEED_PRODUCTS = [
+          // APPLE (9)
+          { id: 101, brand: "Apple", name: "iPhone 16 Pro Max", price_usd: 1580, ecran: "6.9\" Super Retina XDR 120Hz", camera: "48+48+12 MP Telephoto 5x", batterie: "4685 mAh", ram: "8Go", stockage: "256Go", tendance: 99, specs: "Puce A18 Pro, Titane Grade 5, Bouton Commande de l'appareil photo" },
+          { id: 102, brand: "Apple", name: "iPhone 16 Pro", price_usd: 1360, ecran: "6.3\" Super Retina XDR 120Hz", camera: "48+48+12 MP Telephoto 5x", batterie: "3582 mAh", ram: "8Go", stockage: "128Go", tendance: 97, specs: "Puce A18 Pro, Design Compact Titane" },
+          { id: 103, brand: "Apple", name: "iPhone 16", price_usd: 1080, ecran: "6.1\" Super Retina XDR", camera: "48+12 MP Ultrawide", batterie: "3561 mAh", ram: "8Go", stockage: "128Go", tendance: 95, specs: "Puce A18, Bouton Action, Apple Intelligence" },
+          { id: 104, brand: "Apple", name: "iPhone 15 Pro Max", price_usd: 1300, ecran: "6.7\" OLED 120Hz", camera: "48+12+12 MP", batterie: "4422 mAh", ram: "8Go", stockage: "256Go", tendance: 94, specs: "Puce A17 Pro, Châssis Titane, USB-C 3.0" },
+          { id: 105, brand: "Apple", name: "iPhone 15 Pro", price_usd: 1130, ecran: "6.1\" OLED 120Hz", camera: "48+12+12 MP", batterie: "3274 mAh", ram: "8Go", stockage: "128Go", tendance: 92, specs: "Puce A17 Pro, Port USB-C High-Speed" },
+          { id: 106, brand: "Apple", name: "iPhone 15", price_usd: 865, ecran: "6.1\" OLED Super Retina", camera: "48+12 MP", batterie: "3349 mAh", ram: "6Go", stockage: "128Go", tendance: 90, specs: "Dynamic Island, Puce A16 Bionic, USB-C" },
+          { id: 107, brand: "Apple", name: "iPhone 14 Pro Max", price_usd: 1030, ecran: "6.7\" OLED 120Hz", camera: "48+12+12 MP", batterie: "4323 mAh", ram: "6Go", stockage: "128Go", tendance: 88, specs: "Dynamic Island, Écran Always-On, Puce A16" },
+          { id: 108, brand: "Apple", name: "iPhone 13", price_usd: 630, ecran: "6.1\" OLED Super Retina", camera: "12+12 MP", batterie: "3240 mAh", ram: "4Go", stockage: "128Go", tendance: 86, specs: "Mode Cinéma, Puce A15 Bionic" },
+          { id: 109, brand: "Apple", name: "iPhone 11", price_usd: 365, ecran: "6.1\" Liquid Retina", camera: "12+12 MP", batterie: "3110 mAh", ram: "4Go", stockage: "64Go", tendance: 82, specs: "Puce A13 Bionic, Mode Nuit Ultra-Performant" },
+
+          // SAMSUNG (11)
+          { id: 110, brand: "Samsung", name: "Galaxy S25 Ultra", price_usd: 1500, ecran: "6.8\" Dynamic AMOLED 2X 120Hz", camera: "200+50+50+10 MP", batterie: "5000 mAh", ram: "12Go", stockage: "256Go", tendance: 98, specs: "Snapdragon 8 Elite, S-Pen Intégré, Galaxy AI 2026" },
+          { id: 111, brand: "Samsung", name: "Galaxy S24 Ultra", price_usd: 1250, ecran: "6.8\" Dynamic AMOLED 2X 120Hz", camera: "200+50+12+10 MP", batterie: "5000 mAh", ram: "12Go", stockage: "256Go", tendance: 96, specs: "Cadre Titane, Galaxy AI, Zoom Optique 10x" },
+          { id: 112, brand: "Samsung", name: "Galaxy S24+", price_usd: 965, ecran: "6.7\" QHD+ AMOLED 120Hz", camera: "50+10+12 MP", batterie: "4900 mAh", ram: "12Go", stockage: "256Go", tendance: 91, specs: "Écran QHD+ ultra lumineux, Galaxy AI" },
+          { id: 113, brand: "Samsung", name: "Galaxy S24", price_usd: 800, ecran: "6.2\" FHD+ AMOLED 120Hz", camera: "50+10+12 MP", batterie: "4000 mAh", ram: "8Go", stockage: "128Go", tendance: 89, specs: "Format compact premium, Galaxy AI" },
+          { id: 114, brand: "Samsung", name: "Galaxy Z Fold 6", price_usd: 1830, ecran: "7.6\" Pliable AMOLED 120Hz", camera: "50+10+12 MP", batterie: "4400 mAh", ram: "12Go", stockage: "512Go", tendance: 93, specs: "Format Pliable Grand Écran, Multitâche Pro" },
+          { id: 115, brand: "Samsung", name: "Galaxy Z Flip 6", price_usd: 1030, ecran: "6.7\" Pliable AMOLED 120Hz", camera: "50+12 MP", batterie: "4000 mAh", ram: "12Go", stockage: "256Go", tendance: 90, specs: "Pliable Clapet Compact, FlexCam AI" },
+          { id: 116, brand: "Samsung", name: "Galaxy A55 5G", price_usd: 400, ecran: "6.6\" Super AMOLED 120Hz", camera: "50+12+5 MP", batterie: "5000 mAh", ram: "8Go", stockage: "256Go", tendance: 94, specs: "Dos en verre, Protection IP67, Exynos 1480" },
+          { id: 117, brand: "Samsung", name: "Galaxy A35 5G", price_usd: 310, ecran: "6.6\" Super AMOLED 120Hz", camera: "50+8+5 MP", batterie: "5000 mAh", ram: "8Go", stockage: "128Go", tendance: 89, specs: "Design Premium Key Island, IP67" },
+          { id: 118, brand: "Samsung", name: "Galaxy A25 5G", price_usd: 240, ecran: "6.5\" Super AMOLED 120Hz", camera: "50+8+2 MP", batterie: "5000 mAh", ram: "6Go", stockage: "128Go", tendance: 85, specs: "Super AMOLED 1000 nits, Haut-parleurs Stéréo" },
+          { id: 119, brand: "Samsung", name: "Galaxy A15 5G", price_usd: 185, ecran: "6.5\" Super AMOLED 90Hz", camera: "50+5+2 MP", batterie: "5000 mAh", ram: "4Go", stockage: "128Go", tendance: 92, specs: "Écran Super AMOLED, Batterie longue durée" },
+          { id: 120, brand: "Samsung", name: "Galaxy A05s", price_usd: 125, ecran: "6.7\" PLS LCD 90Hz", camera: "50+2+2 MP", batterie: "5000 mAh", ram: "4Go", stockage: "64Go", tendance: 87, specs: "Snapdragon 680, Charge 25W" },
+
+          // TECNO (8)
+          { id: 121, brand: "Tecno", name: "Camon 30 Pro 5G", price_usd: 385, ecran: "6.78\" AMOLED 144Hz", camera: "50+50+2 MP OIS", batterie: "5000 mAh (70W)", ram: "12Go", stockage: "256Go", tendance: 95, specs: "Dimensity 8200 Ultimate, Capteur Sony IMX890" },
+          { id: 122, brand: "Tecno", name: "Camon 30", price_usd: 250, ecran: "6.78\" AMOLED 120Hz", camera: "50 MP Dual", batterie: "5000 mAh (70W)", ram: "8Go", stockage: "256Go", tendance: 92, specs: "Charge Rapide 70W, Capteur Photo 50MP OIS" },
+          { id: 123, brand: "Tecno", name: "Spark 20 Pro+", price_usd: 225, ecran: "6.78\" Curved AMOLED 120Hz", camera: "108 MP Ultra Sensing", batterie: "5000 mAh (33W)", ram: "8Go", stockage: "256Go", tendance: 93, specs: "Écran Incurvé AMOLED, Helio G99 Ultimate" },
+          { id: 124, brand: "Tecno", name: "Spark 20 Pro", price_usd: 190, ecran: "6.78\" IPS LCD 120Hz", camera: "108 MP", batterie: "5000 mAh", ram: "8Go", stockage: "256Go", tendance: 88, specs: "Helio G99, Design Dynamic Port" },
+          { id: 125, brand: "Tecno", name: "Spark 20", price_usd: 140, ecran: "6.56\" IPS LCD 90Hz", camera: "50 MP", batterie: "5000 mAh", ram: "4Go", stockage: "128Go", tendance: 86, specs: "Double Haut-parleur DTS, Dynamic Port" },
+          { id: 126, brand: "Tecno", name: "Pop 8", price_usd: 90, ecran: "6.6\" IPS LCD 90Hz", camera: "13 MP", batterie: "5000 mAh", ram: "3Go", stockage: "64Go", tendance: 84, specs: "Très économique, processeur Octa-Core" },
+          { id: 127, brand: "Tecno", name: "Pova 6 Pro 5G", price_usd: 290, ecran: "6.78\" AMOLED 120Hz Dynamic", camera: "108 MP", batterie: "6000 mAh (70W)", ram: "12Go", stockage: "256Go", tendance: 91, specs: "Batterie géante 6000mAh, Design Gaming LED" },
+          { id: 128, brand: "Tecno", name: "Phantom V Fold 2", price_usd: 1080, ecran: "7.85\" Pliable AMOLED 120Hz", camera: "50+50+50 MP", batterie: "5750 mAh (70W)", ram: "12Go", stockage: "512Go", tendance: 89, specs: "Pliable Flagship, Double écran 120Hz" },
+
+          // INFINIX (7)
+          { id: 129, brand: "Infinix", name: "Note 40 Pro 5G", price_usd: 350, ecran: "6.78\" 3D Curved AMOLED 120Hz", camera: "108 MP OIS", batterie: "5000 mAh (45W)", ram: "12Go", stockage: "256Go", tendance: 94, specs: "Charge Sans Fil MagCharge, Son par JBL" },
+          { id: 130, brand: "Infinix", name: "Note 40", price_usd: 240, ecran: "6.78\" AMOLED 120Hz", camera: "108 MP", batterie: "5000 mAh (45W)", ram: "8Go", stockage: "256Go", tendance: 90, specs: "Écran AMOLED, MagCharge sans fil" },
+          { id: 131, brand: "Infinix", name: "Hot 40 Pro", price_usd: 200, ecran: "6.78\" FHD+ 120Hz", camera: "108 MP Gaming", batterie: "5000 mAh (33W)", ram: "8Go", stockage: "256Go", tendance: 89, specs: "Moteur Gaming XBOOST, Helio G99" },
+          { id: 132, brand: "Infinix", name: "Hot 40i", price_usd: 125, ecran: "6.56\" HD+ 90Hz", camera: "50 MP", batterie: "5000 mAh", ram: "4Go", stockage: "128Go", tendance: 85, specs: "Selfie 32MP avec Flash, RAM extensible" },
+          { id: 133, brand: "Infinix", name: "Smart 8", price_usd: 86, ecran: "6.6\" HD+ 90Hz Magic Ring", camera: "13 MP", batterie: "5000 mAh", ram: "3Go", stockage: "64Go", tendance: 83, specs: "Interaction Magic Ring, Volume Boost 200%" },
+          { id: 134, brand: "Infinix", name: "GT 20 Pro", price_usd: 375, ecran: "6.78\" Gaming AMOLED 144Hz", camera: "108 MP OIS", batterie: "5000 mAh (45W)", ram: "12Go", stockage: "256Go", tendance: 93, specs: "Puce Dimensity 8200 Ultimate, Mode Esport" },
+          { id: 135, brand: "Infinix", name: "Zero 30 5G", price_usd: 315, ecran: "6.78\" Curved AMOLED 144Hz", camera: "108+13+2 MP (4K Selfie)", batterie: "5000 mAh", ram: "12Go", stockage: "256Go", tendance: 88, specs: "Caméra Frontale 50MP 4K 60fps Ultra VLOG" },
+
+          // XIAOMI (7)
+          { id: 136, brand: "Xiaomi", name: "Redmi Note 13 Pro+ 5G", price_usd: 465, ecran: "6.67\" Curved AMOLED 120Hz", camera: "200 MP OIS", batterie: "5000 mAh (120W)", ram: "12Go", stockage: "512Go", tendance: 96, specs: "Charge 120W HyperCharge, IP68, 200MP" },
+          { id: 137, brand: "Xiaomi", name: "Redmi Note 13 Pro 4G", price_usd: 290, ecran: "6.67\" AMOLED 120Hz", camera: "200 MP OIS", batterie: "5000 mAh (67W)", ram: "8Go", stockage: "256Go", tendance: 91, specs: "200 MP OIS, Charge Turbo 67W" },
+          { id: 138, brand: "Xiaomi", name: "Redmi Note 13 4G", price_usd: 210, ecran: "6.67\" AMOLED 120Hz", camera: "108 MP", batterie: "5000 mAh (33W)", ram: "6Go", stockage: "128Go", tendance: 93, specs: "Bordures ultra-fines, Écran 120Hz AMOLED" },
+          { id: 139, brand: "Xiaomi", name: "Redmi 13C", price_usd: 125, ecran: "6.74\" 90Hz Display", camera: "50 MP AI", batterie: "5000 mAh", ram: "4Go", stockage: "128Go", tendance: 87, specs: "Design élégant, Grand écran 90Hz" },
+          { id: 140, brand: "Xiaomi", name: "Poco X6 Pro 5G", price_usd: 385, ecran: "6.67\" Flow AMOLED 120Hz", camera: "64 MP OIS", batterie: "5000 mAh (67W)", ram: "12Go", stockage: "512Go", tendance: 94, specs: "Processeur Dimensity 8300-Ultra, WildBoost 2.0" },
+          { id: 141, brand: "Xiaomi", name: "Poco F6 Pro", price_usd: 600, ecran: "6.67\" WQHD+ AMOLED 120Hz", camera: "50 MP Light Hunter", batterie: "5000 mAh (120W)", ram: "12Go", stockage: "512Go", tendance: 92, specs: "Snapdragon 8 Gen 2, Écran 2K WQHD+" },
+          { id: 142, brand: "Xiaomi", name: "Xiaomi 14", price_usd: 865, ecran: "6.36\" LTPO OLED 120Hz", camera: "50+50+50 MP Leica", batterie: "4610 mAh (90W)", ram: "12Go", stockage: "256Go", tendance: 90, specs: "Optiques Leica Summilux, Snapdragon 8 Gen 3" },
+
+          // GOOGLE (4)
+          { id: 143, brand: "Google", name: "Pixel 9 Pro XL", price_usd: 1200, ecran: "6.8\" Super Actua OLED 120Hz", camera: "50+48+48 MP Tele 5x", batterie: "5060 mAh", ram: "16Go", stockage: "256Go", tendance: 97, specs: "Puce Google Tensor G4, Gemini Nano IA" },
+          { id: 144, brand: "Google", name: "Pixel 9 Pro", price_usd: 1030, ecran: "6.3\" Super Actua OLED 120Hz", camera: "50+48+48 MP Tele 5x", batterie: "4700 mAh", ram: "16Go", stockage: "128Go", tendance: 95, specs: "Format Pro Compact, Tensor G4, Gemini Pro" },
+          { id: 145, brand: "Google", name: "Pixel 9", price_usd: 815, ecran: "6.3\" Actua OLED 120Hz", camera: "50+48 MP Ultrawide", batterie: "4700 mAh", ram: "12Go", stockage: "128Go", tendance: 92, specs: "Nouveau Design, Tensor G4, Traitement Photo IA" },
+          { id: 146, brand: "Google", name: "Pixel 8a", price_usd: 515, ecran: "6.1\" Actua OLED 120Hz", camera: "64+13 MP", batterie: "4492 mAh", ram: "8Go", stockage: "128Go", tendance: 89, specs: "7 ans de mises à jour, Tensor G3" },
+
+          // OPPO (2)
+          { id: 147, brand: "Oppo", name: "Reno 11 Pro 5G", price_usd: 515, ecran: "6.7\" Curved OLED 120Hz", camera: "50+32+8 MP Portrait Pro", batterie: "4600 mAh (80W)", ram: "12Go", stockage: "512Go", tendance: 88, specs: "Spécialiste Portrait Telephoto, Charge SUPERVOOC 80W" },
+          { id: 148, brand: "Oppo", name: "A78 4G", price_usd: 225, ecran: "6.43\" AMOLED 90Hz", camera: "50 MP Dual", batterie: "5000 mAh (67W)", ram: "8Go", stockage: "128Go", tendance: 85, specs: "67W SUPERVOOC, Double haut-parleur Stéréo" },
+
+          // VIVO & REALME (2)
+          { id: 149, brand: "Vivo", name: "V30 Pro 5G", price_usd: 530, ecran: "6.78\" Curved AMOLED 120Hz", camera: "50+50+50 MP ZEISS", batterie: "5000 mAh (80W)", ram: "12Go", stockage: "512Go", tendance: 89, specs: "Optique ZEISS Smart Aura Light Portrait" },
+          { id: 150, brand: "Realme", name: "12 Pro+ 5G", price_usd: 430, ecran: "6.7\" Curved OLED 120Hz", camera: "50+64+8 MP Periscope", batterie: "5000 mAh (67W)", ram: "12Go", stockage: "256Go", tendance: 87, specs: "Téléobjectif Périscope 64MP OIS, Design Horlogerie" }
+        ];
+
         function setDetailsCurrency(curr) {
             activeCurrency = curr;
             renderDetailsView();
@@ -47,12 +116,23 @@
             const container = document.getElementById('productDetails');
             
             try {
+                // 1. Tentative d'appel de l'API
                 const res = await fetch(`/api/products/${productId}`);
-                if (!res.ok) throw new Error("Téléphone non trouvé");
-                currentProduct = await res.json();
-                renderDetailsView();
+                if (res.ok) {
+                    currentProduct = await res.json();
+                } else {
+                    throw new Error("Produit non trouvé sur l'API");
+                }
             } catch (error) {
-                console.error(error);
+                // 2. Bascule automatique sur SEED_PRODUCTS en cas d'absence d'API ou erreur
+                console.log("Recherche dans le catalogue automatique...");
+                const numId = Number(productId);
+                currentProduct = SEED_PRODUCTS.find(p => p.id === numId || p.id == productId);
+            }
+
+            if (currentProduct) {
+                renderDetailsView();
+            } else {
                 container.innerHTML = `
                     <div class="text-center py-12">
                         <span class="text-6xl block mb-4">🕵️‍♂️</span>

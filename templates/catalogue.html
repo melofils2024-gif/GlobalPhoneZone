@@ -53,7 +53,7 @@
       <!-- 1. Barre de recherche principale -->
       <div class="relative flex-grow w-full">
         <input type="text" id="searchInput" oninput="filterProducts()" 
-               placeholder="Rechercher un modèle, marque, processeur (ex: S24 Ultra, iPhone 15, Redmi, Pixel)..." 
+               placeholder="Rechercher un modèle, marque, processeur (ex: S24 Ultra, iPhone 16, Camon 30, Pixel)..." 
                class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
         <span class="absolute left-3.5 top-3.5 text-slate-400">🔍</span>
       </div>
@@ -61,29 +61,17 @@
       <!-- Conteneur des Filtres -->
       <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full md:w-auto">
         
-        <!-- 2. Filtre Marque -->
-<div class="relative flex-grow sm:flex-grow-0 min-w-[170px]">
-  <select id="brandFilter" onchange="filterProducts()" 
-          class="w-full appearance-none bg-sky-50 text-sky-800 font-bold py-3 pl-9 pr-8 rounded-xl text-sm border border-sky-200 hover:bg-sky-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
-    <option value="ALL">🏷️ Toutes les marques</option>
-    <option value="Apple">Apple</option>
-    <option value="Samsung">Samsung</option>
-    <option value="Xiaomi">Xiaomi (Redmi, Poco)</option>
-    <option value="Infinix">Infinix</option>
-    <option value="Tecno">Tecno</option>
-    <option value="Itel">Itel</option>
-    <option value="Oppo">Oppo</option>
-    <option value="Vivo">Vivo</option>
-    <option value="Google">Google (Pixel)</option>
-    <option value="Huawei">Huawei</option>
-    <option value="Realme">Realme</option>
-    <option value="Honor">Honor</option>
-  </select>
-  <span class="absolute left-3 top-3.5 pointer-events-none text-xs">📱</span>
-  <span class="absolute right-3 top-3.5 pointer-events-none text-xs text-sky-600">▼</span>
-</div>
+        <!-- 2. Filtre Marque (Généré dynamiquement) -->
+        <div class="relative flex-grow sm:flex-grow-0 min-w-[170px]">
+          <select id="brandFilter" onchange="filterProducts()" 
+                  class="w-full appearance-none bg-sky-50 text-sky-800 font-bold py-3 pl-9 pr-8 rounded-xl text-sm border border-sky-200 hover:bg-sky-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+            <option value="ALL">🏷️ Toutes les marques</option>
+          </select>
+          <span class="absolute left-3 top-3.5 pointer-events-none text-xs">📱</span>
+          <span class="absolute right-3 top-3.5 pointer-events-none text-xs text-sky-600">▼</span>
+        </div>
 
-        <!-- 3. Champ Budget Max (adapté à la devise active) -->
+        <!-- 3. Champ Budget Max -->
         <div class="relative flex-grow sm:flex-grow-0 min-w-[150px]">
           <input type="number" id="maxPriceInput" oninput="filterProducts()" 
                  placeholder="Budget max..." 
@@ -91,7 +79,7 @@
           <span class="absolute left-3 top-3.5 text-amber-600 font-bold text-xs">💰</span>
         </div>
 
-        <!-- 4. Sélecteur de Devise ($ / € / FCFA) -->
+        <!-- 4. Sélecteur de Devise -->
         <div class="relative flex-grow sm:flex-grow-0 min-w-[130px]">
           <select id="currencySelect" onchange="changeCurrency()" 
                   class="w-full appearance-none bg-emerald-50 text-emerald-900 font-black py-3 pl-9 pr-8 rounded-xl text-sm border border-emerald-300 hover:bg-emerald-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
@@ -145,17 +133,11 @@
         </div>
 
         <div>
-  <label class="font-bold text-slate-700 block mb-1">3. Préférence de Marque :</label>
-  <select id="quizBrand" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-semibold text-slate-800">
-    <option value="ALL">Peu importe (Toutes les marques)</option>
-    <option value="Apple">Apple</option>
-    <option value="Samsung">Samsung</option>
-    <option value="Xiaomi">Xiaomi</option>
-    <option value="Infinix">Infinix</option>
-    <option value="Tecno">Tecno</option>
-    <option value="Itel">Itel</option>
-  </select>
-</div>
+          <label class="font-bold text-slate-700 block mb-1">3. Préférence de Marque :</label>
+          <select id="quizBrand" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none font-semibold text-slate-800">
+            <option value="ALL">Peu importe (Toutes les marques)</option>
+          </select>
+        </div>
 
         <button onclick="runSmartAssistant()" id="btnRunAssistant" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-black py-3.5 rounded-xl hover:shadow-lg hover:scale-102 active:scale-98 transition shadow mt-2 flex items-center justify-center gap-2">
           <span>🚀</span> Trouver mes Meilleurs Téléphones
@@ -218,7 +200,7 @@
     <p class="text-xs sm:text-sm mt-1 text-slate-400">Catalogue complet multi-devises et fiches techniques certifiées</p>
   </footer>
 
-  <!-- Script Dynamique Multi-Devises et Assistant -->
+  <!-- Script Dynamique Multi-Devises, Auto-Seed & Assistant -->
   <script>
     const userRole = localStorage.getItem('userRole');
     const userId = localStorage.getItem('userId');
@@ -250,6 +232,75 @@
       window.location.href = '/';
     }
 
+    // LISTE AUTOMATIQUE DES 50 TÉLÉPHONES TENDANCES DU MOMENT (Prix en USD de base)
+    const SEED_PRODUCTS = [
+      // APPLE (9)
+      { id: 101, brand: "Apple", name: "iPhone 16 Pro Max", price_usd: 1580, ecran: "6.9\" Super Retina XDR 120Hz", camera: "48+48+12 MP Telephoto 5x", batterie: "4685 mAh", ram: "8Go", stockage: "256Go", tendance: 99 },
+      { id: 102, brand: "Apple", name: "iPhone 16 Pro", price_usd: 1360, ecran: "6.3\" Super Retina XDR 120Hz", camera: "48+48+12 MP Telephoto 5x", batterie: "3582 mAh", ram: "8Go", stockage: "128Go", tendance: 97 },
+      { id: 103, brand: "Apple", name: "iPhone 16", price_usd: 1080, ecran: "6.1\" Super Retina XDR", camera: "48+12 MP Ultrawide", batterie: "3561 mAh", ram: "8Go", stockage: "128Go", tendance: 95 },
+      { id: 104, brand: "Apple", name: "iPhone 15 Pro Max", price_usd: 1300, ecran: "6.7\" OLED 120Hz", camera: "48+12+12 MP", batterie: "4422 mAh", ram: "8Go", stockage: "256Go", tendance: 94 },
+      { id: 105, brand: "Apple", name: "iPhone 15 Pro", price_usd: 1130, ecran: "6.1\" OLED 120Hz", camera: "48+12+12 MP", batterie: "3274 mAh", ram: "8Go", stockage: "128Go", tendance: 92 },
+      { id: 106, brand: "Apple", name: "iPhone 15", price_usd: 865, ecran: "6.1\" OLED Super Retina", camera: "48+12 MP", batterie: "3349 mAh", ram: "6Go", stockage: "128Go", tendance: 90 },
+      { id: 107, brand: "Apple", name: "iPhone 14 Pro Max", price_usd: 1030, ecran: "6.7\" OLED 120Hz", camera: "48+12+12 MP", batterie: "4323 mAh", ram: "6Go", stockage: "128Go", tendance: 88 },
+      { id: 108, brand: "Apple", name: "iPhone 13", price_usd: 630, ecran: "6.1\" OLED Super Retina", camera: "12+12 MP", batterie: "3240 mAh", ram: "4Go", stockage: "128Go", tendance: 86 },
+      { id: 109, brand: "Apple", name: "iPhone 11", price_usd: 365, ecran: "6.1\" Liquid Retina", camera: "12+12 MP", batterie: "3110 mAh", ram: "4Go", stockage: "64Go", tendance: 82 },
+
+      // SAMSUNG (11)
+      { id: 110, brand: "Samsung", name: "Galaxy S25 Ultra", price_usd: 1500, ecran: "6.8\" Dynamic AMOLED 2X 120Hz", camera: "200+50+50+10 MP", batterie: "5000 mAh", ram: "12Go", stockage: "256Go", tendance: 98 },
+      { id: 111, brand: "Samsung", name: "Galaxy S24 Ultra", price_usd: 1250, ecran: "6.8\" Dynamic AMOLED 2X 120Hz", camera: "200+50+12+10 MP", batterie: "5000 mAh", ram: "12Go", stockage: "256Go", tendance: 96 },
+      { id: 112, brand: "Samsung", name: "Galaxy S24+", price_usd: 965, ecran: "6.7\" QHD+ AMOLED 120Hz", camera: "50+10+12 MP", batterie: "4900 mAh", ram: "12Go", stockage: "256Go", tendance: 91 },
+      { id: 113, brand: "Samsung", name: "Galaxy S24", price_usd: 800, ecran: "6.2\" FHD+ AMOLED 120Hz", camera: "50+10+12 MP", batterie: "4000 mAh", ram: "8Go", stockage: "128Go", tendance: 89 },
+      { id: 114, brand: "Samsung", name: "Galaxy Z Fold 6", price_usd: 1830, ecran: "7.6\" Pliable AMOLED 120Hz", camera: "50+10+12 MP", batterie: "4400 mAh", ram: "12Go", stockage: "512Go", tendance: 93 },
+      { id: 115, brand: "Samsung", name: "Galaxy Z Flip 6", price_usd: 1030, ecran: "6.7\" Pliable AMOLED 120Hz", camera: "50+12 MP", batterie: "4000 mAh", ram: "12Go", stockage: "256Go", tendance: 90 },
+      { id: 116, brand: "Samsung", name: "Galaxy A55 5G", price_usd: 400, ecran: "6.6\" Super AMOLED 120Hz", camera: "50+12+5 MP", batterie: "5000 mAh", ram: "8Go", stockage: "256Go", tendance: 94 },
+      { id: 117, brand: "Samsung", name: "Galaxy A35 5G", price_usd: 310, ecran: "6.6\" Super AMOLED 120Hz", camera: "50+8+5 MP", batterie: "5000 mAh", ram: "8Go", stockage: "128Go", tendance: 89 },
+      { id: 118, brand: "Samsung", name: "Galaxy A25 5G", price_usd: 240, ecran: "6.5\" Super AMOLED 120Hz", camera: "50+8+2 MP", batterie: "5000 mAh", ram: "6Go", stockage: "128Go", tendance: 85 },
+      { id: 119, brand: "Samsung", name: "Galaxy A15 5G", price_usd: 185, ecran: "6.5\" Super AMOLED 90Hz", camera: "50+5+2 MP", batterie: "5000 mAh", ram: "4Go", stockage: "128Go", tendance: 92 },
+      { id: 120, brand: "Samsung", name: "Galaxy A05s", price_usd: 125, ecran: "6.7\" PLS LCD 90Hz", camera: "50+2+2 MP", batterie: "5000 mAh", ram: "4Go", stockage: "64Go", tendance: 87 },
+
+      // TECNO (8)
+      { id: 121, brand: "Tecno", name: "Camon 30 Pro 5G", price_usd: 385, ecran: "6.78\" AMOLED 144Hz", camera: "50+50+2 MP OIS", batterie: "5000 mAh (70W)", ram: "12Go", stockage: "256Go", tendance: 95 },
+      { id: 122, brand: "Tecno", name: "Camon 30", price_usd: 250, ecran: "6.78\" AMOLED 120Hz", camera: "50 MP Dual", batterie: "5000 mAh (70W)", ram: "8Go", stockage: "256Go", tendance: 92 },
+      { id: 123, brand: "Tecno", name: "Spark 20 Pro+", price_usd: 225, ecran: "6.78\" Curved AMOLED 120Hz", camera: "108 MP Ultra Sensing", batterie: "5000 mAh (33W)", ram: "8Go", stockage: "256Go", tendance: 93 },
+      { id: 124, brand: "Tecno", name: "Spark 20 Pro", price_usd: 190, ecran: "6.78\" IPS LCD 120Hz", camera: "108 MP", batterie: "5000 mAh", ram: "8Go", stockage: "256Go", tendance: 88 },
+      { id: 125, brand: "Tecno", name: "Spark 20", price_usd: 140, ecran: "6.56\" IPS LCD 90Hz", camera: "50 MP", batterie: "5000 mAh", ram: "4Go", stockage: "128Go", tendance: 86 },
+      { id: 126, brand: "Tecno", name: "Pop 8", price_usd: 90, ecran: "6.6\" IPS LCD 90Hz", camera: "13 MP", batterie: "5000 mAh", ram: "3Go", stockage: "64Go", tendance: 84 },
+      { id: 127, brand: "Tecno", name: "Pova 6 Pro 5G", price_usd: 290, ecran: "6.78\" AMOLED 120Hz Dynamic", camera: "108 MP", batterie: "6000 mAh (70W)", ram: "12Go", stockage: "256Go", tendance: 91 },
+      { id: 128, brand: "Tecno", name: "Phantom V Fold 2", price_usd: 1080, ecran: "7.85\" Pliable AMOLED 120Hz", camera: "50+50+50 MP", batterie: "5750 mAh (70W)", ram: "12Go", stockage: "512Go", tendance: 89 },
+
+      // INFINIX (7)
+      { id: 129, brand: "Infinix", name: "Note 40 Pro 5G", price_usd: 350, ecran: "6.78\" 3D Curved AMOLED 120Hz", camera: "108 MP OIS", batterie: "5000 mAh (45W)", ram: "12Go", stockage: "256Go", tendance: 94 },
+      { id: 130, brand: "Infinix", name: "Note 40", price_usd: 240, ecran: "6.78\" AMOLED 120Hz", camera: "108 MP", batterie: "5000 mAh (45W)", ram: "8Go", stockage: "256Go", tendance: 90 },
+      { id: 131, brand: "Infinix", name: "Hot 40 Pro", price_usd: 200, ecran: "6.78\" FHD+ 120Hz", camera: "108 MP Gaming", batterie: "5000 mAh (33W)", ram: "8Go", stockage: "256Go", tendance: 89 },
+      { id: 132, brand: "Infinix", name: "Hot 40i", price_usd: 125, ecran: "6.56\" HD+ 90Hz", camera: "50 MP", batterie: "5000 mAh", ram: "4Go", stockage: "128Go", tendance: 85 },
+      { id: 133, brand: "Infinix", name: "Smart 8", price_usd: 86, ecran: "6.6\" HD+ 90Hz Magic Ring", camera: "13 MP", batterie: "5000 mAh", ram: "3Go", stockage: "64Go", tendance: 83 },
+      { id: 134, brand: "Infinix", name: "GT 20 Pro", price_usd: 375, ecran: "6.78\" Gaming AMOLED 144Hz", camera: "108 MP OIS", batterie: "5000 mAh (45W)", ram: "12Go", stockage: "256Go", tendance: 93 },
+      { id: 135, brand: "Infinix", name: "Zero 30 5G", price_usd: 315, ecran: "6.78\" Curved AMOLED 144Hz", camera: "108+13+2 MP (4K Selfie)", batterie: "5000 mAh", ram: "12Go", stockage: "256Go", tendance: 88 },
+
+      // XIAOMI (7)
+      { id: 136, brand: "Xiaomi", name: "Redmi Note 13 Pro+ 5G", price_usd: 465, ecran: "6.67\" Curved AMOLED 120Hz", camera: "200 MP OIS", batterie: "5000 mAh (120W)", ram: "12Go", stockage: "512Go", tendance: 96 },
+      { id: 137, brand: "Xiaomi", name: "Redmi Note 13 Pro 4G", price_usd: 290, ecran: "6.67\" AMOLED 120Hz", camera: "200 MP OIS", batterie: "5000 mAh (67W)", ram: "8Go", stockage: "256Go", tendance: 91 },
+      { id: 138, brand: "Xiaomi", name: "Redmi Note 13 4G", price_usd: 210, ecran: "6.67\" AMOLED 120Hz", camera: "108 MP", batterie: "5000 mAh (33W)", ram: "6Go", stockage: "128Go", tendance: 93 },
+      { id: 139, brand: "Xiaomi", name: "Redmi 13C", price_usd: 125, ecran: "6.74\" 90Hz Display", camera: "50 MP AI", batterie: "5000 mAh", ram: "4Go", stockage: "128Go", tendance: 87 },
+      { id: 140, brand: "Xiaomi", name: "Poco X6 Pro 5G", price_usd: 385, ecran: "6.67\" Flow AMOLED 120Hz", camera: "64 MP OIS", batterie: "5000 mAh (67W)", ram: "12Go", stockage: "512Go", tendance: 94 },
+      { id: 141, brand: "Xiaomi", name: "Poco F6 Pro", price_usd: 600, ecran: "6.67\" WQHD+ AMOLED 120Hz", camera: "50 MP Light Hunter", batterie: "5000 mAh (120W)", ram: "12Go", stockage: "512Go", tendance: 92 },
+      { id: 142, brand: "Xiaomi", name: "Xiaomi 14", price_usd: 865, ecran: "6.36\" LTPO OLED 120Hz", camera: "50+50+50 MP Leica", batterie: "4610 mAh (90W)", ram: "12Go", stockage: "256Go", tendance: 90 },
+
+      // GOOGLE (4)
+      { id: 143, brand: "Google", name: "Pixel 9 Pro XL", price_usd: 1200, ecran: "6.8\" Super Actua OLED 120Hz", camera: "50+48+48 MP Tele 5x", batterie: "5060 mAh", ram: "16Go", stockage: "256Go", tendance: 97 },
+      { id: 144, brand: "Google", name: "Pixel 9 Pro", price_usd: 1030, ecran: "6.3\" Super Actua OLED 120Hz", camera: "50+48+48 MP Tele 5x", batterie: "4700 mAh", ram: "16Go", stockage: "128Go", tendance: 95 },
+      { id: 145, brand: "Google", name: "Pixel 9", price_usd: 815, ecran: "6.3\" Actua OLED 120Hz", camera: "50+48 MP Ultrawide", batterie: "4700 mAh", ram: "12Go", stockage: "128Go", tendance: 92 },
+      { id: 146, brand: "Google", name: "Pixel 8a", price_usd: 515, ecran: "6.1\" Actua OLED 120Hz", camera: "64+13 MP", batterie: "4492 mAh", ram: "8Go", stockage: "128Go", tendance: 89 },
+
+      // OPPO (2)
+      { id: 147, brand: "Oppo", name: "Reno 11 Pro 5G", price_usd: 515, ecran: "6.7\" Curved OLED 120Hz", camera: "50+32+8 MP Portrait Pro", batterie: "4600 mAh (80W)", ram: "12Go", stockage: "512Go", tendance: 88 },
+      { id: 148, brand: "Oppo", name: "A78 4G", price_usd: 225, ecran: "6.43\" AMOLED 90Hz", camera: "50 MP Dual", batterie: "5000 mAh (67W)", ram: "8Go", stockage: "128Go", tendance: 85 },
+
+      // VIVO & REALME (2)
+      { id: 149, brand: "Vivo", name: "V30 Pro 5G", price_usd: 530, ecran: "6.78\" Curved AMOLED 120Hz", camera: "50+50+50 MP ZEISS", batterie: "5000 mAh (80W)", ram: "12Go", stockage: "512Go", tendance: 89 },
+      { id: 150, brand: "Realme", name: "12 Pro+ 5G", price_usd: 430, ecran: "6.7\" Curved OLED 120Hz", camera: "50+64+8 MP Periscope", batterie: "5000 mAh (67W)", ram: "12Go", stockage: "256Go", tendance: 87 }
+    ];
+
     // Gestion Devises & Taux
     const RATES = { USD: 1, EUR: 0.92, XOF: 600, FCFA: 600 };
     const SYMBOLS = { USD: '$', EUR: '€', XOF: 'FCFA', FCFA: 'FCFA' };
@@ -257,19 +308,46 @@
     let products = [];
     let selectedProductForInstallment = null;
 
+    // FONCTION CHARGEMENT AUTOMATIQUE INTELLIGENT
     async function loadProducts() {
       try {
         const response = await fetch('/api/products');
-        if (!response.ok) throw new Error("Erreur de chargement");
-        products = await response.json();
-        // Le code de filtrage des marques a été supprimé car tes marques sont déjà dans le HTML
-        renderProducts(products);
+        if (response.ok) {
+          const apiProducts = await response.json();
+          // Si l'API renvoie des téléphones créés par des vendeurs, on les utilise
+          if (Array.isArray(apiProducts) && apiProducts.length > 0) {
+            products = apiProducts;
+          } else {
+            // Sinon bascule automatique sur nos 50 téléphones par défaut
+            products = SEED_PRODUCTS;
+          }
+        } else {
+          products = SEED_PRODUCTS;
+        }
       } catch (error) {
-        console.error("Erreur:", error);
-        document.getElementById('productsGrid').innerHTML = `
-          <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow-sm border border-red-100">
-            <p class="text-red-500 font-bold">Erreur de chargement du catalogue.</p>
-          </div>`;
+        // En cas d'erreur de connexion à l'API, chargement automatique garanti
+        console.log("Mode catalogue automatique activé.");
+        products = SEED_PRODUCTS;
+      }
+
+      // Extraction dynamique des marques
+      const uniqueBrands = [...new Set(products.map(p => p.brand).filter(Boolean))].sort();
+      populateBrandSelects(uniqueBrands);
+
+      renderProducts(products);
+    }
+
+    function populateBrandSelects(brands) {
+      const brandFilter = document.getElementById('brandFilter');
+      const quizBrand = document.getElementById('quizBrand');
+      
+      const optionsHTML = brands.map(b => `<option value="${b}">${b}</option>`).join('');
+
+      if (brandFilter) {
+        brandFilter.innerHTML = '<option value="ALL">🏷️ Toutes les marques</option>' + optionsHTML;
+      }
+      if (quizBrand) {
+        quizBrand.innerHTML = '<option value="ALL">Peu importe (Toutes les marques)</option>' + optionsHTML;
       }
     }
 
@@ -372,7 +450,7 @@
       const filtered = products.filter(p => {
         const name = (p.name || '').toLowerCase();
         const brand = (p.brand || '').toLowerCase();
-        const specs = (p.specs || '').toLowerCase();
+        const specs = `${p.ecran || ''} ${p.camera || ''} ${p.ram || ''} ${p.stockage || ''}`.toLowerCase();
         const price = p.price_usd || 0;
         const convertedPrice = Math.round(price * (RATES[currentCurrency] || 600));
 
@@ -380,7 +458,7 @@
         
         let matchBrand = true;
         if (brandSelected !== 'ALL') {
-          matchBrand = brand === brandSelected.toLowerCase() || (p.series && p.series.toLowerCase() === brandSelected.toLowerCase());
+          matchBrand = brand === brandSelected.toLowerCase();
         }
 
         let matchPrice = true;
@@ -432,7 +510,7 @@
     }
 
     async function runSmartAssistant() {
-      const budget = document.getElementById('quizBudget').value;
+      const budget = parseFloat(document.getElementById('quizBudget').value) || 0;
       const priority = document.getElementById('quizPriority').value;
       const brand = document.getElementById('quizBrand').value;
       const btn = document.getElementById('btnRunAssistant');
@@ -440,26 +518,33 @@
       btn.disabled = true;
       btn.innerHTML = `<span>⏳</span> Recherche intelligente en cours...`;
 
-      try {
-        const res = await fetch('/api/assistant/recommend', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            budget: budget,
-            priority: priority,
-            brand: brand,
-            currency: currentCurrency === 'XOF' ? 'FCFA' : currentCurrency
-          })
+      setTimeout(() => {
+        // Filtrage local immédiat et intelligent parmi nos 50 téléphones
+        let matches = products.filter(p => {
+          const convertedPrice = Math.round((p.price_usd || 0) * (RATES[currentCurrency] || 600));
+          const matchBudget = budget > 0 ? convertedPrice <= budget : true;
+          const matchBrand = brand !== 'ALL' ? p.brand.toLowerCase() === brand.toLowerCase() : true;
+          return matchBudget && matchBrand;
         });
 
-        const data = await res.json();
+        // Tri intelligent selon la priorité
+        if (priority === 'CAMERA') {
+          matches.sort((a, b) => (b.price_usd) - (a.price_usd));
+        } else if (priority === 'BATTERY') {
+          matches.sort((a, b) => parseInt(b.batterie || 0) - parseInt(a.batterie || 0));
+        } else if (priority === 'BUDGET') {
+          matches.sort((a, b) => (a.price_usd) - (b.price_usd));
+        } else {
+          matches.sort((a, b) => (b.tendance || 0) - (a.tendance || 0));
+        }
+
+        const top3 = matches.slice(0, 3);
         const resultsContainer = document.getElementById('quizResults');
         const list = document.getElementById('recommendationsList');
-        
         list.innerHTML = '';
 
-        if (data.recommendations && data.recommendations.length > 0) {
-          data.recommendations.forEach((item, idx) => {
+        if (top3.length > 0) {
+          top3.forEach((item, idx) => {
             const dName = getCleanName(item.brand, item.name);
             const pFormatted = formatPrice(item.price_usd);
             
@@ -469,10 +554,10 @@
                   <div>
                     <span class="text-xs font-black text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">Recommandation #${idx+1}</span>
                     <h5 class="font-extrabold text-slate-900 mt-1">${dName}</h5>
-                    <p class="text-xs text-slate-500 mt-0.5">${item.recommendation_reason || ''}</p>
+                    <p class="text-xs text-slate-500 mt-0.5">📱 ${item.ecran} • 📸 ${item.camera}</p>
                   </div>
                   <div class="text-right">
-                    <span class="text-xs font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">${item.match_score}% Match</span>
+                    <span class="text-xs font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">${item.tendance || 90}% Match</span>
                     <div class="font-black text-slate-900 mt-1 text-sm">${pFormatted}</div>
                   </div>
                 </div>
@@ -487,19 +572,14 @@
               </div>
             `;
           });
-          resultsContainer.classList.remove('hidden');
         } else {
-          list.innerHTML = `<p class="text-xs text-slate-500 text-center py-3">Aucun résultat trouvé pour ces critères.</p>`;
-          resultsContainer.classList.remove('hidden');
+          list.innerHTML = `<p class="text-xs text-slate-500 text-center py-3">Aucun téléphone ne correspond à ce budget exact. Essayez d'augmenter le budget.</p>`;
         }
 
-      } catch (err) {
-        console.error(err);
-        alert("Erreur lors de la recommandation.");
-      } finally {
+        resultsContainer.classList.remove('hidden');
         btn.disabled = false;
         btn.innerHTML = `<span>🚀</span> Trouver mes Meilleurs Téléphones`;
-      }
+      }, 300);
     }
 
     function openInstallmentModal(id) {
