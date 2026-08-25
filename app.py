@@ -608,6 +608,20 @@ def render_html_page(page_name):
         return render_template(f"{page_name}.html")
     except Exception:
         return "Page introuvable (Erreur 404)", 404
+    
+@app.route('/reset-database-urgente')
+def reset_database_urgente():
+    try:
+        # Supprime toutes les anciennes tables obsolètes
+        db.drop_all()
+        # Recrée toutes les tables avec la structure à jour
+        db.create_all()
+        # Ré-injecte les données de base (les 12 téléphones par défaut)
+        if 'seed_database' in globals():
+            seed_database()
+        return "Succès : La base de données PostgreSQL a été entièrement réinitialisée et mise à jour !"
+    except Exception as e:
+        return f"Erreur lors de la réinitialisation : {str(e)}", 500
 
 
 if __name__ == '__main__':
