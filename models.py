@@ -51,6 +51,10 @@ class Product(db.Model):
     tag = db.Column(db.String(50), default='ALL') # 'PERF', 'CAMERA', 'BATTERY', 'BUDGET', 'ALL'
     statut = db.Column(db.String(50), default='Actif')
     
+    # Prise en charge Neuf / Occasion
+    condition = db.Column(db.String(30), default='neuf') # 'neuf' ou 'occasion'
+    etat = db.Column(db.String(80), default='Neuf')        # 'Comme neuf (Bat. 90%)', 'Très bon état', etc.
+    
     # Caractéristiques détaillées
     ecran = db.Column(db.String(120), default='6.7" AMOLED 120Hz')
     camera = db.Column(db.String(120), default='50 MP + 12 MP')
@@ -79,6 +83,8 @@ class Product(db.Model):
             "price_original": self.price_original or self.price_usd,
             "currency": self.currency or 'USD',
             "devise": self.currency or 'USD',
+            "condition": self.condition or 'neuf',
+            "etat": self.etat or ('Neuf' if self.condition == 'neuf' else 'D\'occasion'),
             "image_url": self.image_url,
             "specs": self.specs,
             "description": self.specs,

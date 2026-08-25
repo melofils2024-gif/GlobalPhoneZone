@@ -84,7 +84,8 @@ def seed_database():
                 db.session.add(demo_client)
             db.session.commit()
 
-            # 2. Classement des 12 MEILLEURS TÉLÉPHONES MONDIAUX
+            # 2. Classement des 12 MEILLEURS TÉLÉPHONES MONDIAUX (Pour le catalogue général uniquement)
+            # Aucun vendeur n'est assigné à ces téléphones (vendeur_id = None)
             best_12_phones = [
                 Product(name="Apple iPhone 15 Pro Max", brand="Apple", series="Apple", price_usd=1199.0, price_original=1199.0, currency="USD", image_url="", specs="256Go \u2022 8Go RAM \u2022 Puce A17 Pro (3nm)", tag="CAMERA", statut="Actif", ecran='6.7" Super Retina XDR OLED 120Hz ProMotion', camera="48 MP Principal + 12 MP Périscope x5 + 12 MP Ultra-Wide", batterie="4422 mAh \u2022 Charge 20W + MagSafe 15W", stockage="256Go", ram="8Go", tendance=99, whatsapp="22997001122"),
                 Product(name="Samsung Galaxy S24 Ultra", brand="Samsung", series="Samsung-S", price_usd=1299.0, price_original=780000.0, currency="FCFA", image_url="", specs="512Go \u2022 12Go RAM \u2022 Snapdragon 8 Gen 3 \u2022 Stylus S-Pen", tag="PERF", statut="Actif", ecran='6.8" Dynamic AMOLED 2X 120Hz QHD+ (2600 nits)', camera="200 MP Principal + 50 MP Zoom x5 + 10 MP Zoom x3 + 12 MP", batterie="5000 mAh \u2022 Charge rapide 45W", stockage="512Go", ram="12Go", tendance=98, whatsapp="22997001122"),
@@ -102,16 +103,9 @@ def seed_database():
             db.session.bulk_save_objects(best_12_phones)
             db.session.commit()
 
-            # 3. Articles spécifiques publiés par le VENDEUR de démo
-            seller_products = [
-                Product(name="iPhone 13 Pro Max (Occasion Pro)", brand="Apple", series="Apple", price_usd=620.0, price_original=370000.0, currency="FCFA", image_url="", specs="128Go \u2022 État comme neuf 95% batterie \u2022 Facture fournie", tag="CAMERA", statut="Actif", ecran='6.7" Super Retina XDR OLED 120Hz', camera="12 MP Triple Caméra Pro", batterie="4352 mAh", stockage="128Go", ram="6Go", tendance=87, whatsapp="22997001122", vendeur_id=demo_seller.id),
-                Product(name="Samsung Galaxy S23 FE 5G", brand="Samsung", series="Samsung-S", price_usd=480.0, price_original=450.0, currency="EUR", image_url="", specs="256Go \u2022 8Go RAM \u2022 Scellé dans son carton avec garantie 1 an", tag="PERF", statut="Actif", ecran='6.4" Dynamic AMOLED 2X 120Hz', camera="50 MP OIS + 8 MP Téléobjectif + 12 MP", batterie="4500 mAh", stockage="256Go", ram="8Go", tendance=89, whatsapp="22997001122", vendeur_id=demo_seller.id),
-                Product(name="Tecno Spark 20 Pro+", brand="Tecno", series="Tecno", price_usd=190.0, price_original=115000.0, currency="FCFA", image_url="", specs="256Go \u2022 8Go RAM \u2022 Design incurvé haut de gamme", tag="BUDGET", statut="Actif", ecran='6.78" AMOLED Incurvé 120Hz', camera="108 MP Principal + 32 MP Selfie", batterie="5000 mAh \u2022 Charge 33W", stockage="256Go", ram="8Go", tendance=86, whatsapp="22997001122", vendeur_id=demo_seller.id),
-            ]
-            db.session.bulk_save_objects(seller_products)
-            db.session.commit()
+            # SUPPRESSION ICI : Les articles du vendeur de démo ont été retirés pour que sa page soit vide par défaut.
 
-            # 4. Favoris & Commande de démo pour le client de test
+            # 3. Favoris & Commande de démo pour le client de test
             p_fav = Product.query.first()
             if p_fav and demo_client:
                 demo_client.favorite_products.append(p_fav)
