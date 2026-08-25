@@ -260,6 +260,11 @@ def get_products():
 
     return jsonify(results), 200
 
+# Alias pour alimenter le tableau de classement sur la page d'accueil
+@app.route('/api/ranking', methods=['GET'])
+def get_ranking():
+    return get_products()
+
 @app.route('/api/products/<int:product_id>', methods=['GET'])
 def get_product(product_id):
     product = Product.query.get_or_404(product_id)
