@@ -622,6 +622,12 @@ def reset_database_urgente():
         return "Succès : La base de données PostgreSQL a été entièrement réinitialisée et mise à jour !"
     except Exception as e:
         return f"Erreur lors de la réinitialisation : {str(e)}", 500
+    
+with app.app_context():
+    db.drop_all()
+    db.create_all()
+    if 'seed_database' in globals():
+        seed_database()
 
 
 if __name__ == '__main__':
