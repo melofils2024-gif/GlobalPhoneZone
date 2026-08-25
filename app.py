@@ -4,15 +4,17 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, Product, Order, OrderItem
 
-# Définir les chemins absolus
-template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
-css_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'css'))
-images_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'images'))
+# Définir les chemins absolus pour les dossiers du projet
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+template_dir = os.path.join(BASE_DIR, 'templates')
+css_dir = os.path.join(BASE_DIR, 'css')
+js_dir = os.path.join(BASE_DIR, 'js')
+images_dir = os.path.join(BASE_DIR, 'images')
 
 app = Flask(__name__, template_folder=template_dir)
 CORS(app)
 
-# Configuration DB : priorité à DATABASE_URL (prod), sinon SQLite
+# Configuration DB pour Render (PostgreSQL) ou SQLite en local
 DATABASE_URL = os.environ.get('DATABASE_URL', '')
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
@@ -20,12 +22,8 @@ if DATABASE_URL.startswith('postgres://'):
 if DATABASE_URL:
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 else:
-    # Sur Vercel serverless, seul /tmp est en écriture
-    if os.environ.get('VERCEL'):
-        db_path = '/tmp/database.db'
-    else:
-        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'database.db')
-        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    db_path = os.path.join(BASE_DIR, 'instance', 'database.db')
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -57,7 +55,7 @@ def seed_database():
         db.create_all()
 
         if Product.query.count() == 0:
-            # 1. Création ou récupération des utilisateurs de test
+            # 1. Création des utilisateurs de test
             demo_seller = User.query.filter_by(email="vendeur@boutique.com").first()
             if not demo_seller:
                 demo_seller = User(
@@ -84,21 +82,20 @@ def seed_database():
                 db.session.add(demo_client)
             db.session.commit()
 
-            # 2. Classement des 12 MEILLEURS TÉLÉPHONES MONDIAUX (Pour le catalogue général uniquement)
-            # Aucun vendeur n'est assigné à ces téléphones (vendeur_id = None)
+            # 2. Catalogue des 12 meilleurs téléphones mondiaux
             best_12_phones = [
-                Product(name="Apple iPhone 15 Pro Max", brand="Apple", series="Apple", price_usd=1199.0, price_original=1199.0, currency="USD", image_url="", specs="256Go \u2022 8Go RAM \u2022 Puce A17 Pro (3nm)", tag="CAMERA", statut="Actif", ecran='6.7" Super Retina XDR OLED 120Hz ProMotion', camera="48 MP Principal + 12 MP Périscope x5 + 12 MP Ultra-Wide", batterie="4422 mAh \u2022 Charge 20W + MagSafe 15W", stockage="256Go", ram="8Go", tendance=99, whatsapp="22997001122"),
-                Product(name="Samsung Galaxy S24 Ultra", brand="Samsung", series="Samsung-S", price_usd=1299.0, price_original=780000.0, currency="FCFA", image_url="", specs="512Go \u2022 12Go RAM \u2022 Snapdragon 8 Gen 3 \u2022 Stylus S-Pen", tag="PERF", statut="Actif", ecran='6.8" Dynamic AMOLED 2X 120Hz QHD+ (2600 nits)', camera="200 MP Principal + 50 MP Zoom x5 + 10 MP Zoom x3 + 12 MP", batterie="5000 mAh \u2022 Charge rapide 45W", stockage="512Go", ram="12Go", tendance=98, whatsapp="22997001122"),
-                Product(name="Google Pixel 8 Pro", brand="Google", series="Google", price_usd=899.0, price_original=899.0, currency="USD", image_url="", specs="256Go \u2022 12Go RAM \u2022 Google Tensor G3 \u2022 IA Avancée", tag="CAMERA", statut="Actif", ecran='6.7" Super Actua LTPO OLED 120Hz', camera="50 MP Principal + 48 MP Téléobjectif x5 + 48 MP Ultra-Wide", batterie="5050 mAh \u2022 Charge 30W", stockage="256Go", ram="12Go", tendance=95, whatsapp="22997001122"),
-                Product(name="Xiaomi 14 Ultra", brand="Xiaomi", series="Xiaomi", price_usd=1099.0, price_original=1050.0, currency="EUR", image_url="", specs="512Go \u2022 16Go RAM \u2022 Optique Leica 1 pouce", tag="CAMERA", statut="Actif", ecran='6.73" AMOLED LTPO WQHD+ 120Hz', camera="50 MP Quad Leica (Capteur 1 pouce LYT-900)", batterie="5000 mAh \u2022 Charge 90W filaire / 80W sans fil", stockage="512Go", ram="16Go", tendance=94, whatsapp="22997001122"),
-                Product(name="OnePlus 12", brand="OnePlus", series="OnePlus", price_usd=799.0, price_original=799.0, currency="USD", image_url="", specs="256Go \u2022 12Go RAM \u2022 Snapdragon 8 Gen 3 \u2022 Hasselblad", tag="PERF", statut="Actif", ecran='6.82" ProXDR AMOLED 120Hz 2K (4500 nits)', camera="50 MP Sony LYT-808 + 64 MP Périscope x3 + 48 MP", batterie="5400 mAh \u2022 Charge Ultra-rapide 100W", stockage="256Go", ram="12Go", tendance=93, whatsapp="22997001122"),
-                Product(name="Apple iPhone 15", brand="Apple", series="Apple", price_usd=799.0, price_original=480000.0, currency="FCFA", image_url="", specs="128Go \u2022 6Go RAM \u2022 Dynamic Island \u2022 Puce A16", tag="ALL", statut="Actif", ecran='6.1" Super Retina XDR OLED', camera="48 MP Principal + 12 MP Ultra grand-angle", batterie="3349 mAh \u2022 USB-C", stockage="128Go", ram="6Go", tendance=92, whatsapp="22997001122"),
-                Product(name="Samsung Galaxy A55 5G", brand="Samsung", series="Samsung-A", price_usd=380.0, price_original=230000.0, currency="FCFA", image_url="", specs="256Go \u2022 8Go RAM \u2022 Exynos 1480 \u2022 Châssis Métal", tag="BUDGET", statut="Actif", ecran='6.6" Super AMOLED 120Hz FHD+', camera="50 MP OIS + 12 MP Ultra-Wide + 5 MP Macro", batterie="5000 mAh \u2022 Charge 25W", stockage="256Go", ram="8Go", tendance=90, whatsapp="22997001122"),
-                Product(name="Infinix Note 40 Pro+ 5G", brand="Infinix", series="Infinix", price_usd=290.0, price_original=175000.0, currency="FCFA", image_url="", specs="256Go \u2022 12Go RAM \u2022 Charge 100W All-Round FastCharge", tag="BATTERY", statut="Actif", ecran='6.78" AMOLED Incurvé 3D 120Hz', camera="108 MP OIS Super-Zoom + 2 MP + 2 MP", batterie="4600 mAh \u2022 Charge 100W + 20W sans fil MagCharge", stockage="256Go", ram="12Go", tendance=89, whatsapp="22997001122"),
-                Product(name="Tecno Camon 30 Premier 5G", brand="Tecno", series="Tecno", price_usd=360.0, price_original=215000.0, currency="FCFA", image_url="", specs="512Go \u2022 12Go RAM \u2022 Puce Imagerie Sony Dual", tag="CAMERA", statut="Actif", ecran='6.77" LTPO AMOLED 1.5K 120Hz', camera="50 MP Sony IMX890 OIS + 50 MP Périscope + 50 MP Ultra", batterie="5000 mAh \u2022 Charge 70W", stockage="512Go", ram="12Go", tendance=88, whatsapp="22997001122"),
-                Product(name="Xiaomi Redmi Note 13 Pro+ 5G", brand="Xiaomi", series="Xiaomi", price_usd=340.0, price_original=205000.0, currency="FCFA", image_url="", specs="256Go \u2022 8Go RAM \u2022 Écran Incurvé 1.5K \u2022 IP68", tag="PERF", statut="Actif", ecran='6.67" CrystalRes AMOLED 120Hz 1.5K', camera="200 MP Samsung ISOCELL HP3 OIS + 8 MP + 2 MP", batterie="5000 mAh \u2022 HyperCharge 120W", stockage="256Go", ram="8Go", tendance=88, whatsapp="22997001122"),
-                Product(name="Samsung Galaxy A15", brand="Samsung", series="Samsung-A", price_usd=160.0, price_original=98000.0, currency="FCFA", image_url="", specs="128Go \u2022 6Go RAM \u2022 Helio G99 \u2022 Super AMOLED", tag="BUDGET", statut="Actif", ecran='6.5" Super AMOLED 90Hz FHD+', camera="50 MP Principal + 5 MP Ultra-Wide + 2 MP", batterie="5000 mAh \u2022 Charge 25W", stockage="128Go", ram="6Go", tendance=86, whatsapp="22997001122"),
-                Product(name="Itel S24", brand="Itel", series="Itel", price_usd=110.0, price_original=68000.0, currency="FCFA", image_url="", specs="128Go \u2022 8Go RAM (4+4) \u2022 Helio G91 Ultra", tag="BUDGET", statut="Actif", ecran='6.6" Punch-hole 90Hz HD+', camera="108 MP Ultra Clear + Capteur IA", batterie="5000 mAh \u2022 Charge 18W Type-C", stockage="128Go", ram="8Go", tendance=85, whatsapp="22997001122"),
+                Product(name="Apple iPhone 15 Pro Max", brand="Apple", series="Apple", price_usd=1199.0, price_original=1199.0, currency="USD", image_url="", specs="256Go • 8Go RAM • Puce A17 Pro (3nm)", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.7" Super Retina XDR OLED 120Hz ProMotion', camera="48 MP Principal + 12 MP Périscope x5 + 12 MP Ultra-Wide", batterie="4422 mAh • Charge 20W + MagSafe 15W", stockage="256Go", ram="8Go", tendance=99, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy S24 Ultra", brand="Samsung", series="Samsung-S", price_usd=1299.0, price_original=780000.0, currency="FCFA", image_url="", specs="512Go • 12Go RAM • Snapdragon 8 Gen 3 • Stylus S-Pen", tag="PERF", statut="Actif", condition="neuf", etat="Neuf", ecran='6.8" Dynamic AMOLED 2X 120Hz QHD+ (2600 nits)', camera="200 MP Principal + 50 MP Zoom x5 + 10 MP Zoom x3 + 12 MP", batterie="5000 mAh • Charge rapide 45W", stockage="512Go", ram="12Go", tendance=98, whatsapp="22997001122"),
+                Product(name="Google Pixel 8 Pro", brand="Google", series="Google", price_usd=899.0, price_original=899.0, currency="USD", image_url="", specs="256Go • 12Go RAM • Google Tensor G3 • IA Avancée", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.7" Super Actua LTPO OLED 120Hz', camera="50 MP Principal + 48 MP Téléobjectif x5 + 48 MP Ultra-Wide", batterie="5050 mAh • Charge 30W", stockage="256Go", ram="12Go", tendance=95, whatsapp="22997001122"),
+                Product(name="Xiaomi 14 Ultra", brand="Xiaomi", series="Xiaomi", price_usd=1099.0, price_original=1050.0, currency="EUR", image_url="", specs="512Go • 16Go RAM • Optique Leica 1 pouce", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.73" AMOLED LTPO WQHD+ 120Hz', camera="50 MP Quad Leica (Capteur 1 pouce LYT-900)", batterie="5000 mAh • Charge 90W filaire / 80W sans fil", stockage="512Go", ram="16Go", tendance=94, whatsapp="22997001122"),
+                Product(name="OnePlus 12", brand="OnePlus", series="OnePlus", price_usd=799.0, price_original=799.0, currency="USD", image_url="", specs="256Go • 12Go RAM • Snapdragon 8 Gen 3 • Hasselblad", tag="PERF", statut="Actif", condition="neuf", etat="Neuf", ecran='6.82" ProXDR AMOLED 120Hz 2K (4500 nits)', camera="50 MP Sony LYT-808 + 64 MP Périscope x3 + 48 MP", batterie="5400 mAh • Charge Ultra-rapide 100W", stockage="256Go", ram="12Go", tendance=93, whatsapp="22997001122"),
+                Product(name="Apple iPhone 15", brand="Apple", series="Apple", price_usd=799.0, price_original=480000.0, currency="FCFA", image_url="", specs="128Go • 6Go RAM • Dynamic Island • Puce A16", tag="ALL", statut="Actif", condition="neuf", etat="Neuf", ecran='6.1" Super Retina XDR OLED', camera="48 MP Principal + 12 MP Ultra grand-angle", batterie="3349 mAh • USB-C", stockage="128Go", ram="6Go", tendance=92, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy A55 5G", brand="Samsung", series="Samsung-A", price_usd=380.0, price_original=230000.0, currency="FCFA", image_url="", specs="256Go • 8Go RAM • Exynos 1480 • Châssis Métal", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.6" Super AMOLED 120Hz FHD+', camera="50 MP OIS + 12 MP Ultra-Wide + 5 MP Macro", batterie="5000 mAh • Charge 25W", stockage="256Go", ram="8Go", tendance=90, whatsapp="22997001122"),
+                Product(name="Infinix Note 40 Pro+ 5G", brand="Infinix", series="Infinix", price_usd=290.0, price_original=175000.0, currency="FCFA", image_url="", specs="256Go • 12Go RAM • Charge 100W All-Round FastCharge", tag="BATTERY", statut="Actif", condition="neuf", etat="Neuf", ecran='6.78" AMOLED Incurvé 3D 120Hz', camera="108 MP OIS Super-Zoom + 2 MP + 2 MP", batterie="4600 mAh • Charge 100W + 20W sans fil MagCharge", stockage="256Go", ram="12Go", tendance=89, whatsapp="22997001122"),
+                Product(name="Tecno Camon 30 Premier 5G", brand="Tecno", series="Tecno", price_usd=360.0, price_original=215000.0, currency="FCFA", image_url="", specs="512Go • 12Go RAM • Puce Imagerie Sony Dual", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.77" LTPO AMOLED 1.5K 120Hz', camera="50 MP Sony IMX890 OIS + 50 MP Périscope + 50 MP Ultra", batterie="5000 mAh • Charge 70W", stockage="512Go", ram="12Go", tendance=88, whatsapp="22997001122"),
+                Product(name="Xiaomi Redmi Note 13 Pro+ 5G", brand="Xiaomi", series="Xiaomi", price_usd=340.0, price_original=205000.0, currency="FCFA", image_url="", specs="256Go • 8Go RAM • Écran Incurvé 1.5K • IP68", tag="PERF", statut="Actif", condition="neuf", etat="Neuf", ecran='6.67" CrystalRes AMOLED 120Hz 1.5K', camera="200 MP Samsung ISOCELL HP3 OIS + 8 MP + 2 MP", batterie="5000 mAh • HyperCharge 120W", stockage="256Go", ram="8Go", tendance=88, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy A15", brand="Samsung", series="Samsung-A", price_usd=160.0, price_original=98000.0, currency="FCFA", image_url="", specs="128Go • 6Go RAM • Helio G99 • Super AMOLED", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.5" Super AMOLED 90Hz FHD+', camera="50 MP Principal + 5 MP Ultra-Wide + 2 MP", batterie="5000 mAh • Charge 25W", stockage="128Go", ram="6Go", tendance=86, whatsapp="22997001122"),
+                Product(name="Itel S24", brand="Itel", series="Itel", price_usd=110.0, price_original=68000.0, currency="FCFA", image_url="", specs="128Go • 8Go RAM (4+4) • Helio G91 Ultra", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.6" Punch-hole 90Hz HD+', camera="108 MP Ultra Clear + Capteur IA", batterie="5000 mAh • Charge 18W Type-C", stockage="128Go", ram="8Go", tendance=85, whatsapp="22997001122"),
             ]
             db.session.bulk_save_objects(best_12_phones)
             db.session.commit()
@@ -131,9 +128,10 @@ def seed_database():
         db.session.rollback()
 
 
-# Seeding au démarrage (compatible Vercel serverless)
+# Initialisation du contexte de l'application
 with app.app_context():
     seed_database()
+
 
 # ==========================================
 # 1. AUTHENTIFICATION & UTILISATEURS
@@ -223,7 +221,6 @@ def update_user(user_id):
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
-    """Récupère les produits avec options de filtrage et conversion de devises"""
     currency = request.args.get('currency', 'USD').upper()
     brand = request.args.get('brand')
     tag = request.args.get('tag')
@@ -295,6 +292,8 @@ def add_product():
         specs=data.get('desc', data.get('description', data.get('specs', ''))),
         tag=data.get('tag', 'ALL'),
         statut=data.get('statut', 'Actif'),
+        condition=data.get('condition', 'neuf'),
+        etat=data.get('etat', 'Neuf' if data.get('condition', 'neuf') == 'neuf' else "D'occasion"),
         ecran=data.get('ecran', '6.7" AMOLED'),
         camera=data.get('camera', '50 MP'),
         batterie=data.get('batterie', '5000 mAh'),
@@ -325,6 +324,8 @@ def update_product(product_id):
         product.price_usd = to_usd(p_val, curr)
 
     if 'statut' in data: product.statut = data['statut']
+    if 'condition' in data: product.condition = data['condition']
+    if 'etat' in data: product.etat = data['etat']
     if 'desc' in data or 'specs' in data: product.specs = data.get('desc', data.get('specs'))
     if 'ecran' in data: product.ecran = data['ecran']
     if 'camera' in data: product.camera = data['camera']
@@ -457,7 +458,6 @@ def get_user_orders(user_id):
     orders = Order.query.filter_by(user_id=user_id).order_by(Order.date_creation.desc()).all()
     return jsonify([o.to_dict() for o in orders]), 200
 
-# CORRECTION APPLIQUÉE ICI : Utilisation des relations explicites SQLAlchemy 2.0 et de .distinct()
 @app.route('/api/orders/seller/<int:vendeur_id>', methods=['GET'])
 def get_seller_orders(vendeur_id):
     orders = (
@@ -578,7 +578,7 @@ def recover_phone():
 
 
 # ==========================================
-# 7. ROUTES FRONT-END (HTML / CSS / IMAGES)
+# 7. ROUTES FRONT-END (HTML, CSS, JS, IMAGES)
 # ==========================================
 
 @app.route('/')
@@ -588,6 +588,10 @@ def home():
 @app.route('/css/<path:filename>')
 def serve_css(filename):
     return send_from_directory(css_dir, filename)
+
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    return send_from_directory(js_dir, filename)
 
 @app.route('/images/<path:filename>')
 def serve_images(filename):
@@ -604,6 +608,7 @@ def render_html_page(page_name):
         return render_template(f"{page_name}.html")
     except Exception:
         return "Page introuvable (Erreur 404)", 404
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -376,7 +376,7 @@
 
       items.forEach(p => {
         const displayName = getCleanName(p.brand, p.name);
-        const price = p.price_usd || 0;
+        const price = p.price_usd || p.price || 0;
         const brand = p.brand || 'Marque';
         const ecran = p.ecran || '6.7" AMOLED';
         const camera = p.camera || '50 MP';
@@ -463,7 +463,7 @@
         const name = (p.name || '').toLowerCase();
         const brand = (p.brand || '').toLowerCase();
         const specs = `${p.ecran || ''} ${p.camera || ''} ${p.ram || ''} ${p.stockage || ''}`.toLowerCase();
-        const price = p.price_usd || 0;
+        const price = p.price_usd || p.price || 0;
         const convertedPrice = Math.round(price * (RATES[currentCurrency] || 600));
 
         const matchSearch = name.includes(search) || brand.includes(search) || specs.includes(search);
@@ -538,18 +538,18 @@
 
       setTimeout(() => {
         let matches = products.filter(p => {
-          const convertedPrice = Math.round((p.price_usd || 0) * (RATES[currentCurrency] || 600));
+          const convertedPrice = Math.round((p.price_usd || p.price || 0) * (RATES[currentCurrency] || 600));
           const matchBudget = budget > 0 ? convertedPrice <= budget : true;
           const matchBrand = brand !== 'ALL' ? p.brand.toLowerCase() === brand.toLowerCase() : true;
           return matchBudget && matchBrand;
         });
 
         if (priority === 'CAMERA') {
-          matches.sort((a, b) => (b.price_usd) - (a.price_usd));
+          matches.sort((a, b) => (b.price_usd || b.price) - (a.price_usd || a.price));
         } else if (priority === 'BATTERY') {
           matches.sort((a, b) => parseInt(b.batterie || 0) - parseInt(a.batterie || 0));
         } else if (priority === 'BUDGET') {
-          matches.sort((a, b) => (a.price_usd) - (b.price_usd));
+          matches.sort((a, b) => (a.price_usd || a.price) - (b.price_usd || b.price));
         } else {
           matches.sort((a, b) => (b.tendance || 0) - (a.tendance || 0));
         }
@@ -562,7 +562,7 @@
         if (top3.length > 0) {
           top3.forEach((item, idx) => {
             const dName = getCleanName(item.brand, item.name);
-            const pFormatted = formatPrice(item.price_usd);
+            const pFormatted = formatPrice(item.price_usd || item.price);
             const condBadge = (item.condition === 'occasion') ? '♻️ Occasion' : '✨ Neuf';
             
             list.innerHTML += `
@@ -603,7 +603,7 @@
       selectedProductForInstallment = products.find(p => p.id === id);
       if (!selectedProductForInstallment) return;
 
-      const price = selectedProductForInstallment.price_usd || 0;
+      const price = selectedProductForInstallment.price_usd || selectedProductForInstallment.price || 0;
       document.getElementById('instTitle').textContent = getCleanName(selectedProductForInstallment.brand, selectedProductForInstallment.name);
       document.getElementById('instTotalPrice').textContent = `Prix Total : ${formatPrice(price)}`;
       
@@ -620,7 +620,7 @@
       
       const type = document.getElementById('instType').value;
       const duration = parseInt(document.getElementById('instDuration').value);
-      const price = selectedProductForInstallment.price_usd || 0;
+      const price = selectedProductForInstallment.price_usd || selectedProductForInstallment.price || 0;
       
       const totalPrice = Math.round(price * (RATES[currentCurrency] || 600));
       let divisions = duration;

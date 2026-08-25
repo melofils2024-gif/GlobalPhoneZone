@@ -123,6 +123,22 @@
           </div>
         </div>
 
+        <!-- Condition & État du téléphone (Intégré) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <div>
+            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Condition *</label>
+            <select id="prodCondition" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-semibold" onchange="handleConditionChange(this.value)">
+              <option value="neuf" selected>Neuf (Scellé)</option>
+              <option value="occasion">Occasion</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Précision de l'État</label>
+            <input type="text" id="prodEtat" placeholder="Ex: Neuf ou Comme neuf (Bat. 90%)" value="Neuf"
+                   class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-semibold">
+          </div>
+        </div>
+
         <!-- Caractéristiques Techniques -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
@@ -288,6 +304,11 @@
             tag: document.getElementById('prodTag').value,
             price: parseFloat(document.getElementById('prodPrice').value),
             currency: document.getElementById('currency').value,
+            
+            // Champs Condition et État ajoutés
+            condition: document.getElementById('prodCondition').value,
+            etat: document.getElementById('prodEtat').value.trim() || 'Neuf',
+
             ecran: document.getElementById('prodEcran').value.trim() || '6.7" AMOLED',
             camera: document.getElementById('prodCamera').value.trim() || '50 MP',
             batterie: document.getElementById('prodBatterie').value.trim() || '5000 mAh',
@@ -322,6 +343,16 @@
         });
       }
     });
+
+    // Fonction utilitaire pour automatiser le champ état selon la condition
+    function handleConditionChange(val) {
+      const etatInput = document.getElementById('prodEtat');
+      if (val === 'neuf') {
+        etatInput.value = 'Neuf';
+      } else {
+        etatInput.value = 'Très bon état (Occasion)';
+      }
+    }
 
     // 3. Charger UNIQUEMENT les produits du vendeur connecté
     async function loadSellerProducts(sellerId) {
