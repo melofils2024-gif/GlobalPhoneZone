@@ -50,12 +50,13 @@ def from_usd(price_usd, currency):
 
 
 def seed_database():
-    """Initialise et peuple la base de données si elle est vide."""
+    """Initialise et peuple la base de données avec un large catalogue (Neuf & Occasion)."""
     try:
         db.create_all()
 
-        if Product.query.count() == 0:
-            # 1. Création des utilisateurs de test
+        # On force la mise à jour si on a moins de 40 produits pour charger le nouveau catalogue complet
+        if Product.query.count() < 40:
+            # 1. Création des utilisateurs de test (si non existants)
             demo_seller = User.query.filter_by(email="vendeur@boutique.com").first()
             if not demo_seller:
                 demo_seller = User(
@@ -82,55 +83,39 @@ def seed_database():
                 db.session.add(demo_client)
             db.session.commit()
 
-            # 2. Catalogue des 12 meilleurs téléphones mondiaux
-            best_12_phones = [
-                Product(name="Apple iPhone 15 Pro Max", brand="Apple", series="Apple", price_usd=1199.0, price_original=1199.0, currency="USD", image_url="", specs="256Go • 8Go RAM • Puce A17 Pro (3nm)", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.7" Super Retina XDR OLED 120Hz ProMotion', camera="48 MP Principal + 12 MP Périscope x5 + 12 MP Ultra-Wide", batterie="4422 mAh • Charge 20W + MagSafe 15W", stockage="256Go", ram="8Go", tendance=99, whatsapp="22997001122"),
-                Product(name="Samsung Galaxy S24 Ultra", brand="Samsung", series="Samsung-S", price_usd=1299.0, price_original=780000.0, currency="FCFA", image_url="", specs="512Go • 12Go RAM • Snapdragon 8 Gen 3 • Stylus S-Pen", tag="PERF", statut="Actif", condition="neuf", etat="Neuf", ecran='6.8" Dynamic AMOLED 2X 120Hz QHD+ (2600 nits)', camera="200 MP Principal + 50 MP Zoom x5 + 10 MP Zoom x3 + 12 MP", batterie="5000 mAh • Charge rapide 45W", stockage="512Go", ram="12Go", tendance=98, whatsapp="22997001122"),
-                Product(name="Google Pixel 8 Pro", brand="Google", series="Google", price_usd=899.0, price_original=899.0, currency="USD", image_url="", specs="256Go • 12Go RAM • Google Tensor G3 • IA Avancée", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.7" Super Actua LTPO OLED 120Hz', camera="50 MP Principal + 48 MP Téléobjectif x5 + 48 MP Ultra-Wide", batterie="5050 mAh • Charge 30W", stockage="256Go", ram="12Go", tendance=95, whatsapp="22997001122"),
-                Product(name="Xiaomi 14 Ultra", brand="Xiaomi", series="Xiaomi", price_usd=1099.0, price_original=1050.0, currency="EUR", image_url="", specs="512Go • 16Go RAM • Optique Leica 1 pouce", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.73" AMOLED LTPO WQHD+ 120Hz', camera="50 MP Quad Leica (Capteur 1 pouce LYT-900)", batterie="5000 mAh • Charge 90W filaire / 80W sans fil", stockage="512Go", ram="16Go", tendance=94, whatsapp="22997001122"),
-                Product(name="OnePlus 12", brand="OnePlus", series="OnePlus", price_usd=799.0, price_original=799.0, currency="USD", image_url="", specs="256Go • 12Go RAM • Snapdragon 8 Gen 3 • Hasselblad", tag="PERF", statut="Actif", condition="neuf", etat="Neuf", ecran='6.82" ProXDR AMOLED 120Hz 2K (4500 nits)', camera="50 MP Sony LYT-808 + 64 MP Périscope x3 + 48 MP", batterie="5400 mAh • Charge Ultra-rapide 100W", stockage="256Go", ram="12Go", tendance=93, whatsapp="22997001122"),
-                Product(name="Apple iPhone 15", brand="Apple", series="Apple", price_usd=799.0, price_original=480000.0, currency="FCFA", image_url="", specs="128Go • 6Go RAM • Dynamic Island • Puce A16", tag="ALL", statut="Actif", condition="neuf", etat="Neuf", ecran='6.1" Super Retina XDR OLED', camera="48 MP Principal + 12 MP Ultra grand-angle", batterie="3349 mAh • USB-C", stockage="128Go", ram="6Go", tendance=92, whatsapp="22997001122"),
-                Product(name="Samsung Galaxy A55 5G", brand="Samsung", series="Samsung-A", price_usd=380.0, price_original=230000.0, currency="FCFA", image_url="", specs="256Go • 8Go RAM • Exynos 1480 • Châssis Métal", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.6" Super AMOLED 120Hz FHD+', camera="50 MP OIS + 12 MP Ultra-Wide + 5 MP Macro", batterie="5000 mAh • Charge 25W", stockage="256Go", ram="8Go", tendance=90, whatsapp="22997001122"),
-                Product(name="Infinix Note 40 Pro+ 5G", brand="Infinix", series="Infinix", price_usd=290.0, price_original=175000.0, currency="FCFA", image_url="", specs="256Go • 12Go RAM • Charge 100W All-Round FastCharge", tag="BATTERY", statut="Actif", condition="neuf", etat="Neuf", ecran='6.78" AMOLED Incurvé 3D 120Hz', camera="108 MP OIS Super-Zoom + 2 MP + 2 MP", batterie="4600 mAh • Charge 100W + 20W sans fil MagCharge", stockage="256Go", ram="12Go", tendance=89, whatsapp="22997001122"),
-                Product(name="Tecno Camon 30 Premier 5G", brand="Tecno", series="Tecno", price_usd=360.0, price_original=215000.0, currency="FCFA", image_url="", specs="512Go • 12Go RAM • Puce Imagerie Sony Dual", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.77" LTPO AMOLED 1.5K 120Hz', camera="50 MP Sony IMX890 OIS + 50 MP Périscope + 50 MP Ultra", batterie="5000 mAh • Charge 70W", stockage="512Go", ram="12Go", tendance=88, whatsapp="22997001122"),
-                Product(name="Xiaomi Redmi Note 13 Pro+ 5G", brand="Xiaomi", series="Xiaomi", price_usd=340.0, price_original=205000.0, currency="FCFA", image_url="", specs="256Go • 8Go RAM • Écran Incurvé 1.5K • IP68", tag="PERF", statut="Actif", condition="neuf", etat="Neuf", ecran='6.67" CrystalRes AMOLED 120Hz 1.5K', camera="200 MP Samsung ISOCELL HP3 OIS + 8 MP + 2 MP", batterie="5000 mAh • HyperCharge 120W", stockage="256Go", ram="8Go", tendance=88, whatsapp="22997001122"),
-                Product(name="Samsung Galaxy A15", brand="Samsung", series="Samsung-A", price_usd=160.0, price_original=98000.0, currency="FCFA", image_url="", specs="128Go • 6Go RAM • Helio G99 • Super AMOLED", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.5" Super AMOLED 90Hz FHD+', camera="50 MP Principal + 5 MP Ultra-Wide + 2 MP", batterie="5000 mAh • Charge 25W", stockage="128Go", ram="6Go", tendance=86, whatsapp="22997001122"),
-                Product(name="Itel S24", brand="Itel", series="Itel", price_usd=110.0, price_original=68000.0, currency="FCFA", image_url="", specs="128Go • 8Go RAM (4+4) • Helio G91 Ultra", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.6" Punch-hole 90Hz HD+', camera="108 MP Ultra Clear + Capteur IA", batterie="5000 mAh • Charge 18W Type-C", stockage="128Go", ram="8Go", tendance=85, whatsapp="22997001122"),
-            ]
-            db.session.bulk_save_objects(best_12_phones)
-            db.session.commit()
+            # 2. Grand Catalogue (mélange de Neuf et Occasion, plusieurs marques)
+            phones_catalogue = [
+                # --- APPLE (Neuf & Occasion) ---
+                Product(name="Apple iPhone 15 Pro Max", brand="Apple", series="Apple", price_usd=1199.0, price_original=1199.0, currency="USD", specs="256Go • 8Go RAM • Puce A17 Pro", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.7" OLED 120Hz', camera="48 MP Principal", batterie="4422 mAh", stockage="256Go", ram="8Go", tendance=99, whatsapp="22997001122"),
+                Product(name="Apple iPhone 14 Pro", brand="Apple", series="Apple", price_usd=750.0, price_original=500000.0, currency="FCFA", specs="128Go • 6Go RAM • Dynamic Island", tag="CAMERA", statut="Actif", condition="occasion", etat="Très bon état", ecran='6.1" OLED 120Hz', camera="48 MP", batterie="3200 mAh", stockage="128Go", ram="6Go", tendance=91, whatsapp="22997001122"),
+                Product(name="Apple iPhone 13", brand="Apple", series="Apple", price_usd=480.0, price_original=310000.0, currency="FCFA", specs="128Go • A15 Bionic", tag="ALL", statut="Actif", condition="occasion", etat="Bon état", ecran='6.1" OLED', camera="12 MP", batterie="3240 mAh", stockage="128Go", ram="4Go", tendance=87, whatsapp="22997001122"),
+                Product(name="Apple iPhone 12", brand="Apple", series="Apple", price_usd=350.0, price_original=230000.0, currency="FCFA", specs="64Go • 5G", tag="BUDGET", statut="Actif", condition="occasion", etat="Correct", ecran='6.1" OLED', camera="12 MP", batterie="2815 mAh", stockage="64Go", ram="4Go", tendance=82, whatsapp="22997001122"),
+                Product(name="Apple iPhone 11", brand="Apple", series="Apple", price_usd=280.0, price_original=180000.0, currency="FCFA", specs="64Go • A13 Bionic", tag="BUDGET", statut="Actif", condition="occasion", etat="Bon état", ecran='6.1" LCD', camera="12 MP Dual", batterie="3110 mAh", stockage="64Go", ram="4Go", tendance=80, whatsapp="22997001122"),
 
-            # 3. Favoris & Commande de démo pour le client de test
-            p_fav = Product.query.first()
-            if p_fav and demo_client:
-                demo_client.favorite_products.append(p_fav)
-                sample_order = Order(
-                    user_id=demo_client.id,
-                    total=p_fav.price_usd * 600,
-                    currency="FCFA",
-                    statut="En attente",
-                    client_name=f"{demo_client.prenom} {demo_client.nom}",
-                    client_phone=demo_client.phone
-                )
-                db.session.add(sample_order)
-                db.session.commit()
-                order_item = OrderItem(
-                    order_id=sample_order.id,
-                    product_id=p_fav.id,
-                    quantite=1,
-                    prix_unitaire=p_fav.price_usd * 600
-                )
-                db.session.add(order_item)
-                db.session.commit()
+                # --- SAMSUNG (Neuf & Occasion) ---
+                Product(name="Samsung Galaxy S24 Ultra", brand="Samsung", series="Samsung-S", price_usd=1299.0, price_original=780000.0, currency="FCFA", specs="512Go • 12Go RAM • Snapdragon 8 Gen 3", tag="PERF", statut="Actif", condition="neuf", etat="Neuf", ecran='6.8" AMOLED 120Hz', camera="200 MP", batterie="5000 mAh", stockage="512Go", ram="12Go", tendance=98, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy S23 Ultra", brand="Samsung", series="Samsung-S", price_usd=850.0, price_original=550000.0, currency="FCFA", specs="256Go • 12Go RAM", tag="CAMERA", statut="Actif", condition="occasion", etat="Très bon état", ecran='6.8" AMOLED', camera="200 MP", batterie="5000 mAh", stockage="256Go", ram="12Go", tendance=92, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy S22", brand="Samsung", series="Samsung-S", price_usd=420.0, price_original=275000.0, currency="FCFA", specs="128Go • Snapdragon 8 Gen 1", tag="PERF", statut="Actif", condition="occasion", etat="Bon état", ecran='6.1" AMOLED', camera="50 MP", batterie="3700 mAh", stockage="128Go", ram="8Go", tendance=84, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy A55 5G", brand="Samsung", series="Samsung-A", price_usd=380.0, price_original=230000.0, currency="FCFA", specs="256Go • 8Go RAM", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.6" Super AMOLED', camera="50 MP", batterie="5000 mAh", stockage="256Go", ram="8Go", tendance=90, whatsapp="22997001122"),
+                Product(name="Samsung Galaxy A15", brand="Samsung", series="Samsung-A", price_usd=160.0, price_original=98000.0, currency="FCFA", specs="128Go • 6Go RAM", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.5" AMOLED', camera="50 MP", batterie="5000 mAh", stockage="128Go", ram="6Go", tendance=86, whatsapp="22997001122"),
+
+                # --- XIAOMI & REDMI ---
+                Product(name="Xiaomi 14 Ultra", brand="Xiaomi", series="Xiaomi", price_usd=1099.0, price_original=1050.0, currency="EUR", specs="512Go • 16Go RAM • Leica", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.73" AMOLED', camera="50 MP Quad", batterie="5000 mAh", stockage="512Go", ram="16Go", tendance=94, whatsapp="22997001122"),
+                Product(name="Xiaomi Redmi Note 13 Pro+ 5G", brand="Xiaomi", series="Xiaomi", price_usd=340.0, price_original=205000.0, currency="FCFA", specs="256Go • 8Go RAM", tag="PERF", statut="Actif", condition="neuf", etat="Neuf", ecran='6.67" AMOLED', camera="200 MP", batterie="5000 mAh", stockage="256Go", ram="8Go", tendance=88, whatsapp="22997001122"),
+                Product(name="Xiaomi Redmi Note 12", brand="Xiaomi", series="Xiaomi", price_usd=180.0, price_original=115000.0, currency="FCFA", specs="128Go • Snapdragon 685", tag="BUDGET", statut="Actif", condition="occasion", etat="Très bon état", ecran='6.67" AMOLED', camera="50 MP", batterie="5000 mAh", stockage="128Go", ram="4Go", tendance=81, whatsapp="22997001122"),
+
+                # --- INFINIX & TECNO ---
+                Product(name="Infinix Note 40 Pro+ 5G", brand="Infinix", series="Infinix", price_usd=290.0, price_original=175000.0, currency="FCFA", specs="256Go • 12Go RAM", tag="BATTERY", statut="Actif", condition="neuf", etat="Neuf", ecran='6.78" AMOLED', camera="108 MP", batterie="4600 mAh", stockage="256Go", ram="12Go", tendance=89, whatsapp="22997001122"),
+                Product(name="Tecno Camon 30 Premier 5G", brand="Tecno", series="Tecno", price_usd=360.0, price_original=215000.0, currency="FCFA", specs="512Go • 12Go RAM", tag="CAMERA", statut="Actif", condition="neuf", etat="Neuf", ecran='6.77" AMOLED', camera="50 MP Sony", batterie="5000 mAh", stockage="512Go", ram="12Go", tendance=88, whatsapp="22997001122"),
+                Product(name="Itel S24", brand="Itel", series="Itel", price_usd=110.0, price_original=68000.0, currency="FCFA", specs="128Go • 8Go RAM", tag="BUDGET", statut="Actif", condition="neuf", etat="Neuf", ecran='6.6" 90Hz', camera="108 MP", batterie="5000 mAh", stockage="128Go", ram="8Go", tendance=85, whatsapp="22997001122"),
+            ]
+            db.session.bulk_save_objects(phones_catalogue)
+            db.session.commit()
+            print("[SEED] Catalogue mis à jour avec succès avec les nouveaux téléphones (Neuf & Occasion) !")
 
     except Exception as e:
         print(f"[SEED] Erreur d'initialisation : {e}")
         db.session.rollback()
-
-
-# Initialisation du contexte de l'application
-with app.app_context():
-    seed_database()
 
 
 # ==========================================
@@ -608,26 +593,7 @@ def render_html_page(page_name):
         return render_template(f"{page_name}.html")
     except Exception:
         return "Page introuvable (Erreur 404)", 404
-    
-@app.route('/reset-database-urgente')
-def reset_database_urgente():
-    try:
-        # Supprime toutes les anciennes tables obsolètes
-        db.drop_all()
-        # Recrée toutes les tables avec la structure à jour
-        db.create_all()
-        # Ré-injecte les données de base (les 12 téléphones par défaut)
-        if 'seed_database' in globals():
-            seed_database()
-        return "Succès : La base de données PostgreSQL a été entièrement réinitialisée et mise à jour !"
-    except Exception as e:
-        return f"Erreur lors de la réinitialisation : {str(e)}", 500
-    
-with app.app_context():
-    db.drop_all()
-    db.create_all()
-    if 'seed_database' in globals():
-        seed_database()
+
 
 
 if __name__ == '__main__':
