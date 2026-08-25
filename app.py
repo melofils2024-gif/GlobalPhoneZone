@@ -103,8 +103,6 @@ def seed_database():
             db.session.bulk_save_objects(best_12_phones)
             db.session.commit()
 
-            # SUPPRESSION ICI : Les articles du vendeur de démo ont été retirés pour que sa page soit vide par défaut.
-
             # 3. Favoris & Commande de démo pour le client de test
             p_fav = Product.query.first()
             if p_fav and demo_client:
@@ -179,7 +177,6 @@ def login():
     data = request.get_json() or {}
     email = data.get('email', '').strip().lower()
     password = data.get('password', '')
-    expected_role = data.get('role')
 
     user = User.query.filter_by(email=email).first()
 
@@ -253,14 +250,12 @@ def get_products():
     results = []
     for p in products:
         item = p.to_dict()
-        # Calcul du prix converti dans la devise demandée
         item['price_converted'] = from_usd(p.price_usd, currency)
         item['active_currency'] = currency
         results.append(item)
 
     return jsonify(results), 200
 
-# Alias pour alimenter le tableau de classement sur la page d'accueil
 @app.route('/api/ranking', methods=['GET'])
 def get_ranking():
     return get_products()
@@ -270,13 +265,11 @@ def get_product(product_id):
     product = Product.query.get_or_404(product_id)
     return jsonify(product.to_dict()), 200
 
-# Route exclusive vendeur : récupère UNIQUEMENT les produits du vendeur connecté
 @app.route('/api/products/seller/<int:vendeur_id>', methods=['GET'])
 def get_seller_products(vendeur_id):
     products = Product.query.filter_by(vendeur_id=vendeur_id).order_by(Product.id.desc()).all()
     return jsonify([p.to_dict() for p in products]), 200
 
-# Ajouter un produit par le vendeur (avec devise personnalisée)
 @app.route('/api/products', methods=['POST'])
 def add_product():
     data = request.get_json() or {}
@@ -289,7 +282,6 @@ def add_product():
     if not name or not brand:
         return jsonify({"message": "Nom et marque obligatoires"}), 400
 
-    # Conversion en USD pour standardiser
     price_usd_calc = to_usd(price_input, currency_input)
 
     new_product = Product(
@@ -317,7 +309,6 @@ def add_product():
     db.session.commit()
     return jsonify({"message": "Produit publié avec succès", "product": new_product.to_dict()}), 201
 
-# Modifier un produit
 @app.route('/api/products/<int:product_id>', methods=['PUT'])
 def update_product(product_id):
     product = Product.query.get_or_404(product_id)
@@ -344,7 +335,6 @@ def update_product(product_id):
     db.session.commit()
     return jsonify({"message": "Produit mis à jour", "product": product.to_dict()}), 200
 
-# Supprimer un produit
 @app.route('/api/products/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
     product = Product.query.get_or_404(product_id)
@@ -426,7 +416,6 @@ def create_order():
     client_name = data.get('client_name') or (f"{user.prenom} {user.nom}".strip() if user else "Client Anonyme")
     client_phone = data.get('client_phone') or (user.phone if user else "22900000000")
 
-    # Si commande directe d'un seul produit
     if product_id and not items_data:
         items_data = [{'product_id': product_id, 'quantite': data.get('quantite', 1)}]
 
@@ -435,7 +424,7 @@ def create_order():
 
     total = 0.0
     new_order = Order(
-        user_id=user_id if user_id else (user.id if user else 2), # fallback
+        user_id=user_id if user_id else (user.id if user else 2),
         total=0,
         currency=currency,
         client_name=client_name,
@@ -468,13 +457,18 @@ def get_user_orders(user_id):
     orders = Order.query.filter_by(user_id=user_id).order_by(Order.date_creation.desc()).all()
     return jsonify([o.to_dict() for o in orders]), 200
 
-# Commandes reçues concernant les articles du vendeur
+# CORRECTION APPLIQUÉE ICI : Utilisation des relations explicites SQLAlchemy 2.0 et de .distinct()
 @app.route('/api/orders/seller/<int:vendeur_id>', methods=['GET'])
 def get_seller_orders(vendeur_id):
-    orders = Order.query.join(OrderItem).join(Product).filter(Product.vendeur_id == vendeur_id).all()
-    unique_orders = list(set(orders))
-    unique_orders.sort(key=lambda x: x.date_creation, reverse=True)
-    return jsonify([o.to_dict() for o in unique_orders]), 200
+    orders = (
+        Order.query.join(Order.items)
+        .join(OrderItem.product)
+        .filter(Product.vendeur_id == vendeur_id)
+        .distinct()
+        .order_by(Order.date_creation.desc())
+        .all()
+    )
+    return jsonify([o.to_dict() for o in orders]), 200
 
 @app.route('/api/orders/<int:order_id>/status', methods=['PUT'])
 def update_order_status(order_id):
@@ -493,15 +487,13 @@ def update_order_status(order_id):
 
 @app.route('/api/assistant/recommend', methods=['POST'])
 def recommend_phone():
-    """Assistant intelligent qui recommande les téléphones les plus adaptés selon budget, priorité et marque"""
     data = request.get_json() or {}
     
     budget_raw = data.get('budget')
     currency = data.get('currency', 'FCFA').upper()
-    priority = data.get('priority', 'ALL').upper() # 'CAMERA', 'BATTERY', 'PERF', 'BUDGET', 'ALL'
+    priority = data.get('priority', 'ALL').upper()
     brand = data.get('brand', 'ALL')
     
-    # Conversion du budget en USD
     max_budget_usd = None
     if budget_raw and float(budget_raw) > 0:
         max_budget_usd = to_usd(float(budget_raw), currency)
@@ -517,17 +509,13 @@ def recommend_phone():
     for p in products:
         score = p.tendance or 80
         
-        # Filtre et scoring Budget
         if max_budget_usd:
             if p.price_usd <= max_budget_usd:
-                # Bon point si dans le budget
                 ratio = p.price_usd / max_budget_usd
                 score += int((1 - abs(1 - ratio)) * 20)
             else:
-                # Trop cher
                 score -= int((p.price_usd - max_budget_usd) / 10)
 
-        # Scoring Priorité
         if priority == 'CAMERA':
             if p.tag == 'CAMERA' or '200 MP' in (p.camera or '') or 'Leica' in (p.specs or '') or 'Pro' in p.name:
                 score += 30
